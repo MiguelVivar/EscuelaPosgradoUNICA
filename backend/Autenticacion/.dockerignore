@@ -1,0 +1,9 @@
+# Ignorar archivos innecesarios para el build
+target/
+!target/*.jar
+*.log
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore

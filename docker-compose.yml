@@ -1,0 +1,77 @@
+services:
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - autenticacion
+      - intranet
+      - matricula
+
+  # Autenticacion Microservice
+  autenticacion:
+    build: ./backend/Autenticacion
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/autenticacion
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - db
+    networks:
+      - escuela-network
+
+  # Intranet Microservice
+  intranet:
+    build: ./backend/Intranet
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/intranet
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - db
+    networks:
+      - escuela-network
+
+  # Matricula Microservice
+  matricula:
+    build: ./backend/Matricula
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/matricula
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - db
+    networks:
+      - escuela-network
+
+  # Database Service
+  db:
+    image: postgres:17.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_MULTIPLE_DATABASES: autenticacion,intranet,matricula
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - escuela-network
+
+volumes:
+  pgdata:
+
+networks:
+  escuela-network:
+    driver: bridge
