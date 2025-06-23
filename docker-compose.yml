@@ -1,15 +1,17 @@
-services:
-  # Frontend Service
+services:  
+  # Microservicio de Frontend
   frontend:
     build: ./frontend
     ports:
-      - "4200:80"
+      - "3000:3000"
     depends_on:
       - autenticacion
       - intranet
       - matricula
+    networks:
+      - escuela-network
 
-  # Autenticacion Microservice
+  # Microservicio de Autenticación
   autenticacion:
     build: ./backend/Autenticacion
     ports:
@@ -24,7 +26,7 @@ services:
     networks:
       - escuela-network
 
-  # Intranet Microservice
+  # Microservicio de Intranet
   intranet:
     build: ./backend/Intranet
     ports:
@@ -39,7 +41,7 @@ services:
     networks:
       - escuela-network
 
-  # Matricula Microservice
+  # Microservicio de Matrícula
   matricula:
     build: ./backend/Matricula
     ports:
@@ -54,7 +56,7 @@ services:
     networks:
       - escuela-network
 
-  # Database Service
+  # Servicio de Base de Datos
   db:
     image: postgres:17.5
     environment:

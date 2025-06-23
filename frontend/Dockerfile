@@ -1,43 +1,89 @@
-# frontend/Dockerfile
-FROM node:20-alpine AS builder
+# check=skip=JSONArgsRecommended
+# Dockerfile para Next.js con TypeScript y TailwindCSS
+# Utilizando multi-stage build para optimizar el tamaño de la imagen
 
-# Instalar pnpm y herramientas necesarias
-RUN npm install -g pnpm
+# ==========================================
+# Imagen base con Node.js
+# ==========================================
+FROM node:22-alpine AS base
 
-# Configurar variables de entorno para el build
-ENV NODE_ENV=production
-ENV GENERATE_SOURCEMAP=false
+# Instalar libc6-compat para compatibilidad con Alpine
+RUN apk add --no-cache libc6-compat
+
+# Habilitar corepack para usar pnpm
+RUN corepack enable
 
 WORKDIR /app
 
-# Copiar archivos de dependencias primero para aprovechar el cache de Docker
+# ==========================================
+# Stage 1: Instalación de dependencias
+# ==========================================
+FROM base AS deps
+
+# Copiar archivos de configuración de pnpm
 COPY package.json pnpm-lock.yaml ./
 
 # Instalar dependencias
 RUN pnpm install --frozen-lockfile
 
-# Copiar el resto del código fuente (excluyendo node_modules)
-COPY src ./src
-COPY public ./public
-COPY index.html ./
-COPY vite.config.ts ./
-COPY tsconfig*.json ./
-COPY eslint.config.js ./
+# ==========================================
+# Stage 2: Build de la aplicación
+# ==========================================
+FROM base AS builder
 
-# Construir la aplicación
-RUN pnpm run build
+WORKDIR /app
 
-# Etapa de producción con Nginx
-FROM nginx:alpine
+# Copiar dependencias desde la etapa anterior
+COPY --from=deps /app/node_modules ./node_modules
 
-# Copiar archivos construidos
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copiar código fuente
+COPY . .
 
-# Copiar configuración personalizada de Nginx (opcional)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Variables de entorno para Next.js
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
-# Exponer puerto 80
-EXPOSE 80
+# Build de la aplicación
+RUN pnpm build
 
-# Comando por defecto
-CMD ["nginx", "-g", "daemon off;"]
+# Listar contenido para debug
+RUN ls -la .next/
+
+# ==========================================
+# Stage 3: Imagen de producción
+# ==========================================
+FROM base AS runner
+
+WORKDIR /app
+
+# Configurar usuario no root
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copiar package.json y pnpm-lock.yaml
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/pnpm-lock.yaml ./
+
+# Copiar archivos públicos
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public/
+
+# Copiar toda la carpeta .next
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next/
+
+# Instalar solo dependencias de producción
+RUN pnpm install --prod --frozen-lockfile
+
+# Cambiar a usuario no root
+USER nextjs
+
+# Exponer puerto
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Comando para ejecutar la aplicación
+CMD ["pnpm", "start"]

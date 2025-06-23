@@ -16,8 +16,8 @@ Este proyecto implementa una solución completa para la gestión académica, div
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │  Autenticación  │    │    Matrícula    │
-│   React + Vite  │◄──►│   (Port 8080)   │◄──►│   (Port 8082)   │
-│   (Port 4200)   │    │                 │    │                 │
+│  Next.js + React│◄──►│   (Port 8080)   │◄──►│   (Port 8082)   │
+│   (Port 3000)   │    │                 │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          │              ┌─────────────────┐              │
@@ -35,13 +35,12 @@ Este proyecto implementa una solución completa para la gestión académica, div
 ### Tecnologías Utilizadas
 
 #### Frontend
-- **React 19.1.0** - Biblioteca principal para UI
-- **Vite 6.3.5** - Build tool y dev server
-- **TypeScript 5.8.3** - Tipado estático
-- **TailwindCSS 4.1.10** - Framework CSS
-- **React Router DOM 7.6.2** - Enrutamiento
+- **Next.js 15.3.4** - Framework React full-stack
+- **React 19.0.0** - Biblioteca principal para UI
+- **TypeScript 5** - Tipado estático
+- **TailwindCSS 4** - Framework CSS
 - **GSAP 3.13.0** - Animaciones
-- **ESLint 9.25.0** - Linting
+- **ESLint 9** - Linting con configuración Next.js
 
 #### Backend
 - **Spring Boot 3.5.3** - Framework principal
@@ -75,10 +74,10 @@ escuela_posgrado/
 │       ├── Dockerfile
 │       ├── pom.xml
 │       └── src/main/java/com/escuelaposgrado/Intranet/
-├── 📁 frontend/                   # Aplicación React
+├── 📁 frontend/                   # Aplicación Next.js
 │   ├── Dockerfile
 │   ├── package.json
-│   ├── vite.config.ts
+│   ├── next.config.ts
 │   └── src/
 ├── 📁 db/                         # Scripts de base de datos
 │   └── init-multiple-databases.sh
@@ -117,7 +116,7 @@ escuela_posgrado/
 
 | Servicio | URL | Puerto | Descripción |
 |----------|-----|--------|-------------|
-| Frontend | http://localhost:4200 | 4200 | Aplicación React |
+| Frontend | http://localhost:3000 | 3000 | Aplicación Next.js |
 | Autenticación | http://localhost:8080 | 8080 | API de autenticación |
 | Intranet | http://localhost:8081 | 8081 | API de intranet |
 | Matrícula | http://localhost:8082 | 8082 | API de matrícula |
@@ -169,10 +168,10 @@ El archivo `db/init-multiple-databases.sh` configura automáticamente las bases 
 
 ### Frontend
 ```bash
-pnpm dev          # Servidor de desarrollo
+pnpm dev          # Servidor de desarrollo (con Turbopack)
 pnpm build        # Build de producción
-pnpm lint         # Análisis de código
-pnpm preview      # Preview del build
+pnpm start        # Servidor de producción
+pnpm lint         # Análisis de código con ESLint
 ```
 
 ### Backend
@@ -244,8 +243,9 @@ Ica, Perú
 **Desarrollado con ❤️ para la comunidad académica de la UNICA**
 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-brightgreen)
-![React](https://img.shields.io/badge/React-19.1.0-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15.3.4-black)
+![React](https://img.shields.io/badge/React-19.0.0-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17.5-blue)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue)
 
