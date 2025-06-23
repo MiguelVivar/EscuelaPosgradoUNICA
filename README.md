@@ -121,7 +121,7 @@ escuela_posgrado/
 | Autenticación | http://localhost:8080 | 8080 | API de autenticación |
 | Intranet | http://localhost:8081 | 8081 | API de intranet |
 | Matrícula | http://localhost:8082 | 8082 | API de matrícula |
-| PostgreSQL | localhost:5432 | 5432 | Base de datos |
+| PostgreSQL |  http://localhost:5432 | 5432 | Base de datos |
 
 ### Health Checks
 
@@ -206,7 +206,7 @@ Este proyecto fue desarrollado por un equipo de 7 integrantes:
 | Angelina Soto | [@VinnBon](https://github.com/VinnBon) |
 | Luis Mitma | [@Elextranjero1942](https://github.com/Elextranjero1942) |
 | Juan Ttito | [@juanttito1003](https://github.com/juanttito1003) |
-| Rodrigo Conislla | [@Rodri2505](https://github.com/Rodri2505) |
+| Rodrigo Conislla | [@Rodri25](https://github.com/Rodricrak25) |
 | Dylan Palomino | [@DaPcxD](https://github.com/DaPcxD) |
 
 
