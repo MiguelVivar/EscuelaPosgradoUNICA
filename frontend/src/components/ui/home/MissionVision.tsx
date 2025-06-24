@@ -55,13 +55,13 @@ export default function MissionVision() {
             {/* Contenido Misión */}
             <div className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-amber-600">
               <p className="text-gray-700 leading-relaxed text-lg">
-                La Escuela de Posgrado, está comprometida con la formación, 
-                capacitación, investigación, asesoría y producción intelectual 
-                de alto nivel. Capacita profesionales con excelencia académica 
-                y con aptitud de respuesta científica y tecnológica a través de 
-                la investigación científica. Propicia el mejoramiento de las 
-                condiciones sociales, económicas, culturales y ambientales de 
-                la Región y el País.
+                La Escuela de Posgrado, está comprometida con la formación,
+                capacitación, investigación, asesoría y producción intelectual
+                de alto nivel. Capacita profesionales con excelencia académica y
+                con aptitud de respuesta científica y tecnológica a través de la
+                investigación científica. Propicia el mejoramiento de las
+                condiciones sociales, económicas, culturales y ambientales de la
+                Región y el País.
               </p>
             </div>
           </div>
@@ -85,29 +85,29 @@ export default function MissionVision() {
             <div className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-red-600">
               <div className="space-y-4 text-gray-700 leading-relaxed text-lg">
                 <p>
-                  La Escuela de Posgrado es reconocida como un Centro de 
-                  Excelencia Académica, entre las Instituciones de la Región 
-                  Ica y del País.
+                  La Escuela de Posgrado es reconocida como un Centro de
+                  Excelencia Académica, entre las Instituciones de la Región Ica
+                  y del País.
                 </p>
-                
+
                 <p>
-                  Reconoce el desarrollo integral del hombre y de la sociedad, 
-                  interactuando con ella para lograr el beneficio económico y 
-                  social de la colectividad dentro del marco jurídico y el 
+                  Reconoce el desarrollo integral del hombre y de la sociedad,
+                  interactuando con ella para lograr el beneficio económico y
+                  social de la colectividad dentro del marco jurídico y el
                   respeto a los derechos humanos.
                 </p>
-                
+
                 <p>
-                  Conduce la investigación científica, con un enfoque 
-                  multidisciplinario y en concertación con el conjunto de 
+                  Conduce la investigación científica, con un enfoque
+                  multidisciplinario y en concertación con el conjunto de
                   instituciones que operan en la región.
                 </p>
-                
+
                 <p>
-                  Asimismo, logra objetivos y metas planificado y programados 
-                  oportunamente, cumpliendo eficiente y eficazmente sus 
-                  compromisos con las instituciones y la sociedad, así como, 
-                  con las fuentes que financien su desarrollo.
+                  Asimismo, logra objetivos y metas planificado y programados
+                  oportunamente, cumpliendo eficiente y eficazmente sus
+                  compromisos con las instituciones y la sociedad, así como, con
+                  las fuentes que financien su desarrollo.
                 </p>
               </div>
             </div>

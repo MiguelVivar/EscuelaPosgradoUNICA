@@ -1,6 +1,7 @@
 import Carousel from "@/components/ui/home/Carrousel";
 import Welcome from "@/components/ui/home/Welcome";
 import MissionVision from "@/components/ui/home/MissionVision";
+import AcademicObjectives from "@/components/ui/home/AcademicObjectives";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Carousel />
       <Welcome />
       <MissionVision />
+      <AcademicObjectives />
     </main>
   );
 }
