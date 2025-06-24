@@ -69,7 +69,7 @@ export default function Welcome() {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                 Escuela de Posgrado de la{" "}
                 <span className="text-red-600">Universidad Nacional</span>{" "}
-                <span className="text-amber-600">"San Luis Gonzaga"</span>
+                <span className="text-amber-600">&quot;San Luis Gonzaga&quot;</span>
               </h1>
             </div>
 

@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar/Navbar";
+import Footer from "@/components/layout/Footer/Footer";
 
 export const metadata = {
   title: "Universidad Nacional San Luis Gonzaga - UNICA",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
