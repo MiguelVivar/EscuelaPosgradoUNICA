@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "@/components/common/Button";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import logoPosgrado from "@/assets/logoPosgrado.png";
+import logoUNICA from "@/assets/logoUNICA.png";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -64,7 +65,6 @@ export default function LoginForm() {
     >
       {/* Contenedor principal con glassmorphism - Grid de 2 columnas */}
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden grid grid-cols-1 lg:grid-cols-2 min-h-[700px]">
-        
         {/* Columna Izquierda - Imagen y Branding */}
         <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 relative overflow-hidden flex flex-col justify-center items-center p-8 lg:p-12">
           {/* Elementos decorativos de fondo */}
@@ -72,7 +72,7 @@ export default function LoginForm() {
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
           <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-          
+
           <div className="relative z-10 text-center">
             {/* Logos */}
             <div className="flex justify-center items-center space-x-8 mb-8">
@@ -80,7 +80,7 @@ export default function LoginForm() {
                 <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl"></div>
                 <div className="relative bg-white/95 p-4 rounded-3xl shadow-2xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
                   <Image
-                    src="/assets/logoUNICA.png"
+                    src={logoUNICA}
                     alt="Logo UNICA"
                     width={80}
                     height={80}
@@ -92,7 +92,7 @@ export default function LoginForm() {
                 <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl"></div>
                 <div className="relative bg-white/95 p-4 rounded-3xl shadow-2xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
                   <Image
-                    src="/assets/logoPosgrado.png"
+                    src={logoPosgrado}
                     alt="Logo Posgrado"
                     width={80}
                     height={80}
@@ -109,19 +109,26 @@ export default function LoginForm() {
             <h2 className="text-xl lg:text-2xl font-semibold text-white/95 mb-6 drop-shadow-lg">
               Escuela de Posgrado UNICA
             </h2>
-            
+
             {/* Descripción */}
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               <p className="text-white/90 text-lg leading-relaxed">
-                "Formando líderes para el futuro a través de la excelencia académica y la investigación de vanguardia"
+                "Formando líderes para el futuro a través de la excelencia
+                académica y la investigación de vanguardia"
               </p>
             </div>
 
             {/* Elementos decorativos adicionales */}
             <div className="mt-8 flex justify-center space-x-4">
               <div className="w-3 h-3 bg-white/60 rounded-full animate-pulse"></div>
-              <div className="w-3 h-3 bg-white/40 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="w-3 h-3 bg-white/60 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div
+                className="w-3 h-3 bg-white/40 rounded-full animate-pulse"
+                style={{ animationDelay: "0.5s" }}
+              ></div>
+              <div
+                className="w-3 h-3 bg-white/60 rounded-full animate-pulse"
+                style={{ animationDelay: "1s" }}
+              ></div>
             </div>
           </div>
         </div>
@@ -283,8 +290,18 @@ export default function LoginForm() {
                   ) : (
                     <div className="flex items-center justify-center space-x-2">
                       <span>Iniciar Sesión</span>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                        />
                       </svg>
                     </div>
                   )}
@@ -324,7 +341,7 @@ export default function LoginForm() {
             <div className="flex-shrink-0 p-2 bg-amber-100 rounded-full">
               <svg
                 className="h-6 w-6 text-amber-600"
-                fill="currentColor" 
+                fill="currentColor"
                 viewBox="0 0 20 20"
               >
                 <path
@@ -339,7 +356,9 @@ export default function LoginForm() {
                 Acceso Institucional
               </h3>
               <p className="text-sm text-amber-700">
-                Utiliza tu correo institucional <span className="font-semibold">@unica.edu.pe</span> para acceder al sistema académico de la Escuela de Posgrado.
+                Utiliza tu correo institucional{" "}
+                <span className="font-semibold">@unica.edu.pe</span> para
+                acceder al sistema académico de la Escuela de Posgrado.
               </p>
             </div>
           </div>
