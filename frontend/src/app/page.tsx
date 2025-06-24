@@ -1,7 +1,9 @@
+import Carousel from "@/components/ui/home/Carrousel";
+
 export default function Home() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Página de Inicio</h1>
-    </>
+    <main className="bg-gray-50">
+      <Carousel />
+    </main>
   );
 }

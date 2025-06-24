@@ -1,4 +1,11 @@
 import "./globals.css";
+import Navbar from "@/components/layout/Navbar/Navbar";
+
+export const metadata = {
+  title: "Universidad Nacional San Luis Gonzaga - UNICA",
+  description:
+    "Universidad Nacional San Luis Gonzaga, formando profesionales de excelencia en Ica, Perú",
+};
 
 export default function RootLayout({
   children,
@@ -8,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <Navbar />
         {children}
       </body>
     </html>
