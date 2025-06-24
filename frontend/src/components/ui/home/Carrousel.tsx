@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import {
   IoChevronBack,
   IoChevronForward,
@@ -18,6 +19,64 @@ const Carousel: React.FC<CarouselProps> = ({
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const contentRefs = useRef<HTMLDivElement[]>([]);
+
+  // Efecto para animación inicial del carrusel
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const ctx = gsap.context(() => {
+      // Animación inicial del carrusel
+      gsap.fromTo(
+        carouselRef.current,
+        { 
+          opacity: 0 
+        },
+        {
+          opacity: 1,
+          duration: 1.5,
+          ease: "power2.out"
+        }
+      );
+      
+      // Animación del contenido del primer slide
+      animateSlideContent(0);
+    }, carouselRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Función para animar el contenido del slide
+  const animateSlideContent = (slideIndex: number) => {
+    if (typeof window === 'undefined') return;
+    
+    const contentRef = contentRefs.current[slideIndex];
+    if (!contentRef) return;
+
+    const subtitle = contentRef.querySelector('[data-subtitle]');
+    const title = contentRef.querySelector('[data-title]');
+    const description = contentRef.querySelector('[data-description]');
+    const button = contentRef.querySelector('[data-button]');
+
+    gsap.timeline()
+      .fromTo(subtitle, 
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
+      )
+      .fromTo(title, 
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.4"
+      )
+      .fromTo(description, 
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.6"
+      )
+      .fromTo(button, 
+        { y: 30, opacity: 0, scale: 0.9 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)" }, "-=0.4"
+      );
+  };
 
   // Efecto para manejar el autoplay
   useEffect(() => {
@@ -29,6 +88,16 @@ const Carousel: React.FC<CarouselProps> = ({
 
     return () => clearInterval(interval);
   }, [currentSlide, isAutoPlaying, autoPlayInterval, slides.length]);
+
+  // Efecto para animar cuando cambia el slide
+  useEffect(() => {
+    // Pequeño delay para esperar la transición del slide
+    const timer = setTimeout(() => {
+      animateSlideContent(currentSlide);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [currentSlide]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -49,9 +118,9 @@ const Carousel: React.FC<CarouselProps> = ({
   const handleMouseLeave = () => {
     setIsAutoPlaying(true);
   };
-
   return (
     <div
+      ref={carouselRef}
       className="relative w-full h-screen overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -61,7 +130,7 @@ const Carousel: React.FC<CarouselProps> = ({
         className="flex transition-transform duration-700 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slides.map((slide) => (
+        {slides.map((slide, index) => (
           <div key={slide.id} className="relative flex-none w-full h-full">
             {/* Imagen de Fondo */}
             <div
@@ -73,31 +142,48 @@ const Carousel: React.FC<CarouselProps> = ({
 
             {/* Contenido */}
             <div className="relative z-10 flex items-center justify-center h-full">
-              <div className="text-center text-white px-4 max-w-4xl mx-auto">
-                <h2 className="text-sm md:text-base font-medium text-amber-300 uppercase tracking-wider mb-2 opacity-90">
+              <div 
+                ref={(el) => {
+                  if (el) contentRefs.current[index] = el;
+                }}
+                className="text-center text-white px-4 max-w-4xl mx-auto"
+              >
+                <h2 
+                  data-subtitle
+                  className="text-sm md:text-base font-medium text-amber-300 uppercase tracking-wider mb-2 opacity-90"
+                >
                   {slide.subtitle}
                 </h2>
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                <h1 
+                  data-title
+                  className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+                >
                   {slide.title}
                 </h1>
-                <p className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed">
+                <p 
+                  data-description
+                  className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed"
+                >
                   {slide.description}
-                </p>                {slide.buttonText && (
-                  <Button
-                    onClick={() => {
-                      if (slide.buttonLink) {
-                        if (slide.target === "_blank") {
-                          window.open(slide.buttonLink, "_blank");
-                        } else {
-                          window.location.href = slide.buttonLink;
+                </p>
+                {slide.buttonText && (
+                  <div data-button>
+                    <Button
+                      onClick={() => {
+                        if (slide.buttonLink) {
+                          if (slide.target === "_blank") {
+                            window.open(slide.buttonLink, "_blank");
+                          } else {
+                            window.location.href = slide.buttonLink;
+                          }
                         }
-                      }
-                    }}
-                    className="inline-flex items-center px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                  >
-                    {slide.buttonText}
-                    <IoArrowForward className="ml-2 w-5 h-5" />
-                  </Button>
+                      }}
+                      className="inline-flex items-center px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                    >
+                      {slide.buttonText}
+                      <IoArrowForward className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>

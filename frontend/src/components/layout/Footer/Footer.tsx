@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import QuickLinks from "./QuickLinks";
 import ContactInfo from "./ContactInfo";
 import SocialLinks from "./SocialLinks";
-import { year } from "@/utils";
+import { year } from "@/constants";
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);

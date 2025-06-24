@@ -2,55 +2,132 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import about2 from "@/assets/about2.png"; 
+import about2 from "@/assets/about2.png";
+import objectives from "@/data/Objectives";
+
+// Registrar ScrollTrigger
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function AcademicObjectives() {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const objectivesListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current && contentRef.current && imageRef.current) {
-      // Animación del contenedor principal
+    if (typeof window === "undefined") return;
+
+    const ctx = gsap.context(() => {
+      // Animación del header
       gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+        headerRef.current,
+        {
+          y: 40,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
       );
 
-      // Animación del contenido
+      // Animación de la descripción
       gsap.fromTo(
-        contentRef.current,
-        { x: -100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 0.3 }
+        descriptionRef.current,
+        {
+          y: 30,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: descriptionRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.2,
+        }
       );
+
+      // Animación de los objetivos uno por uno
+      const objectiveItems = objectivesListRef.current?.children;
+      if (objectiveItems) {
+        gsap.fromTo(
+          objectiveItems,
+          {
+            x: -30,
+            opacity: 0,
+          },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: 0.15,
+            scrollTrigger: {
+              trigger: objectivesListRef.current,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+            delay: 0.4,
+          }
+        );
+      }
 
       // Animación de la imagen
       gsap.fromTo(
         imageRef.current,
-        { x: 100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 0.6 }
+        {
+          x: 80,
+          opacity: 0,
+          scale: 0.9,
+          rotation: 5,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          rotation: 0,
+          duration: 1.2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: imageRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.3,
+        }
       );
-    }
-  }, []);
+    }, containerRef);
 
-  const objectives = [
-    "Proporcionar capacitación especializada y de carácter interdisciplinario del más alto nivel académico, en las diferentes áreas del saber humano.",
-    "Fomentar y desarrollo la investigación científica a través del aporte creador de los integrantes de la Escuela de Posgrado.",
-    "Intensificar la cooperación e intercambio con escuelas similares e instituciones públicas o privadas a nivel nacional e internacional.",
-    "Desarrollar acciones de extensión o proyección universitaria.",
-    "Fomentar la producción de bienes y la prestación de servicios, privilegiando la creación intelectual.",
-  ];
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section ref={containerRef} className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {" "}
           {/* Contenido */}
           <div ref={contentRef} className="space-y-8">
             {/* Header */}
-            <div className="space-y-4">
+            <div ref={headerRef} className="space-y-4">
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-bold text-amber-600 uppercase tracking-wider bg-amber-50 px-3 py-1 rounded-full">
                   EPG - UNICA
@@ -63,12 +140,15 @@ export default function AcademicObjectives() {
             </div>
 
             {/* Descripción introductoria */}
-            <div className="text-gray-700 leading-relaxed text-lg">
+            <div
+              ref={descriptionRef}
+              className="text-gray-700 leading-relaxed text-lg"
+            >
               <p>La Escuela de Posgrado tiene como objetivos:</p>
             </div>
 
             {/* Lista de objetivos */}
-            <div className="space-y-6">
+            <div ref={objectivesListRef} className="space-y-6">
               {objectives.map((objective, index) => (
                 <div key={index} className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
@@ -83,7 +163,6 @@ export default function AcademicObjectives() {
               ))}
             </div>
           </div>
-
           {/* Imagen */}
           <div ref={imageRef} className="relative">
             <Image

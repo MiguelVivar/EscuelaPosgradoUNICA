@@ -2,38 +2,119 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Button from "@/components/common/Button";
 import about from "@/assets/about.png";
+
+// Registrar ScrollTrigger
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function Welcome() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current && imageRef.current && contentRef.current) {
-      // Animación del contenedor principal
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-      );
+    if (typeof window === "undefined") return;
 
-      // Animación de la imagen
+    const ctx = gsap.context(() => {
+      // Animación de la imagen con scroll
       gsap.fromTo(
         imageRef.current,
-        { x: -100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 0.3 }
+        {
+          x: -100,
+          opacity: 0,
+          scale: 0.8,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1.2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
+          },
+        }
       );
 
-      // Animación del contenido
+      // Animación del título con scroll
       gsap.fromTo(
-        contentRef.current,
-        { x: 100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 0.6 }
+        titleRef.current,
+        {
+          y: 50,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: titleRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.2,
+        }
       );
-    }
+
+      // Animación de la descripción con scroll
+      gsap.fromTo(
+        descriptionRef.current?.children || [],
+        {
+          y: 30,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: descriptionRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.4,
+        }
+      );
+
+      // Animación del botón con scroll
+      gsap.fromTo(
+        buttonRef.current,
+        {
+          y: 30,
+          opacity: 0,
+          scale: 0.9,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: buttonRef.current,
+            start: "top 90%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.6,
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -59,6 +140,7 @@ export default function Welcome() {
 
           {/* Contenido */}
           <div ref={contentRef} className="space-y-8">
+            {" "}
             {/* Header */}
             <div className="space-y-4">
               <div className="inline-block">
@@ -66,15 +148,22 @@ export default function Welcome() {
                   Bienvenidos
                 </span>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              <h1
+                ref={titleRef}
+                className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight"
+              >
                 Escuela de Posgrado de la{" "}
                 <span className="text-red-600">Universidad Nacional</span>{" "}
-                <span className="text-amber-600">&quot;San Luis Gonzaga&quot;</span>
+                <span className="text-amber-600">
+                  &quot;San Luis Gonzaga&quot;
+                </span>
               </h1>
             </div>
-
             {/* Descripción */}
-            <div className="space-y-6 text-gray-700 leading-relaxed text-md">
+            <div
+              ref={descriptionRef}
+              className="space-y-6 text-gray-700 leading-relaxed text-md"
+            >
               <p>
                 La{" "}
                 <span className="font-semibold text-amber-600">
@@ -107,13 +196,14 @@ export default function Welcome() {
                 , como programa Académico de Maestría en Educación.
               </p>
             </div>
-
             {/* Botón de acción */}
-            <div className="pt-4">
+            <div ref={buttonRef} className="pt-4">
               <Button
                 variant="primary"
                 size="lg"
                 className="shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                href="https://www.unica.edu.pe/posgrado/info/actas/19821014%20-%20Acta%20de%20creacion.pdf"
+                target="_blank"
               >
                 Ver Acta de Creación del Programa Académico de Perfeccionamiento
               </Button>
