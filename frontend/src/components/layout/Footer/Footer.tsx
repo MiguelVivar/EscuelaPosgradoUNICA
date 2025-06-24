@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import QuickLinks from "./QuickLinks";
 import ContactInfo from "./ContactInfo";
 import SocialLinks from "./SocialLinks";
+import { year } from "@/utils";
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
@@ -19,29 +20,55 @@ export default function Footer() {
     }
   }, []);
   return (
-    <footer ref={footerRef} className="bg-amber-500 border-t-4 text-gray-900">
+    <footer
+      ref={footerRef}
+      className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 border-t border-amber-500/20"
+    >
       {/* Contenido principal del footer */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
           {/* Sección de enlaces rápidos */}
-          <div>
+          <div className="lg:col-span-1">
             <QuickLinks />
           </div>
 
           {/* Sección de contacto */}
-          <div>
+          <div className="lg:col-span-1">
             <ContactInfo />
           </div>
-        </div>{" "}
-        {/* Sección de redes sociales */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-6 sm:space-y-0">
-            <div className="text-white text-sm font-medium">
-              © 2025 Escuela de Posgrado - Universidad Nacional "San Luis
-              Gonzaga" de Ica. Todos los derechos reservados.
+
+          {/* Sección adicional - Logo y descripción */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-light text-amber-400 tracking-wide">
+                Escuela de Posgrado
+              </h3>
+              <p className="text-zinc-300 text-lg leading-relaxed font-light">
+                Formando profesionales de excelencia con los más altos
+                estándares académicos en la Universidad Nacional San Luis
+                Gonzaga de Ica.
+              </p>
             </div>
 
-            <SocialLinks />
+            {/* Redes sociales integradas */}
+            <div className="pt-0">
+              <h4 className="text-zinc-400 text-sm font-medium mb-4 tracking-wide">
+                Síguenos
+              </h4>
+              <SocialLinks />
+            </div>
+          </div>
+        </div>
+
+        {/* Línea divisoria sutil */}
+        <div className="mt-16 pt-8 border-t border-zinc-700/50">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-zinc-400 text-sm font-light tracking-wide">
+              © {year} Universidad Nacional "San Luis Gonzaga" de Ica
+            </div>
+            <div className="text-zinc-500 text-xs font-light">
+              Todos los derechos reservados
+            </div>
           </div>
         </div>
       </div>

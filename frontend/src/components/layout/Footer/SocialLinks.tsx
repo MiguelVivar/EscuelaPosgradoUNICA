@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function SocialLinks() {
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-3">
       {socialLinks.map((social) => {
         const IconComponent = social.icon;
         return (
@@ -14,14 +14,10 @@ export default function SocialLinks() {
             href={social.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`
-              w-10 h-10 bg-red-700 rounded-full flex items-center justify-center
-              text-red-300 transition-all duration-200
-              hover:bg-red-600 hover:scale-110
-            `}
+            className="group w-10 h-10 bg-zinc-800 hover:bg-amber-500/20 border border-zinc-700 hover:border-amber-500/30 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105"
             aria-label={social.name}
           >
-            <IconComponent className="w-5 h-5" />
+            <IconComponent className="w-4 h-4 text-zinc-400 group-hover:text-amber-400 transition-colors duration-300" />
           </Link>
         );
       })}
