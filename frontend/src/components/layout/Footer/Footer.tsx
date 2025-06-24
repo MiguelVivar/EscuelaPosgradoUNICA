@@ -64,7 +64,7 @@ export default function Footer() {
         <div className="mt-16 pt-8 border-t border-zinc-700/50">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-zinc-400 text-sm font-light tracking-wide">
-              © {year} Universidad Nacional "San Luis Gonzaga" de Ica
+              &copy; {year} Universidad Nacional &quot;San Luis Gonzaga&quot; de Ica
             </div>
             <div className="text-zinc-500 text-xs font-light">
               Todos los derechos reservados
