@@ -23,17 +23,6 @@ export default function ScrollAnimationProvider({
       markers: false, // Cambiar a true para debug
     });
 
-    // Smooth scrolling personalizado
-    const smoothScroll = () => {
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Lenis smooth scrolling alternative usando GSAP
-      gsap.to(window, {
-        scrollTo: { y: 0, autoKill: false },
-        duration: 0,
-      });
-    };
-
     // Refresh ScrollTrigger cuando cambie el contenido
     const handleResize = () => {
       ScrollTrigger.refresh();
