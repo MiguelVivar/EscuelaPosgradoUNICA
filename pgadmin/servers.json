@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Escuela Posgrado - PostgreSQL",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "PassFile": "/pgpass",
+      "SSLMode": "prefer",
+      "Favorite": true
+    }
+  }
+}
