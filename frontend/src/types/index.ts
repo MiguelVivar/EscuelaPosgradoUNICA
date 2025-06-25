@@ -6,6 +6,15 @@ import {
   BaseButtonProps,
 } from "./Button";
 import { CarouselSlide, CarouselProps } from "./Carrousel";
+import { 
+  Role, 
+  LoginRequest, 
+  AuthResponse, 
+  MessageResponse, 
+  UsuarioResponse, 
+  AuthContextType,
+  ApiError 
+} from "./auth";
 
 export type {
   NavItem,
@@ -15,4 +24,11 @@ export type {
   BaseButtonProps,
   CarouselSlide,
   CarouselProps,
+  Role,
+  LoginRequest,
+  AuthResponse,
+  MessageResponse,
+  UsuarioResponse,
+  AuthContextType,
+  ApiError,
 };

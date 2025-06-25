@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useEmailValidation } from "@/hooks/useEmailValidation";
+import { useAuth } from "@/contexts/AuthContext";
+import { ApiError } from "@/types/auth";
 import LoginBrandingSection from "./LoginBrandingSection";
 import LoginFormSection from "./LoginFormSection";
 import EmailFormatInfo from "./EmailFormatInfo";
@@ -16,9 +18,20 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
   const { elementRef: formRef, animateOnScroll } = useScrollAnimation();
   const hasAnimated = useRef(false);
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/campus-virtual");
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     if (formRef.current && !hasAnimated.current) {
@@ -42,6 +55,10 @@ export default function LoginForm() {
       [name]: value,
     }));
 
+    // Limpiar errores cuando el usuario empiece a escribir
+    if (loginError) setLoginError("");
+    if (successMessage) setSuccessMessage("");
+
     // Validar email en tiempo real
     if (name === "email") {
       if (value === "") {
@@ -52,10 +69,14 @@ export default function LoginForm() {
         setEmailError("");
       }
     }
-  }, [validateEmail]);
+  }, [validateEmail, loginError, successMessage]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Limpiar mensajes previos
+    setLoginError("");
+    setSuccessMessage("");
     
     // Validar el formato del correo antes de enviar
     if (!validateEmail(formData.email)) {
@@ -63,24 +84,40 @@ export default function LoginForm() {
       return;
     }
 
+    // Validar que los campos no estén vacíos
+    if (!formData.email.trim() || !formData.password.trim()) {
+      setLoginError("Por favor, complete todos los campos");
+      return;
+    }
+
     setEmailError("");
     setIsLoading(true);
 
     try {
-      // Aquí iría la lógica de autenticación
-      console.log("Datos de login:", formData);
+      const response = await login({
+        usernameOrEmail: formData.email,
+        password: formData.password,
+      });
 
-      // Simulación de autenticación
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setSuccessMessage(`¡Bienvenido/a, ${response.nombres}!`);
+      
+      // Esperar un momento para mostrar el mensaje de éxito
+      setTimeout(() => {
+        router.push("/campus-virtual");
+      }, 1500);
 
-      // Redireccionar después del login exitoso
-      router.push("/campus-virtual");
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
+      
+      if (error instanceof ApiError) {
+        setLoginError(error.message);
+      } else {
+        setLoginError("Error de conexión. Por favor, intente nuevamente.");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [formData, router, validateEmail]);
+  }, [formData, router, validateEmail, login]);
 
   const handleTogglePassword = useCallback(() => {
     setShowPassword(!showPassword);
@@ -102,6 +139,8 @@ export default function LoginForm() {
           isLoading={isLoading}
           showPassword={showPassword}
           emailError={emailError}
+          loginError={loginError}
+          successMessage={successMessage}
           onInputChange={handleInputChange}
           onSubmit={handleSubmit}
           onTogglePassword={handleTogglePassword}

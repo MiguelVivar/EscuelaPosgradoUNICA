@@ -29,7 +29,7 @@ export default function EmailInput({ value, onChange, error }: EmailInputProps) 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' 
               : 'border-gray-200/50 focus:border-amber-500 focus:ring-amber-500/20'
           } rounded-xl focus:ring-4 transition-all duration-300 bg-white/70 backdrop-blur-sm text-gray-800 placeholder-gray-500 hover:border-amber-300 hover:bg-white/90`}
-          placeholder="12345678@unica.edu.pe"
+          placeholder="correo@unica.edu.pe"
         />
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
           <svg
