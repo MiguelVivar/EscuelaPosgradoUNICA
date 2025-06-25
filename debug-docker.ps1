@@ -5,6 +5,33 @@ Write-Host "============================================" -ForegroundColor Green
 Write-Host "Diagnóstico de Docker Compose" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 
+# 0. Verificar archivos críticos
+Write-Host "0. Verificando archivos críticos..." -ForegroundColor Yellow
+$files = @(
+    ".\docker-compose.yml",
+    ".\backend\Autenticacion\Dockerfile",
+    ".\backend\Autenticacion\docker-entrypoint.sh"
+)
+
+foreach ($file in $files) {
+    if (Test-Path $file) {
+        Write-Host "✓ $file existe" -ForegroundColor Green
+    } else {
+        Write-Host "✗ $file NO EXISTE" -ForegroundColor Red
+    }
+}
+
+# Convertir line endings del script de entrada
+Write-Host "0.1. Convirtiendo line endings de docker-entrypoint.sh..." -ForegroundColor Yellow
+$scriptPath = ".\backend\Autenticacion\docker-entrypoint.sh"
+if (Test-Path $scriptPath) {
+    $content = Get-Content $scriptPath -Raw
+    $content = $content -replace "`r`n", "`n"
+    $content = $content -replace "`r", "`n"
+    [System.IO.File]::WriteAllText((Resolve-Path $scriptPath), $content, [System.Text.Encoding]::UTF8)
+    Write-Host "✓ Line endings convertidos" -ForegroundColor Green
+}
+
 # 1. Limpiar contenedores previos
 Write-Host "1. Limpiando contenedores previos..." -ForegroundColor Yellow
 docker-compose down -v
