@@ -22,6 +22,9 @@ RUN ./mvnw clean package -DskipTests
 # Runtime stage
 FROM eclipse-temurin:24-jre-alpine
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Create non-root user for security
 RUN addgroup -g 1001 -S spring && \
     adduser -u 1001 -S spring -G spring
