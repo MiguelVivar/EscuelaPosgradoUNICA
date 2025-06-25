@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
 export const useScrollAnimation = () => {
   const elementRef = useRef<HTMLElement>(null);
 
-  const animateOnScroll = (
+  const animateOnScroll = useCallback((
     target: HTMLElement | string,
     animationProps: gsap.TweenVars,
     triggerProps?: ScrollTrigger.Vars
@@ -45,9 +45,9 @@ export const useScrollAnimation = () => {
         ...defaultAnimationProps,
       }
     );
-  };
+  }, []);
 
-  const animateMultipleOnScroll = (
+  const animateMultipleOnScroll = useCallback((
     targets: (HTMLElement | string)[],
     animationProps: gsap.TweenVars[],
     triggerProps?: ScrollTrigger.Vars
@@ -60,7 +60,7 @@ export const useScrollAnimation = () => {
 
       animateOnScroll(target, { ...props, delay }, triggerProps);
     });
-  };
+  }, [animateOnScroll]);
 
   useEffect(() => {
     return () => {
