@@ -7,6 +7,9 @@ export const metadata = {
   title: "Universidad Nacional San Luis Gonzaga - UNICA",
   description:
     "Universidad Nacional San Luis Gonzaga, formando profesionales de excelencia en Ica, Perú",
+  icons: {
+    icon: "/logoPosgrado.png",
+  },
 };
 
 export default function RootLayout({
