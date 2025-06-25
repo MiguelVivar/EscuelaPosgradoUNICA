@@ -7,11 +7,11 @@ interface PasswordInputProps {
   onToggleVisibility: () => void;
 }
 
-export default function PasswordInput({ 
-  value, 
-  onChange, 
-  showPassword, 
-  onToggleVisibility 
+export default function PasswordInput({
+  value,
+  onChange,
+  showPassword,
+  onToggleVisibility,
 }: PasswordInputProps) {
   return (
     <div className="space-y-3">

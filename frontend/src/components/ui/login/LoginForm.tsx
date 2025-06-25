@@ -20,7 +20,7 @@ export default function LoginForm() {
   const [emailError, setEmailError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   const router = useRouter();
   const { login, isAuthenticated } = useAuth();
   const { elementRef: formRef, animateOnScroll } = useScrollAnimation();
@@ -48,76 +48,81 @@ export default function LoginForm() {
 
   const { validateEmail } = useEmailValidation();
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
 
-    // Limpiar errores cuando el usuario empiece a escribir
-    if (loginError) setLoginError("");
-    if (successMessage) setSuccessMessage("");
+      // Limpiar errores cuando el usuario empiece a escribir
+      if (loginError) setLoginError("");
+      if (successMessage) setSuccessMessage("");
 
-    // Validar email en tiempo real
-    if (name === "email") {
-      if (value === "") {
-        setEmailError("");
-      } else if (!validateEmail(value)) {
-        setEmailError("El correo debe tener el formato: 12345678@unica.edu.pe");
-      } else {
-        setEmailError("");
+      // Validar email en tiempo real
+      if (name === "email") {
+        if (value === "") {
+          setEmailError("");
+        } else if (!validateEmail(value)) {
+          setEmailError("El correo debe tener el formato: correo@unica.edu.pe");
+        } else {
+          setEmailError("");
+        }
       }
-    }
-  }, [validateEmail, loginError, successMessage]);
+    },
+    [validateEmail, loginError, successMessage]
+  );
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Limpiar mensajes previos
-    setLoginError("");
-    setSuccessMessage("");
-    
-    // Validar el formato del correo antes de enviar
-    if (!validateEmail(formData.email)) {
-      setEmailError("El correo debe tener el formato: 12345678@unica.edu.pe");
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    // Validar que los campos no estén vacíos
-    if (!formData.email.trim() || !formData.password.trim()) {
-      setLoginError("Por favor, complete todos los campos");
-      return;
-    }
+      // Limpiar mensajes previos
+      setLoginError("");
+      setSuccessMessage("");
 
-    setEmailError("");
-    setIsLoading(true);
-
-    try {
-      const response = await login({
-        usernameOrEmail: formData.email,
-        password: formData.password,
-      });
-
-      setSuccessMessage(`¡Bienvenido/a, ${response.nombres}!`);
-      
-      // Esperar un momento para mostrar el mensaje de éxito
-      setTimeout(() => {
-        router.push("/campus-virtual");
-      }, 1500);
-
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      
-      if (error instanceof ApiError) {
-        setLoginError(error.message);
-      } else {
-        setLoginError("Error de conexión. Por favor, intente nuevamente.");
+      // Validar el formato del correo antes de enviar
+      if (!validateEmail(formData.email)) {
+        setEmailError("El correo debe tener el formato: correo@unica.edu.pe");
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData, router, validateEmail, login]);
+
+      // Validar que los campos no estén vacíos
+      if (!formData.email.trim() || !formData.password.trim()) {
+        setLoginError("Por favor, complete todos los campos");
+        return;
+      }
+
+      setEmailError("");
+      setIsLoading(true);
+
+      try {
+        const response = await login({
+          usernameOrEmail: formData.email,
+          password: formData.password,
+        });
+
+        setSuccessMessage(`¡Bienvenido/a, ${response.nombres}!`);
+
+        // Esperar un momento para mostrar el mensaje de éxito
+        setTimeout(() => {
+          router.push("/campus-virtual");
+        }, 1500);
+      } catch (error) {
+        console.error("Error al iniciar sesión:", error);
+
+        if (error instanceof ApiError) {
+          setLoginError(error.message);
+        } else {
+          setLoginError("Error de conexión. Por favor, intente nuevamente.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formData, router, validateEmail, login]
+  );
 
   const handleTogglePassword = useCallback(() => {
     setShowPassword(!showPassword);

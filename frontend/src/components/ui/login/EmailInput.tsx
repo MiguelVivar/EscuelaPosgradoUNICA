@@ -6,7 +6,11 @@ interface EmailInputProps {
   error?: string;
 }
 
-export default function EmailInput({ value, onChange, error }: EmailInputProps) {
+export default function EmailInput({
+  value,
+  onChange,
+  error,
+}: EmailInputProps) {
   return (
     <div className="space-y-3">
       <label
@@ -25,18 +29,18 @@ export default function EmailInput({ value, onChange, error }: EmailInputProps) 
           value={value}
           onChange={onChange}
           className={`relative w-full px-4 py-4 border-2 ${
-            error 
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' 
-              : 'border-gray-200/50 focus:border-amber-500 focus:ring-amber-500/20'
+            error
+              ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+              : "border-gray-200/50 focus:border-amber-500 focus:ring-amber-500/20"
           } rounded-xl focus:ring-4 transition-all duration-300 bg-white/70 backdrop-blur-sm text-gray-800 placeholder-gray-500 hover:border-amber-300 hover:bg-white/90`}
           placeholder="correo@unica.edu.pe"
         />
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
           <svg
             className={`h-5 w-5 transition-colors duration-300 ${
-              error 
-                ? 'text-red-400' 
-                : 'text-gray-400 group-hover:text-amber-500'
+              error
+                ? "text-red-400"
+                : "text-gray-400 group-hover:text-amber-500"
             }`}
             fill="none"
             stroke="currentColor"
@@ -54,7 +58,11 @@ export default function EmailInput({ value, onChange, error }: EmailInputProps) 
       {error && (
         <p className="text-red-600 text-sm font-medium flex items-center space-x-1">
           <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
           </svg>
           <span>{error}</span>
         </p>

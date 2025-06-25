@@ -5,7 +5,10 @@ interface SubmitButtonProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-export default function SubmitButton({ isLoading, onSubmit }: SubmitButtonProps) {
+export default function SubmitButton({
+  isLoading,
+  onSubmit,
+}: SubmitButtonProps) {
   return (
     <div className="pt-4">
       <button

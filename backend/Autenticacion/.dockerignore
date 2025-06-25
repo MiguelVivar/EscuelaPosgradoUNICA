@@ -7,3 +7,4 @@ target/
 README.md
 Dockerfile
 .dockerignore
+!docker-entrypoint.sh

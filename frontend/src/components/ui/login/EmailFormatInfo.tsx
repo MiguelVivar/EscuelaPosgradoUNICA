@@ -22,8 +22,9 @@ export default function EmailFormatInfo() {
             </h3>
             <p className="text-sm text-amber-700">
               Tu correo institucional debe tener el formato{" "}
-              <span className="font-semibold">correo@unica.edu.pe</span> (8 dígitos seguidos de @unica.edu.pe).
-              Este corresponde a tu código de estudiante o trabajador.
+              <span className="font-semibold">correo@unica.edu.pe</span> (8
+              dígitos seguidos de @unica.edu.pe). Este corresponde a tu código
+              de estudiante o trabajador.
             </p>
           </div>
         </div>

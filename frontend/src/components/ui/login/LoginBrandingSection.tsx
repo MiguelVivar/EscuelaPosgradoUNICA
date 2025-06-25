@@ -51,7 +51,8 @@ export default function LoginBrandingSection() {
         {/* Descripción */}
         <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
           <p className="text-white/90 text-lg leading-relaxed">
-            &quot;Formando líderes para el futuro a través de la excelencia académica y la investigación de vanguardia&quot;
+            &quot;Formando líderes para el futuro a través de la excelencia
+            académica y la investigación de vanguardia&quot;
           </p>
         </div>
 
