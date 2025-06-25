@@ -29,7 +29,7 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 
 # Install necessary packages for runtime and health checks
-RUN apk add --no-cache curl bash
+RUN apk add --no-cache curl bash netcat-openbsd
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S spring && \
@@ -39,14 +39,15 @@ RUN addgroup -g 1001 -S spring && \
 WORKDIR /app
 
 # Copy the jar file from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/target/*.jar /app/app.jar
 
-# Copy the startup script
+# Copy the startup script and ensure proper line endings
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
-# Change ownership to spring user and make script executable
-RUN chown spring:spring app.jar /app/docker-entrypoint.sh && \
-    chmod +x /app/docker-entrypoint.sh
+# Fix line endings, set permissions and ownership
+RUN dos2unix /app/docker-entrypoint.sh 2>/dev/null || true && \
+    chmod +x /app/docker-entrypoint.sh && \
+    chown spring:spring /app/app.jar /app/docker-entrypoint.sh
 
 # Switch to non-root user
 USER spring:spring
