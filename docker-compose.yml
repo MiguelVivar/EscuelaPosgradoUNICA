@@ -5,11 +5,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - autenticacion
-      - intranet
-      - matricula
+      autenticacion:
+        condition: service_healthy
+      intranet:
+        condition: service_healthy
+      matricula:
+        condition: service_healthy
     networks:
       - escuela-network
+    restart: unless-stopped
 
   # Microservicio de Autenticación
   autenticacion:
@@ -22,9 +26,17 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - escuela-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
 
   # Microservicio de Intranet
   intranet:
@@ -37,9 +49,17 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - escuela-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
 
   # Microservicio de Matrícula
   matricula:
@@ -52,9 +72,17 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - escuela-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
 
   # Servicio de Base de Datos
   db:
