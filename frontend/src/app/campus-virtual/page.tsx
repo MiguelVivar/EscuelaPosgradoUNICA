@@ -35,8 +35,8 @@ export default function CampusVirtualPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 mt-20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 mt-20">
+      <div className="min-h-screen container mx-auto px-4 py-8">
         {/* Header del Campus Virtual */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
           <div className="flex justify-between items-center">
@@ -146,6 +146,9 @@ export default function CampusVirtualPage() {
             Aquí se integrarán los demás microservicios del sistema.
           </p>
         </div>
+
+        {/* Espaciador para asegurar que el footer sea visible */}
+        <div className="h-20"></div>
       </div>
     </div>
   );
