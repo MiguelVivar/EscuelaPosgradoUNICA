@@ -1,20 +1,29 @@
 package com.escuelaposgrado.Autenticacion.controller;
 
-import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
-import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
-import com.escuelaposgrado.Autenticacion.model.enums.Role;
-import com.escuelaposgrado.Autenticacion.service.AuthService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
+import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
+import com.escuelaposgrado.Autenticacion.model.enums.Role;
+import com.escuelaposgrado.Autenticacion.service.AuthService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador REST para operaciones de docentes
  */
+@Tag(name = "👨‍🏫 Docentes", description = "Endpoints específicos para docentes")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/docente")
@@ -27,6 +36,12 @@ public class DocenteController {
     /**
      * Obtener perfil del docente actual
      */
+    @Operation(
+            summary = "Obtener perfil del docente",
+            description = "Información del perfil del docente autenticado",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍🏫 Docentes"}
+    )
     @GetMapping("/perfil")
     public ResponseEntity<UsuarioResponse> getPerfil(Authentication authentication) {
         try {

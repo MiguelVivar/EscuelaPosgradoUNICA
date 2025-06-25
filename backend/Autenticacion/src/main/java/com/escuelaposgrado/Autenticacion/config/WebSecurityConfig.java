@@ -76,6 +76,13 @@ public class WebSecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 
+                // Swagger/OpenAPI endpoints
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-resources/**").permitAll()
+                .requestMatchers("/webjars/**").permitAll()
+                
                 // Endpoints para diferentes roles
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/docente/**").hasAnyRole("DOCENTE", "COORDINADOR", "ADMIN")

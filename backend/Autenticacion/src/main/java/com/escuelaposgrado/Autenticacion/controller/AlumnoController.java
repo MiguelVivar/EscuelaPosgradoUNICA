@@ -16,9 +16,14 @@ import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * Controlador REST para operaciones de alumnos
  */
+@Tag(name = "🎓 Alumnos", description = "Endpoints específicos para estudiantes")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/alumno")
@@ -31,6 +36,12 @@ public class AlumnoController {
     /**
      * Obtener perfil del alumno actual
      */
+    @Operation(
+            summary = "Obtener perfil del alumno",
+            description = "Information del perfil del alumno autenticado",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"🎓 Alumnos"}
+    )
     @GetMapping("/perfil")
     public ResponseEntity<UsuarioResponse> getPerfil(Authentication authentication) {
         try {

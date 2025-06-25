@@ -16,9 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * Controlador REST para health checks y información del servicio
  */
+@Tag(name = "💊 Salud del Sistema", description = "Endpoints para verificar el estado y salud del microservicio")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/health")
@@ -33,6 +42,30 @@ public class HealthController {
     /**
      * Health check básico
      */
+    @Operation(
+            summary = "Estado básico del servicio",
+            description = "Verifica que el microservicio esté funcionando correctamente",
+            tags = {"💊 Salud del Sistema"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Servicio funcionando correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Servicio activo",
+                                    value = """
+                                            {
+                                              "message": "Microservicio de Autenticación - ACTIVO",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/status")
     public ResponseEntity<MessageResponse> getStatus() {
         return ResponseEntity.ok(new MessageResponse("Microservicio de Autenticación - ACTIVO"));

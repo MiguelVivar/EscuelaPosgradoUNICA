@@ -1,20 +1,27 @@
 package com.escuelaposgrado.Autenticacion.controller;
 
-import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
-import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
-import com.escuelaposgrado.Autenticacion.model.enums.Role;
-import com.escuelaposgrado.Autenticacion.service.AuthService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
+import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
+import com.escuelaposgrado.Autenticacion.model.enums.Role;
+import com.escuelaposgrado.Autenticacion.service.AuthService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador REST para operaciones de postulantes
  */
+@Tag(name = "📝 Postulantes", description = "Endpoints específicos para postulantes")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/postulante")

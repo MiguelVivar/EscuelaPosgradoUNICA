@@ -10,7 +10,22 @@ Este servicio maneja:
 - **Gestión de usuarios** con diferentes perfiles
 - **Seguridad** de endpoints por rol
 
-## 👥 Roles del Sistema
+## � Documentación API con Swagger
+
+### 🚀 Acceso Directo
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **API Docs**: http://localhost:8080/v3/api-docs
+
+### ✨ Características
+- ✅ **Documentación Interactiva**: Prueba todos los endpoints desde el navegador
+- ✅ **Autenticación JWT**: Configuración integrada para pruebas con tokens
+- ✅ **Ejemplos Reales**: Requests y responses con datos de ejemplo
+- ✅ **Validaciones**: Documentación completa de validaciones
+- ✅ **Agrupación por Roles**: Endpoints organizados por tipo de usuario
+
+> 📖 **Ver**: [SWAGGER-README.md](./SWAGGER-README.md) para guía detallada de uso
+
+## �👥 Roles del Sistema
 
 El sistema maneja los siguientes roles con sus respectivos permisos:
 

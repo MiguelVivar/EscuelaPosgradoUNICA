@@ -1,19 +1,36 @@
 package com.escuelaposgrado.Autenticacion.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador REST para operaciones administrativas
  */
+@Tag(name = "👨‍💼 Administración", description = "Endpoints exclusivos para administradores del sistema")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/admin")
@@ -26,6 +43,32 @@ public class AdminController {
     /**
      * Obtener todos los usuarios
      */
+    @Operation(
+            summary = "Obtener todos los usuarios",
+            description = "Devuelve una lista de todos los usuarios activos en el sistema",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de usuarios obtenida exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioResponse>> getAllUsuarios() {
         List<UsuarioResponse> usuarios = authService.getAllUsuarios();
@@ -35,8 +78,36 @@ public class AdminController {
     /**
      * Obtener usuarios por rol
      */
+    @Operation(
+            summary = "Obtener usuarios por rol",
+            description = "Devuelve una lista de usuarios filtrados por el rol especificado",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de usuarios por rol obtenida exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @GetMapping("/usuarios/rol/{role}")
-    public ResponseEntity<List<UsuarioResponse>> getUsuariosByRole(@PathVariable Role role) {
+    public ResponseEntity<List<UsuarioResponse>> getUsuariosByRole(
+            @Parameter(description = "Rol a filtrar (ADMIN, COORDINADOR, DOCENTE, ALUMNO, POSTULANTE)", required = true)
+            @PathVariable Role role) {
         List<UsuarioResponse> usuarios = authService.getUsuariosByRole(role);
         return ResponseEntity.ok(usuarios);
     }
@@ -53,8 +124,62 @@ public class AdminController {
     /**
      * Activar usuario
      */
+    @Operation(
+            summary = "Activar usuario",
+            description = "Activa un usuario previamente desactivado en el sistema",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuario activado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario activado",
+                                    value = """
+                                            {
+                                              "message": "Usuario activado exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario no encontrado",
+                                    value = """
+                                            {
+                                              "message": "Usuario no encontrado",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @PutMapping("/usuarios/{id}/activar")
-    public ResponseEntity<MessageResponse> activarUsuario(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> activarUsuario(
+            @Parameter(description = "ID del usuario a activar", required = true)
+            @PathVariable Long id) {
         MessageResponse response = authService.activarUsuario(id);
         return ResponseEntity.ok(response);
     }
