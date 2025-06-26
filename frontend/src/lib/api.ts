@@ -7,7 +7,8 @@ export const API_CONFIG = {
       REGISTER: '/api/auth/registro',
       ME: '/api/auth/me',
       VALIDATE: '/api/auth/validate',
-      UPDATE_PROFILE: '/api/auth/actualizar-perfil'
+      UPDATE_PROFILE: '/api/auth/actualizar-perfil',
+      CHANGE_PASSWORD: '/api/auth/cambiar-password'
     }
   },
   HEADERS: {

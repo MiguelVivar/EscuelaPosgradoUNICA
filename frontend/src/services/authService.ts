@@ -1,5 +1,5 @@
 import { API_CONFIG, getAuthHeaders } from '@/lib/api';
-import { LoginRequest, AuthResponse, MessageResponse, UsuarioResponse, ApiError, UpdateProfileRequest } from '@/types/auth';
+import { LoginRequest, AuthResponse, MessageResponse, UsuarioResponse, ApiError, UpdateProfileRequest, ChangePasswordRequest } from '@/types/auth';
 
 class AuthService {
   private baseUrl = API_CONFIG.BASE_URL;
@@ -118,6 +118,36 @@ class AuthService {
       if (!response.ok) {
         throw new ApiError(
           data.message || 'Error al actualizar perfil',
+          response.status,
+          false
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError('Error de conexión con el servidor');
+    }
+  }
+
+  /**
+   * Cambia la contraseña del usuario autenticado
+   */
+  async changePassword(passwordData: ChangePasswordRequest): Promise<MessageResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.CHANGE_PASSWORD}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(passwordData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new ApiError(
+          data.message || 'Error al cambiar contraseña',
           response.status,
           false
         );

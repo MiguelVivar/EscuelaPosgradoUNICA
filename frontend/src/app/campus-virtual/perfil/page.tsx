@@ -2,13 +2,15 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/layout/PageHeader";
-import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaEdit, FaSave, FaSpinner } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaEdit, FaSave, FaSpinner, FaKey } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { ChangePasswordRequest } from "@/types/auth";
 
 export default function PerfilPage() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, changePassword } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [formData, setFormData] = useState({
     nombres: user?.nombres || '',
@@ -16,6 +18,11 @@ export default function PerfilPage() {
     email: user?.email || '',
     telefono: user?.telefono || '',
     direccion: user?.direccion || ''
+  });
+  const [passwordData, setPasswordData] = useState<ChangePasswordRequest>({
+    passwordActual: '',
+    nuevaPassword: '',
+    confirmarNuevaPassword: ''
   });
 
   // Sincronizar formData cuando el usuario cambie
@@ -89,6 +96,51 @@ export default function PerfilPage() {
         });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    try {
+      setIsChangingPassword(true);
+      setMessage(null);
+
+      // Validar que todos los campos estén llenos
+      if (!passwordData.passwordActual || !passwordData.nuevaPassword || !passwordData.confirmarNuevaPassword) {
+        setMessage({ text: 'Todos los campos de contraseña son obligatorios', type: 'error' });
+        return;
+      }
+
+      // Validar que las nuevas contraseñas coincidan
+      if (passwordData.nuevaPassword !== passwordData.confirmarNuevaPassword) {
+        setMessage({ text: 'Las nuevas contraseñas no coinciden', type: 'error' });
+        return;
+      }
+
+      // Validar longitud mínima
+      if (passwordData.nuevaPassword.length < 6) {
+        setMessage({ text: 'La nueva contraseña debe tener al menos 6 caracteres', type: 'error' });
+        return;
+      }
+
+      const response = await changePassword(passwordData);
+      
+      if (response.success) {
+        setMessage({ text: 'Contraseña cambiada exitosamente', type: 'success' });
+        setPasswordData({
+          passwordActual: '',
+          nuevaPassword: '',
+          confirmarNuevaPassword: ''
+        });
+      } else {
+        setMessage({ text: response.message, type: 'error' });
+      }
+    } catch (error: unknown) {
+      setMessage({ 
+        text: error instanceof Error ? error.message : 'Error al cambiar la contraseña', 
+        type: 'error' 
+      });
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -253,7 +305,10 @@ export default function PerfilPage() {
 
             {/* Cambio de contraseña */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 mt-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Cambiar Contraseña</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <FaKey className="mr-3 text-purple-500" />
+                Cambiar Contraseña
+              </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -261,8 +316,11 @@ export default function PerfilPage() {
                   </label>
                   <input
                     type="password"
+                    value={passwordData.passwordActual}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, passwordActual: e.target.value }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Ingresa tu contraseña actual"
+                    disabled={isChangingPassword}
                   />
                 </div>
                 <div>
@@ -271,8 +329,11 @@ export default function PerfilPage() {
                   </label>
                   <input
                     type="password"
+                    value={passwordData.nuevaPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, nuevaPassword: e.target.value }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Ingresa tu nueva contraseña"
+                    placeholder="Ingresa tu nueva contraseña (mínimo 6 caracteres)"
+                    disabled={isChangingPassword}
                   />
                 </div>
                 <div>
@@ -281,12 +342,29 @@ export default function PerfilPage() {
                   </label>
                   <input
                     type="password"
+                    value={passwordData.confirmarNuevaPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmarNuevaPassword: e.target.value }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Confirma tu nueva contraseña"
+                    disabled={isChangingPassword}
                   />
                 </div>
-                <button className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
-                  Cambiar Contraseña
+                <button 
+                  onClick={handlePasswordChange}
+                  disabled={isChangingPassword}
+                  className="flex items-center px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <FaSpinner className="mr-2 animate-spin" />
+                      Cambiando...
+                    </>
+                  ) : (
+                    <>
+                      <FaKey className="mr-2" />
+                      Cambiar Contraseña
+                    </>
+                  )}
                 </button>
               </div>
             </div>

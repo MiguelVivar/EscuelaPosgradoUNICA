@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.CambiarPasswordRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -148,6 +149,48 @@ public class AuthService {
             usuarioRepository.save(usuario);
 
             return new MessageResponse("Perfil actualizado exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);
+        }
+    }
+
+    /**
+     * Cambiar contraseña del usuario autenticado
+     */
+    public MessageResponse cambiarPassword(String username, CambiarPasswordRequest request) {
+        try {
+            // Buscar usuario por username
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
+            if (!usuarioOpt.isPresent()) {
+                return new MessageResponse("Error: Usuario no encontrado", false);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Validar que las nuevas contraseñas coincidan
+            if (!request.isPasswordValid()) {
+                return new MessageResponse("Error: Las nuevas contraseñas no coinciden", false);
+            }
+
+            // Validar que la contraseña actual sea correcta
+            if (!encoder.matches(request.getPasswordActual(), usuario.getPassword())) {
+                return new MessageResponse("Error: La contraseña actual es incorrecta", false);
+            }
+
+            // Validar que la nueva contraseña sea diferente a la actual
+            if (encoder.matches(request.getNuevaPassword(), usuario.getPassword())) {
+                return new MessageResponse("Error: La nueva contraseña debe ser diferente a la actual", false);
+            }
+
+            // Actualizar contraseña
+            usuario.setPassword(encoder.encode(request.getNuevaPassword()));
+            usuario.setFechaActualizacion(LocalDateTime.now());
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Contraseña cambiada exitosamente", true);
 
         } catch (Exception e) {
             return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);

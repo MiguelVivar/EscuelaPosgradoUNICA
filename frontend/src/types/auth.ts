@@ -56,12 +56,19 @@ export interface UpdateProfileRequest {
   confirmarPassword?: string;
 }
 
+export interface ChangePasswordRequest {
+  passwordActual: string;
+  nuevaPassword: string;
+  confirmarNuevaPassword: string;
+}
+
 export interface AuthContextType {
   user: AuthResponse | null;
   token: string | null;
   login: (credentials: LoginRequest) => Promise<AuthResponse>;
   logout: () => void;
   updateProfile: (profileData: UpdateProfileRequest) => Promise<MessageResponse>;
+  changePassword: (passwordData: ChangePasswordRequest) => Promise<MessageResponse>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }

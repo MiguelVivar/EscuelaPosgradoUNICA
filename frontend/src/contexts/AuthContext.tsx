@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect} from 'react';
-import { AuthContextType, AuthResponse, LoginRequest, UpdateProfileRequest, MessageResponse } from '@/types/auth';
+import { AuthContextType, AuthResponse, LoginRequest, UpdateProfileRequest, ChangePasswordRequest, MessageResponse } from '@/types/auth';
 import authService from '@/services/authService';
 import { AuthProviderProps } from '@/types/auth'; 
 
@@ -88,12 +88,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const changePassword = async (passwordData: ChangePasswordRequest): Promise<MessageResponse> => {
+    try {
+      const response = await authService.changePassword(passwordData);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
     login,
     logout,
     updateProfile,
+    changePassword,
     isLoading,
     isAuthenticated: !!user && !!token,
   };

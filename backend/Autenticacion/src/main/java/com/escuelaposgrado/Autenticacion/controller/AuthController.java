@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.CambiarPasswordRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -411,6 +412,112 @@ public class AuthController {
             
         } catch (Exception e) {
             logger.error("Error inesperado al actualizar perfil: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error interno del servidor", false)
+            );
+        }
+    }
+
+    /**
+     * Cambiar contraseña del usuario autenticado
+     */
+    @Operation(
+            summary = "Cambiar contraseña",
+            description = "Permite al usuario autenticado cambiar su contraseña proporcionando la contraseña actual y la nueva contraseña",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"🔐 Autenticación"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Contraseña cambiada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Contraseña cambiada",
+                                    value = """
+                                            {
+                                              "message": "Contraseña cambiada exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en el cambio de contraseña",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Contraseña actual incorrecta",
+                                            value = """
+                                                    {
+                                                      "message": "Error: La contraseña actual es incorrecta",
+                                                      "success": false
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Contraseñas no coinciden",
+                                            value = """
+                                                    {
+                                                      "message": "Error: Las nuevas contraseñas no coinciden",
+                                                      "success": false
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario no encontrado",
+                                    value = """
+                                            {
+                                              "message": "Error: Usuario no encontrado",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PutMapping("/cambiar-password")
+    public ResponseEntity<MessageResponse> cambiarPassword(
+            @Parameter(description = "Datos para cambiar la contraseña", required = true)
+            @Valid @RequestBody CambiarPasswordRequest request,
+            Authentication authentication) {
+        
+        try {
+            String username = authentication.getName();
+            logger.info("Cambiando contraseña para usuario: {}", username);
+            
+            MessageResponse response = authService.cambiarPassword(username, request);
+            
+            if (response.isSuccess()) {
+                logger.info("Contraseña cambiada exitosamente para usuario: {}", username);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("Error al cambiar contraseña para usuario {}: {}", username, response.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error inesperado al cambiar contraseña: {}", e.getMessage());
             return ResponseEntity.badRequest().body(
                 new MessageResponse("Error interno del servidor", false)
             );
