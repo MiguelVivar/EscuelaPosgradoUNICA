@@ -8,10 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -303,5 +305,100 @@ public class AuthController {
             return ResponseEntity.ok(new MessageResponse("Token válido"));
         }
         return ResponseEntity.badRequest().body(new MessageResponse("Token inválido", false));
+    }
+
+    /**
+     * Endpoint para actualizar perfil del usuario autenticado
+     */
+    @Operation(
+            summary = "Actualizar perfil personal",
+            description = "Permite al usuario actualizar su información personal. Solo puede modificar: teléfono y contraseña. No puede cambiar: rol, username, email, nombres, apellidos, dni, códigos o especialidad.",
+            tags = {"🔐 Autenticación"},
+            security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Perfil actualizado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Actualización exitosa",
+                                    value = """
+                                            {
+                                              "message": "Perfil actualizado exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en los datos proporcionados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de validación",
+                                    value = """
+                                            {
+                                              "message": "Error: Las contraseñas no coinciden",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario no encontrado",
+                                    value = """
+                                            {
+                                              "message": "Error: Usuario no encontrado",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PutMapping("/actualizar-perfil")
+    public ResponseEntity<MessageResponse> actualizarPerfil(
+            @Parameter(description = "Datos para actualizar el perfil personal", required = true)
+            @Valid @RequestBody ActualizarPerfilRequest request,
+            Authentication authentication) {
+        
+        try {
+            String username = authentication.getName();
+            logger.info("Actualizando perfil para usuario: {}", username);
+            
+            MessageResponse response = authService.actualizarPerfil(username, request);
+            
+            if (response.isSuccess()) {
+                logger.info("Perfil actualizado exitosamente para usuario: {}", username);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("Error al actualizar perfil para usuario {}: {}", username, response.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error inesperado al actualizar perfil: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error interno del servidor", false)
+            );
+        }
     }
 }

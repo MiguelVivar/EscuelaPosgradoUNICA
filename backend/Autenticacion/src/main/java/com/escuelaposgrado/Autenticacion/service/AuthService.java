@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -115,6 +116,45 @@ public class AuthService {
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         return mapToUsuarioResponse(usuario);
+    }
+
+
+
+    /**
+     * Actualizar perfil del usuario autenticado
+     */
+    public MessageResponse actualizarPerfil(String username, ActualizarPerfilRequest request) {
+        try {
+            // Buscar usuario por username
+            Optional<Usuario> optionalUsuario = usuarioRepository.findByUsername(username);
+            if (!optionalUsuario.isPresent()) {
+                return new MessageResponse("Error: Usuario no encontrado", false);
+            }
+
+            Usuario usuario = optionalUsuario.get();
+
+            // Validar contraseñas si se está actualizando
+            if (request.isUpdatingPassword()) {
+                if (!request.isPasswordValid()) {
+                    return new MessageResponse("Error: Las contraseñas no coinciden", false);
+                }
+                // Actualizar contraseña
+                usuario.setPassword(encoder.encode(request.getPassword()));
+            }
+
+            // Actualizar teléfono si se proporciona
+            if (request.getTelefono() != null) {
+                usuario.setTelefono(request.getTelefono());
+            }
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Perfil actualizado exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error al actualizar el perfil: " + e.getMessage(), false);
+        }
     }
 
     /**

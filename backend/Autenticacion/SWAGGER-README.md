@@ -95,6 +95,15 @@ Authorization: Bearer YOUR_JWT_TOKEN
 GET /api/auth/me
 Authorization: Bearer YOUR_JWT_TOKEN
 
+# Actualizar perfil personal (Solo teléfono y contraseña)
+PUT /api/auth/actualizar-perfil
+Authorization: Bearer YOUR_JWT_TOKEN
+{
+  "telefono": "987654321",
+  "password": "nuevaPassword123",
+  "confirmarPassword": "nuevaPassword123"
+}
+
 # Perfil de alumno
 GET /api/alumno/perfil
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -103,6 +112,48 @@ Authorization: Bearer YOUR_JWT_TOKEN
 GET /api/admin/usuarios
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
+
+## 🔒 Actualización de Perfil Personal
+
+### 🚫 Campos NO Actualizables
+
+Por razones de seguridad y integridad de datos, los siguientes campos **NO** pueden ser modificados a través del endpoint de actualización de perfil:
+
+- **Rol (role)**: Solo administradores pueden cambiar roles
+- **Username**: Identificador único e inmutable
+- **Email**: Correo institucional controlado por administración
+- **Nombres**: Datos personales oficiales
+- **Apellidos**: Datos personales oficiales  
+- **DNI**: Documento de identidad oficial
+- **Código de Estudiante (codigoEstudiante)**: Asignado por la institución
+- **Código de Docente (codigoDocente)**: Asignado por la institución
+- **Especialidad**: Información académica oficial
+- **Programas de Interés (programaInteres)**: Requiere validación académica
+
+### ✅ Campos Actualizables
+
+Los usuarios pueden actualizar únicamente:
+
+- **Teléfono**: Número de contacto personal
+- **Contraseña**: Con confirmación obligatoria
+
+### 📝 Ejemplo de Uso
+
+```json
+{
+  "telefono": "987654321",
+  "password": "nuevaPassword123",
+  "confirmarPassword": "nuevaPassword123"
+}
+```
+
+### ⚠️ Notas Importantes
+
+- La contraseña es **opcional** en la actualización
+- Si se proporciona contraseña, la confirmación es **obligatoria**
+- Las contraseñas deben coincidir exactamente
+- El teléfono puede actualizarse independientemente
+- Mínimo 6 caracteres para nuevas contraseñas
 
 ## 🛠️ Configuración Técnica
 
