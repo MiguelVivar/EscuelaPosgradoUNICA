@@ -16,7 +16,7 @@ import {
   ErrorMessage,
   AdminLoading
 } from "@/components/ui/admin";
-import { UserStats} from "@/types/Admin";
+import { UserStats, UserFormData } from "@/types/Admin";
 
 export default function AdminCampusPage() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
@@ -209,7 +209,7 @@ export default function AdminCampusPage() {
     setEditingUser(null);
   };
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: UserFormData) => {
     try {
       const endpoint = editingUser 
         ? `/api/admin/usuarios/${editingUser.id}` 
@@ -274,8 +274,8 @@ export default function AdminCampusPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 mt-20">
-      <div className="min-h-screen container mx-auto px-4 py-8">
+    <div className="min-h-full">
+      <div className="container mx-auto px-4 py-8">
         {/* Header del Panel */}
         <AdminPageHeader user={user} onLogout={handleLogout} />
 

@@ -15,6 +15,7 @@ import {
   AuthContextType,
   ApiError 
 } from "./auth";
+import { SidebarProps, SidebarItemProps } from "./Sidebar";
 
 export type {
   NavItem,
@@ -31,4 +32,6 @@ export type {
   UsuarioResponse,
   AuthContextType,
   ApiError,
+  SidebarProps,
+  SidebarItemProps,
 };

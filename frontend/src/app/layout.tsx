@@ -1,7 +1,6 @@
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar/Navbar";
-import Footer from "@/components/layout/Footer/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ConditionalLayout from "@/components/layout/ConditionalLayout";
 
 export const metadata = {
   title: "Universidad Nacional San Luis Gonzaga - UNICA",
@@ -21,9 +20,9 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <AuthProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
         </AuthProvider>
       </body>
     </html>
