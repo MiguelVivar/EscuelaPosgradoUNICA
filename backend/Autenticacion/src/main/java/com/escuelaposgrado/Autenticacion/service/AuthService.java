@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -235,6 +236,82 @@ public class AuthService {
         usuarioRepository.save(usuario);
 
         return new MessageResponse("Usuario activado exitosamente");
+    }
+
+    /**
+     * Actualizar usuario por administrador
+     */
+    public MessageResponse actualizarUsuarioAdmin(Long id, ActualizarUsuarioAdminRequest request) {
+        try {
+            // Buscar usuario por ID
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+            if (usuarioOpt.isEmpty()) {
+                return new MessageResponse("Usuario no encontrado", false);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Validar que el username y email no estén siendo usados por otro usuario
+            if (!usuario.getUsername().equals(request.getUsername())) {
+                Optional<Usuario> existeUsername = usuarioRepository.findByUsername(request.getUsername());
+                if (existeUsername.isPresent() && !existeUsername.get().getId().equals(id)) {
+                    return new MessageResponse("Error: El nombre de usuario ya está en uso", false);
+                }
+            }
+
+            if (!usuario.getEmail().equals(request.getEmail())) {
+                Optional<Usuario> existeEmail = usuarioRepository.findByEmail(request.getEmail());
+                if (existeEmail.isPresent() && !existeEmail.get().getId().equals(id)) {
+                    return new MessageResponse("Error: El email ya está en uso", false);
+                }
+            }
+
+            // Actualizar campos básicos
+            usuario.setUsername(request.getUsername());
+            usuario.setEmail(request.getEmail());
+            usuario.setNombres(request.getNombres());
+            usuario.setApellidos(request.getApellidos());
+            usuario.setRole(request.getRole());
+
+            // Actualizar campos opcionales
+            if (request.getDni() != null) {
+                usuario.setDni(request.getDni());
+            }
+            if (request.getTelefono() != null) {
+                usuario.setTelefono(request.getTelefono());
+            }
+            if (request.getDireccion() != null) {
+                usuario.setDireccion(request.getDireccion());
+            }
+            if (request.getCodigoEstudiante() != null) {
+                usuario.setCodigoEstudiante(request.getCodigoEstudiante());
+            }
+            if (request.getCodigoDocente() != null) {
+                usuario.setCodigoDocente(request.getCodigoDocente());
+            }
+            if (request.getEspecialidad() != null) {
+                usuario.setEspecialidad(request.getEspecialidad());
+            }
+            if (request.getProgramaInteres() != null) {
+                usuario.setProgramaInteres(request.getProgramaInteres());
+            }
+
+            // Actualizar contraseña si se proporciona
+            if (request.isUpdatingPassword()) {
+                usuario.setPassword(encoder.encode(request.getPassword()));
+            }
+
+            // Actualizar fecha de modificación
+            usuario.setFechaActualizacion(LocalDateTime.now());
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Usuario actualizado exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);
+        }
     }
 
     /**

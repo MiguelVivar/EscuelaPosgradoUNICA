@@ -119,18 +119,49 @@ export default function UserFormFields({
         </div>
       )}
       
-      {formData.role === 'DOCENTE' && (
+      {(formData.role === 'DOCENTE' || formData.role === 'COORDINADOR') && (
+        <>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Código de Docente
+            </label>
+            <input
+              type="text"
+              value={formData.codigoDocente || ''}
+              onChange={(e) => onChange('codigoDocente', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Código de docente"
+              title="Código único del docente"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Especialidad
+            </label>
+            <input
+              type="text"
+              value={formData.especialidad || ''}
+              onChange={(e) => onChange('especialidad', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Especialidad del docente"
+              title="Área de especialización"
+            />
+          </div>
+        </>
+      )}
+      
+      {formData.role === 'POSTULANTE' && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Código de Docente
+            Programa de Interés
           </label>
           <input
             type="text"
-            value={formData.codigoDocente || ''}
-            onChange={(e) => onChange('codigoDocente', e.target.value)}
+            value={formData.programaInteres || ''}
+            onChange={(e) => onChange('programaInteres', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Código de docente"
-            title="Código único del docente"
+            placeholder="Programa académico de interés"
+            title="Programa al que desea postular"
           />
         </div>
       )}

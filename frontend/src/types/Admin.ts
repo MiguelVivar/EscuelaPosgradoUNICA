@@ -37,6 +37,8 @@ export interface UserFormData {
   role: Role;
   codigoEstudiante?: string;
   codigoDocente?: string;
+  especialidad?: string;
+  programaInteres?: string;
 }
 
 export interface UserFormModalProps {

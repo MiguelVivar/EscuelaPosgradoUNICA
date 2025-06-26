@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./Modal";
 import UserFormFields from "./UserFormFields";
 import Button from "@/components/common/Button";
@@ -12,29 +12,49 @@ export default function UserFormModal({
 }: UserFormModalProps) {
   const isEditMode = Boolean(editingUser);
 
-  const [formData, setFormData] = useState<UserFormData>(() => {
-    if (editingUser) {
-      return {
-        nombres: editingUser.nombres,
-        apellidos: editingUser.apellidos,
-        email: editingUser.email,
-        username: editingUser.username,
+  const [formData, setFormData] = useState<UserFormData>({
+    nombres: "",
+    apellidos: "",
+    email: "",
+    username: "",
+    password: "",
+    role: "POSTULANTE",
+    codigoEstudiante: "",
+    codigoDocente: "",
+    especialidad: "",
+    programaInteres: "",
+  });
+
+  // Efecto para rellenar el formulario cuando se abre para editar
+  useEffect(() => {
+    if (editingUser && isOpen) {
+      setFormData({
+        nombres: editingUser.nombres || "",
+        apellidos: editingUser.apellidos || "",
+        email: editingUser.email || "",
+        username: editingUser.username || "",
         role: editingUser.role,
         codigoEstudiante: editingUser.codigoEstudiante || "",
         codigoDocente: editingUser.codigoDocente || "",
-      };
+        especialidad: editingUser.especialidad || "",
+        programaInteres: editingUser.programaInteres || "",
+      });
+    } else if (!editingUser && isOpen) {
+      // Limpiar formulario para crear nuevo usuario
+      setFormData({
+        nombres: "",
+        apellidos: "",
+        email: "",
+        username: "",
+        password: "",
+        role: "POSTULANTE",
+        codigoEstudiante: "",
+        codigoDocente: "",
+        especialidad: "",
+        programaInteres: "",
+      });
     }
-    return {
-      nombres: "",
-      apellidos: "",
-      email: "",
-      username: "",
-      password: "",
-      role: "POSTULANTE",
-      codigoEstudiante: "",
-      codigoDocente: "",
-    };
-  });
+  }, [editingUser, isOpen]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

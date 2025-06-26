@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
@@ -26,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 /**
  * Controlador REST para operaciones administrativas
@@ -240,6 +243,71 @@ public class AdminController {
             @Parameter(description = "ID del usuario a activar", required = true)
             @PathVariable Long id) {
         MessageResponse response = authService.activarUsuario(id);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Actualizar datos de usuario
+     */
+    @Operation(
+            summary = "Actualizar datos de usuario",
+            description = "Permite al administrador actualizar todos los datos de un usuario",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuario actualizado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario actualizado",
+                                    value = """
+                                            {
+                                              "message": "Usuario actualizado exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos inválidos o usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de validación",
+                                    value = """
+                                            {
+                                              "message": "Error: El nombre de usuario ya está en uso",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @PutMapping("/usuarios/{id}")
+    public ResponseEntity<MessageResponse> actualizarUsuario(
+            @Parameter(description = "ID del usuario a actualizar", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Datos del usuario a actualizar", required = true)
+            @Valid @RequestBody ActualizarUsuarioAdminRequest request) {
+        MessageResponse response = authService.actualizarUsuarioAdmin(id, request);
         return ResponseEntity.ok(response);
     }
 
