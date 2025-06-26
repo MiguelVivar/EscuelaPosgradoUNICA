@@ -114,7 +114,8 @@ public class AuthController {
      */
     @Operation(
             summary = "Registrar nuevo usuario",
-            description = "Registra un nuevo usuario en el sistema. Los campos requeridos varían según el rol seleccionado",
+            description = "Registra un nuevo usuario en el sistema. Solo accesible para usuarios con rol ADMIN o COORDINADOR. Los campos requeridos varían según el rol seleccionado",
+            security = @SecurityRequirement(name = "bearerAuth"),
             tags = {"🔐 Autenticación"}
     )
     @ApiResponses(value = {
@@ -146,6 +147,28 @@ public class AuthController {
                                     value = """
                                             {
                                               "message": "Error: El nombre de usuario ya está en uso!",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Token JWT no válido o expirado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso denegado - Solo usuarios con rol ADMIN o COORDINADOR pueden registrar nuevos usuarios",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Acceso denegado",
+                                    value = """
+                                            {
+                                              "message": "Acceso denegado: Solo administradores y coordinadores pueden registrar usuarios",
                                               "success": false
                                             }
                                             """

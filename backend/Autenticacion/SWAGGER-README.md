@@ -54,6 +54,12 @@ Una vez que el microservicio esté ejecutándose, puedes acceder a la documentac
 3. Haz clic en **"Authorize"**
 4. ¡Ahora puedes probar todos los endpoints protegidos!
 
+### Paso 3: Registrar Nuevos Usuarios (Solo ADMIN/COORDINADOR)
+
+1. Asegúrate de estar autenticado con un token de ADMIN o COORDINADOR
+2. Ve a `POST /api/auth/registro`
+3. El endpoint ahora requiere autenticación y autorización adecuada
+
 ## 📊 Ejemplos de Endpoints Principales
 
 ### 🔓 Endpoints Públicos
@@ -68,9 +74,14 @@ POST /api/auth/login
   "usernameOrEmail": "admin",
   "password": "admin123"
 }
+```
 
-# Registro
+### 🔒 Endpoints Protegidos (Requieren JWT)
+
+```bash
+# Registro (Solo ADMIN y COORDINADOR)
 POST /api/auth/registro
+Authorization: Bearer YOUR_JWT_TOKEN
 {
   "username": "nuevo.usuario",
   "email": "nuevo@unica.edu.pe",
@@ -79,11 +90,7 @@ POST /api/auth/registro
   "apellidos": "Usuario",
   "role": "ALUMNO"
 }
-```
 
-### 🔒 Endpoints Protegidos (Requieren JWT)
-
-```bash
 # Perfil actual
 GET /api/auth/me
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -168,11 +175,17 @@ Navega a: http://localhost:8080/swagger-ui.html
 
 | Rol | Endpoints Disponibles |
 |-----|----------------------|
-| **ADMIN** | Todos los endpoints + gestión de usuarios |
-| **COORDINADOR** | Perfil, docentes, alumnos, postulantes |
+| **ADMIN** | Todos los endpoints + gestión de usuarios + registro de nuevos usuarios |
+| **COORDINADOR** | Perfil, docentes, alumnos, postulantes + registro de nuevos usuarios |
 | **DOCENTE** | Perfil, alumnos, colegas |
 | **ALUMNO** | Perfil, docentes, compañeros |
 | **POSTULANTE** | Perfil, docentes, coordinadores |
+
+### 📝 Notas Importantes sobre el Registro
+
+- **Acceso Restringido**: Solo usuarios con rol `ADMIN` o `COORDINADOR` pueden registrar nuevos usuarios
+- **Autenticación Requerida**: Debes autenticarte primero y obtener un token JWT válido
+- **Autorización**: El token debe pertenecer a un usuario con los permisos adecuados
 
 ## 🔧 Personalización
 
