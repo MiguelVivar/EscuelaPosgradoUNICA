@@ -1,0 +1,117 @@
+import { useState } from "react";
+import Modal from "./Modal";
+import UserFormFields from "./UserFormFields";
+import Button from "@/components/common/Button";
+import { UserFormData, UserFormModalProps } from "@/types/Admin";
+
+export default function UserFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  editingUser,
+}: UserFormModalProps) {
+  const isEditMode = Boolean(editingUser);
+
+  const [formData, setFormData] = useState<UserFormData>(() => {
+    if (editingUser) {
+      return {
+        nombres: editingUser.nombres,
+        apellidos: editingUser.apellidos,
+        email: editingUser.email,
+        username: editingUser.username,
+        role: editingUser.role,
+        codigoEstudiante: editingUser.codigoEstudiante || "",
+        codigoDocente: editingUser.codigoDocente || "",
+      };
+    }
+    return {
+      nombres: "",
+      apellidos: "",
+      email: "",
+      username: "",
+      password: "",
+      role: "POSTULANTE",
+      codigoEstudiante: "",
+      codigoDocente: "",
+    };
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFieldChange = (field: keyof UserFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validaciones básicas
+    if (
+      !formData.nombres ||
+      !formData.apellidos ||
+      !formData.email ||
+      !formData.username
+    ) {
+      return;
+    }
+
+    if (!isEditMode && !formData.password) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit(formData);
+      onClose();
+    } catch (error) {
+      console.error("Error al enviar formulario:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (!isSubmitting) {
+      onClose();
+    }
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={isEditMode ? "Editar Usuario" : "Crear Nuevo Usuario"}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <UserFormFields
+          formData={formData}
+          isEditMode={isEditMode}
+          onChange={handleFieldChange}
+        />
+
+        <div className="flex justify-end gap-3 pt-4">
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={handleClose}
+            disabled={isSubmitting}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-700"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            size="md"
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+          >
+            {isEditMode ? "Actualizar Usuario" : "Crear Usuario"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
