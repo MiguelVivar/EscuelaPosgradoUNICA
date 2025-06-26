@@ -327,7 +327,7 @@ public class AuthController {
      */
     @Operation(
             summary = "Actualizar perfil personal",
-            description = "Permite al usuario actualizar su información personal. Solo puede modificar: teléfono y contraseña. No puede cambiar: rol, username, email, nombres, apellidos, dni, códigos o especialidad.",
+            description = "Permite al usuario actualizar su información personal. Solo puede modificar: teléfono, dirección y contraseña. No puede cambiar: rol, username, email, nombres, apellidos, dni, códigos o especialidad.",
             tags = {"🔐 Autenticación"},
             security = @SecurityRequirement(name = "Bearer Authentication")
     )

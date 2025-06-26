@@ -15,6 +15,8 @@ export interface AuthResponse {
   email: string;
   nombres: string;
   apellidos: string;
+  telefono?: string;
+  direccion?: string;
   role: Role;
   ultimoAcceso?: string;
   // Campos adicionales según el rol
@@ -35,6 +37,9 @@ export interface UsuarioResponse {
   email: string;
   nombres: string;
   apellidos: string;
+  dni?: string;
+  telefono?: string;
+  direccion?: string;
   role: Role;
   activo: boolean;
   ultimoAcceso?: string;
@@ -44,11 +49,19 @@ export interface UsuarioResponse {
   programaInteres?: string;
 }
 
+export interface UpdateProfileRequest {
+  telefono?: string;
+  direccion?: string;
+  password?: string;
+  confirmarPassword?: string;
+}
+
 export interface AuthContextType {
   user: AuthResponse | null;
   token: string | null;
   login: (credentials: LoginRequest) => Promise<AuthResponse>;
   logout: () => void;
+  updateProfile: (profileData: UpdateProfileRequest) => Promise<MessageResponse>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect} from 'react';
-import { AuthContextType, AuthResponse, LoginRequest } from '@/types/auth';
+import { AuthContextType, AuthResponse, LoginRequest, UpdateProfileRequest, MessageResponse } from '@/types/auth';
 import authService from '@/services/authService';
-import { AuthProviderProps } from '@/types/auth'; // Asegúrate de que este tipo esté definido en tu archivo de tipos
+import { AuthProviderProps } from '@/types/auth'; 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -64,11 +64,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
   };
 
+  const updateProfile = async (profileData: UpdateProfileRequest): Promise<MessageResponse> => {
+    try {
+      const response = await authService.updateProfile(profileData);
+      
+      // Si la actualización fue exitosa, actualizar los datos del usuario local
+      if (response.success && user) {
+        const updatedUser = { 
+          ...user,
+          // Solo actualizar los campos que pueden haberse modificado
+          ...(profileData.telefono !== undefined && { telefono: profileData.telefono }),
+          ...(profileData.direccion !== undefined && { direccion: profileData.direccion })
+        };
+        setUser(updatedUser);
+        
+        // También actualizar en localStorage
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
     login,
     logout,
+    updateProfile,
     isLoading,
     isAuthenticated: !!user && !!token,
   };

@@ -69,6 +69,9 @@ public class Usuario implements UserDetails {
     @Column(length = 15)
     private String telefono;
 
+    @Column(length = 500)
+    private String direccion;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
     private Role role;
@@ -271,6 +274,14 @@ public class Usuario implements UserDetails {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public Role getRole() {

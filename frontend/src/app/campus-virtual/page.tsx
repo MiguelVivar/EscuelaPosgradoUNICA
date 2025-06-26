@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/layout/PageHeader";
 
 export default function CampusVirtualPage() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -14,11 +14,6 @@ export default function CampusVirtualPage() {
       router.push("/iniciar-sesion");
     }
   }, [isAuthenticated, isLoading, router]);
-
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
 
   const goToAdminPanel = () => {
     router.push("/campus-virtual/admin");
