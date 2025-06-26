@@ -34,6 +34,7 @@ export default function AdminCampusPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [selectedRole, setSelectedRole] = useState<Role | 'ALL'>('ALL');
+  const [showInactiveUsers, setShowInactiveUsers] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,11 +68,24 @@ export default function AdminCampusPage() {
 
   const loadUsers = useCallback(async () => {
     try {
-      const endpoint = selectedRole === 'ALL' 
+      console.log('Loading users with:', {
+        selectedRole,
+        showInactiveUsers,
+        userRole: user?.role
+      });
+
+      const baseEndpoint = selectedRole === 'ALL' 
         ? (user?.role === 'ADMIN' ? '/api/admin/usuarios' : '/api/coordinador/resumen')
         : user?.role === 'ADMIN' 
           ? `/api/admin/usuarios/rol/${selectedRole}`
           : `/api/coordinador/${selectedRole.toLowerCase()}s`;
+      
+      // Si showInactiveUsers está habilitado y es admin, usar los endpoints que incluyen inactivos
+      const endpoint = showInactiveUsers && user?.role === 'ADMIN' 
+        ? (selectedRole === 'ALL' ? '/api/admin/usuarios/all' : `/api/admin/usuarios/rol/${selectedRole}/all`)
+        : baseEndpoint;
+
+      console.log('Using endpoint:', endpoint);
 
       const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
         method: 'GET',
@@ -90,6 +104,7 @@ export default function AdminCampusPage() {
           setUsuarios([...docentes, ...alumnos, ...postulantes, ...coordinadores]);
         } else {
           const data = await response.json();
+          console.log('Received data:', data);
           setUsuarios(Array.isArray(data) ? data : []);
         }
       }
@@ -97,7 +112,7 @@ export default function AdminCampusPage() {
       console.error('Error al cargar usuarios:', error);
       setError('Error al cargar la lista de usuarios');
     }
-  }, [selectedRole, user?.role]);
+  }, [selectedRole, showInactiveUsers, user?.role]);
 
   // Cargar datos administrativos
   const loadAdminData = useCallback(async () => {
@@ -144,6 +159,13 @@ export default function AdminCampusPage() {
       loadAdminData();
     }
   }, [isAuthenticated, user, loadAdminData]);
+
+  // Effect para recargar usuarios cuando cambie el filtro de inactivos
+  useEffect(() => {
+    if (isAuthenticated && user && (user.role === 'ADMIN' || user.role === 'COORDINADOR')) {
+      loadUsers();
+    }
+  }, [showInactiveUsers, selectedRole, isAuthenticated, user, loadUsers]);
 
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
     if (user?.role !== 'ADMIN') return;
@@ -400,6 +422,19 @@ export default function AdminCampusPage() {
                 >
                   Crear Usuario
                 </button>
+              )}
+              {user.role === 'ADMIN' && (
+                <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    checked={showInactiveUsers}
+                    onChange={(e) => {
+                      setShowInactiveUsers(e.target.checked);
+                    }}
+                    className="rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Incluir inactivos</span>
+                </label>
               )}
               <select
                 value={selectedRole}

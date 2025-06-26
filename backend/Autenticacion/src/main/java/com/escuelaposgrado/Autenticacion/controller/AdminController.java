@@ -75,6 +75,28 @@ public class AdminController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @Operation(
+        summary = "Obtener todos los usuarios (incluidos inactivos)",
+        description = "Devuelve una lista de todos los usuarios en el sistema, incluidos los activos e inactivos.",
+        security = @SecurityRequirement(name = "bearerAuth"),
+        tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Lista de todos los usuarios obtenida exitosamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioResponse.class)
+            )
+        )
+    })
+    @GetMapping("/usuarios/all")
+    public ResponseEntity<List<UsuarioResponse>> getAllUsuariosIncluyendoInactivos() {
+        List<UsuarioResponse> usuarios = authService.getAllUsuariosIncluyendoInactivos();
+        return ResponseEntity.ok(usuarios);
+    }
+
     /**
      * Obtener usuarios por rol
      */
@@ -109,6 +131,43 @@ public class AdminController {
             @Parameter(description = "Rol a filtrar (ADMIN, COORDINADOR, DOCENTE, ALUMNO, POSTULANTE)", required = true)
             @PathVariable Role role) {
         List<UsuarioResponse> usuarios = authService.getUsuariosByRole(role);
+        return ResponseEntity.ok(usuarios);
+    }
+
+    /**
+     * Obtener usuarios por rol (incluidos inactivos)
+     */
+    @Operation(
+            summary = "Obtener usuarios por rol (incluidos inactivos)",
+            description = "Devuelve una lista de usuarios filtrados por el rol especificado, incluidos los activos e inactivos",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de usuarios por rol obtenida exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @GetMapping("/usuarios/rol/{role}/all")
+    public ResponseEntity<List<UsuarioResponse>> getUsuariosByRoleIncluyendoInactivos(
+            @Parameter(description = "Rol a filtrar (ADMIN, COORDINADOR, DOCENTE, ALUMNO, POSTULANTE)", required = true)
+            @PathVariable Role role) {
+        List<UsuarioResponse> usuarios = authService.getUsuariosByRoleIncluyendoInactivos(role);
         return ResponseEntity.ok(usuarios);
     }
 

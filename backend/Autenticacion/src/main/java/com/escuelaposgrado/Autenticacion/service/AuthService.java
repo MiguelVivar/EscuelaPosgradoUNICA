@@ -168,10 +168,30 @@ public class AuthService {
     }
 
     /**
+     * Obtener todos los usuarios por rol (incluidos inactivos)
+     */
+    public List<UsuarioResponse> getUsuariosByRoleIncluyendoInactivos(Role role) {
+        List<Usuario> usuarios = usuarioRepository.findByRole(role);
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
      * Obtener todos los usuarios activos
      */
     public List<UsuarioResponse> getAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findByActivoTrue();
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtener todos los usuarios (incluidos inactivos)
+     */
+    public List<UsuarioResponse> getAllUsuariosIncluyendoInactivos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
         return usuarios.stream()
                       .map(this::mapToUsuarioResponse)
                       .collect(Collectors.toList());
