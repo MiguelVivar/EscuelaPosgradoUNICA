@@ -35,6 +35,9 @@ export interface UserFormData {
   username: string;
   password?: string;
   role: Role;
+  dni?: string;
+  telefono?: string;
+  direccion?: string;
   codigoEstudiante?: string;
   codigoDocente?: string;
   especialidad?: string;
@@ -62,8 +65,13 @@ export interface UserFormData {
   username: string;
   password?: string;
   role: Role;
+  dni?: string;
+  telefono?: string;
+  direccion?: string;
   codigoEstudiante?: string;
   codigoDocente?: string;
+  especialidad?: string;
+  programaInteres?: string;
 }
 
 export interface UserFormFieldsProps {

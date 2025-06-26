@@ -104,6 +104,7 @@ public class AuthService {
         // Establecer otros campos
         usuario.setDni(registroRequest.getDni());
         usuario.setTelefono(registroRequest.getTelefono());
+        usuario.setDireccion(registroRequest.getDireccion());
 
         usuarioRepository.save(usuario);
 

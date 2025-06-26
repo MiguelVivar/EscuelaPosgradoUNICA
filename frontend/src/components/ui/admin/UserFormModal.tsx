@@ -19,6 +19,9 @@ export default function UserFormModal({
     username: "",
     password: "",
     role: "POSTULANTE",
+    dni: "",
+    telefono: "",
+    direccion: "",
     codigoEstudiante: "",
     codigoDocente: "",
     especialidad: "",
@@ -34,6 +37,9 @@ export default function UserFormModal({
         email: editingUser.email || "",
         username: editingUser.username || "",
         role: editingUser.role,
+        dni: editingUser.dni || "",
+        telefono: editingUser.telefono || "",
+        direccion: editingUser.direccion || "",
         codigoEstudiante: editingUser.codigoEstudiante || "",
         codigoDocente: editingUser.codigoDocente || "",
         especialidad: editingUser.especialidad || "",
@@ -48,6 +54,9 @@ export default function UserFormModal({
         username: "",
         password: "",
         role: "POSTULANTE",
+        dni: "",
+        telefono: "",
+        direccion: "",
         codigoEstudiante: "",
         codigoDocente: "",
         especialidad: "",
@@ -70,8 +79,15 @@ export default function UserFormModal({
       !formData.nombres ||
       !formData.apellidos ||
       !formData.email ||
-      !formData.username
+      !formData.username ||
+      !formData.dni
     ) {
+      return;
+    }
+
+    // Validación del DNI (8 dígitos)
+    if (formData.dni && (formData.dni.length !== 8 || !/^\d{8}$/.test(formData.dni))) {
+      alert("El DNI debe tener exactamente 8 dígitos");
       return;
     }
 
