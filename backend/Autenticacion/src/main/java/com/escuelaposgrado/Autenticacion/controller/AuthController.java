@@ -107,7 +107,22 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error en login para usuario {}: {}", loginRequest.getUsernameOrEmail(), e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new MessageResponse("Error en login: " + e.getMessage(), false));
+            
+            // Traducir mensajes específicos al español
+            String errorMessage = e.getMessage();
+            if (errorMessage.contains("User account is locked")) {
+                errorMessage = "La cuenta de usuario está desactivada";
+            } else if (errorMessage.contains("Bad credentials")) {
+                errorMessage = "Credenciales incorrectas";
+            } else if (errorMessage.contains("Account disabled")) {
+                errorMessage = "La cuenta está deshabilitada";
+            } else if (errorMessage.contains("Account expired")) {
+                errorMessage = "La cuenta ha expirado";
+            } else if (errorMessage.contains("Credentials expired")) {
+                errorMessage = "Las credenciales han expirado";
+            }
+            
+            return ResponseEntity.badRequest().body(new MessageResponse("Error en login: " + errorMessage, false));
         }
     }
 

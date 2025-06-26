@@ -3,21 +3,7 @@ import EmailInput from "./EmailInput";
 import PasswordInput from "./PasswordInput";
 import FormActions from "./FormActions";
 import SubmitButton from "./SubmitButton";
-
-interface LoginFormSectionProps {
-  formData: {
-    email: string;
-    password: string;
-  };
-  isLoading: boolean;
-  showPassword: boolean;
-  emailError: string;
-  loginError?: string;
-  successMessage?: string;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  onTogglePassword: () => void;
-}
+import { LoginFormSectionProps } from "../../../types/Login";
 
 export default function LoginFormSection({
   formData,

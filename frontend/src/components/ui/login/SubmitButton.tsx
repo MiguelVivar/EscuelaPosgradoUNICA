@@ -1,9 +1,5 @@
 import React from "react";
-
-interface SubmitButtonProps {
-  isLoading: boolean;
-  onSubmit: (e: React.FormEvent) => void;
-}
+import { SubmitButtonProps } from "@/types/Login";
 
 export default function SubmitButton({
   isLoading,
