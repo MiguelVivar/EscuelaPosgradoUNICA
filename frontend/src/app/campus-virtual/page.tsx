@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import PageHeader from "@/components/layout/PageHeader";
 
 export default function CampusVirtualPage() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
@@ -40,119 +41,82 @@ export default function CampusVirtualPage() {
 
   return (
     <div className="min-h-full">
+      {/* Header dinámico de la página */}
+      <PageHeader />
+      
       <div className="container mx-auto px-4 py-8">
-        {/* Header del Campus Virtual */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                Campus Virtual - Escuela de Posgrado UNICA
-              </h1>
-              <p className="text-gray-600">
-                Bienvenido/a, <span className="font-semibold text-blue-600">{user.nombres} {user.apellidos}</span>
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {user.role} • {user.email}
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-
-        {/* Información del Usuario */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Contenido específico según el rol */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Tarjeta de accesos rápidos */}
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Información Personal</h2>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Accesos Rápidos</h3>
             <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-500">ID de Usuario:</span>
-                <p className="text-gray-800">{user.id}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Usuario:</span>
-                <p className="text-gray-800">{user.username}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Rol:</span>
-                <p className="text-gray-800 capitalize">{user.role.toLowerCase()}</p>
-              </div>
-              {user.codigoEstudiante && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Código de Estudiante:</span>
-                  <p className="text-gray-800">{user.codigoEstudiante}</p>
-                </div>
-              )}
-              {user.codigoDocente && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Código de Docente:</span>
-                  <p className="text-gray-800">{user.codigoDocente}</p>
-                </div>
-              )}
-              {user.especialidad && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Especialidad:</span>
-                  <p className="text-gray-800">{user.especialidad}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Acceso Rápido</h2>
-            <div className="space-y-3">
-              {/* Panel de Administración - Solo para ADMIN y COORDINADOR */}
-              {(user.role === 'ADMIN' || user.role === 'COORDINADOR') && (
-                <button 
+              {user.role === 'ADMIN' && (
+                <button
                   onClick={goToAdminPanel}
-                  className="w-full p-3 text-left bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200"
+                  className="w-full p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                 >
-                  <div className="font-medium text-red-800">
-                    {user.role === 'ADMIN' ? 'Panel de Administración' : 'Panel de Coordinación'}
-                  </div>
-                  <div className="text-sm text-red-600">
-                    {user.role === 'ADMIN' ? 'Gestionar usuarios del sistema' : 'Gestionar información académica'}
-                  </div>
+                  Panel de Administración
                 </button>
               )}
-              
-              <button className="w-full p-3 text-left bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-blue-800">Mis Cursos</div>
-                <div className="text-sm text-blue-600">Ver materias inscritas</div>
-              </button>
-              <button className="w-full p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-green-800">Calificaciones</div>
-                <div className="text-sm text-green-600">Consultar notas</div>
-              </button>
-              <button className="w-full p-3 text-left bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-purple-800">Recursos</div>
-                <div className="text-sm text-purple-600">Material de estudio</div>
+              {user.role === 'COORDINADOR' && (
+                <>
+                  <button
+                    onClick={goToAdminPanel}
+                    className="w-full p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                  >
+                    Panel de Coordinación
+                  </button>
+                  <button
+                    onClick={() => router.push("/campus-virtual/cursos-gestion")}
+                    className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                  >
+                    Gestión de Cursos
+                  </button>
+                </>
+              )}
+              {(user.role === 'DOCENTE' || user.role === 'ALUMNO') && (
+                <button
+                  onClick={() => router.push("/campus-virtual/mis-cursos")}
+                  className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  Mis Cursos
+                </button>
+              )}
+              <button
+                onClick={() => router.push("/campus-virtual/perfil")}
+                className="w-full p-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+              >
+                Mi Perfil
               </button>
             </div>
           </div>
 
+          {/* Tarjeta de información del usuario */}
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Estado de Sesión</h2>
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-500">Token:</span>
-                <p className="text-xs text-gray-600 font-mono bg-gray-100 p-2 rounded mt-1 break-all">
-                  {user.token.substring(0, 50)}...
-                </p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Último Acceso:</span>
-                <p className="text-gray-800">
-                  {user.ultimoAcceso ? new Date(user.ultimoAcceso).toLocaleString() : 'N/A'}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-sm text-green-600 font-medium">Sesión Activa</span>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Mi Información</h3>
+            <div className="space-y-2">
+              <p><span className="font-semibold">Nombre:</span> {user.nombres} {user.apellidos}</p>
+              <p><span className="font-semibold">Email:</span> {user.email}</p>
+              <p><span className="font-semibold">Rol:</span> {user.role}</p>
+              {user.codigoEstudiante && (
+                <p><span className="font-semibold">Código:</span> {user.codigoEstudiante}</p>
+              )}
+              {user.codigoDocente && (
+                <p><span className="font-semibold">Código:</span> {user.codigoDocente}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Tarjeta de notificaciones */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Notificaciones</h3>
+            <div className="space-y-3 text-gray-600">
+              <p className="text-sm">No tienes notificaciones nuevas</p>
+              <div className="pt-4">
+                <button className="text-amber-600 hover:text-amber-700 text-sm font-medium">
+                  Ver todas las notificaciones
+                </button>
               </div>
             </div>
           </div>

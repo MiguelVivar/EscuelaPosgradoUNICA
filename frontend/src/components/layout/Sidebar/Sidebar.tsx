@@ -2,6 +2,7 @@
 
 import { SidebarProps } from "@/types";
 import SidebarItem from "./SidebarItem";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar({
   items,
@@ -10,10 +11,52 @@ export default function Sidebar({
   position = "left",
   backgroundColor = "bg-zinc-900/95",
 }: SidebarProps) {
+  const pathname = usePathname();
+  
+  // Determinar el estilo del sidebar según la página actual
+  const getSidebarVariant = () => {
+    if (pathname.startsWith("/campus-virtual/admin")) {
+      return {
+        backgroundColor: "bg-zinc-900/95",
+        borderColor: "border-zinc-700/50",
+        accentColor: "bg-zinc-600"
+      };
+    }
+    if (pathname.startsWith("/campus-virtual/cursos-gestion")) {
+      return {
+        backgroundColor: "bg-zinc-900/95",
+        borderColor: "border-zinc-700/50",
+        accentColor: "bg-zinc-600"
+      };
+    }
+    if (pathname.startsWith("/campus-virtual/mis-cursos")) {
+      return {
+        backgroundColor: "bg-zinc-900/95",
+        borderColor: "border-zinc-700/50",
+        accentColor: "bg-zinc-600"
+      };
+    }
+    if (pathname.startsWith("/campus-virtual/perfil")) {
+      return {
+        backgroundColor: "bg-zinc-900/95",
+        borderColor: "border-zinc-700/50",
+        accentColor: "bg-zinc-600"
+      };
+    }
+    // Default para la página principal
+    return {
+      backgroundColor: backgroundColor,
+      borderColor: "border-zinc-700/50",
+      accentColor: "bg-zinc-600"
+    };
+  };
+
+  const variant = getSidebarVariant();
+
   const sidebarClasses = `
     fixed top-0 ${position === "left" ? "left-0" : "right-0"}
-    h-screen ${backgroundColor} backdrop-blur-xl
-    border-r border-zinc-700/50
+    h-screen ${variant.backgroundColor} backdrop-blur-xl
+    border-r ${variant.borderColor}
     ${width === "narrow" ? "w-16" : "w-64"}
     flex flex-col
     transition-all duration-300 ease-in-out
@@ -21,21 +64,38 @@ export default function Sidebar({
     ${className}
   `;
 
+  // Obtener el texto del header según la página
+  const getHeaderText = () => {
+    if (pathname.startsWith("/campus-virtual/admin")) {
+      return width === "wide" ? "Administración" : "A";
+    }
+    if (pathname.startsWith("/campus-virtual/cursos-gestion")) {
+      return width === "wide" ? "Gestión Cursos" : "C";
+    }
+    if (pathname.startsWith("/campus-virtual/mis-cursos")) {
+      return width === "wide" ? "Mis Cursos" : "MC";
+    }
+    if (pathname.startsWith("/campus-virtual/perfil")) {
+      return width === "wide" ? "Mi Perfil" : "P";
+    }
+    return width === "wide" ? "Menu" : "M";
+  };
+
   return (
     <aside className={sidebarClasses}>
       {/* Header/Logo area */}
       <div className={`
         ${width === "narrow" ? "h-16" : "h-20"}
         flex items-center justify-center
-        border-b border-zinc-700/50 mb-2
+        border-b ${variant.borderColor} mb-2
       `}>
         {width === "wide" ? (
           <div className="text-white font-bold text-lg px-4">
-            Menu
+            {getHeaderText()}
           </div>
         ) : (
-          <div className="w-8 h-8 bg-amber-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">M</span>
+          <div className={`w-8 h-8 ${variant.accentColor} rounded-lg flex items-center justify-center`}>
+            <span className="text-white font-bold text-sm">{getHeaderText()}</span>
           </div>
         )}
       </div>
@@ -54,7 +114,7 @@ export default function Sidebar({
       {/* Footer area (optional) */}
       <div className={`
         ${width === "narrow" ? "h-16" : "h-20"}
-        border-t border-zinc-700/50
+        border-t ${variant.borderColor}
         flex items-center justify-center
       `}>
         {width === "wide" && (

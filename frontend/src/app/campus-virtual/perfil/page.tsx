@@ -1,0 +1,252 @@
+"use client";
+
+import { useAuth } from "@/contexts/AuthContext";
+import PageHeader from "@/components/layout/PageHeader";
+import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaEdit, FaSave } from "react-icons/fa";
+import { useState } from "react";
+
+export default function PerfilPage() {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    nombres: user?.nombres || '',
+    apellidos: user?.apellidos || '',
+    email: user?.email || '',
+    telefono: '987654321', // Ejemplo
+    direccion: 'Av. Ejemplo 123, Ica' // Ejemplo
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = () => {
+    // Aquí iría la lógica para guardar los datos
+    setIsEditing(false);
+    console.log('Datos guardados:', formData);
+  };
+
+  return (
+    <div className="min-h-full">
+      <PageHeader />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Panel de información personal */}
+          <div className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Información Personal</h2>
+                <button
+                  onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                    isEditing 
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                  }`}
+                >
+                  {isEditing ? <FaSave className="mr-2" /> : <FaEdit className="mr-2" />}
+                  {isEditing ? 'Guardar' : 'Editar'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombres
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="nombres"
+                      value={formData.nombres}
+                      onChange={handleInputChange}
+                      placeholder="Ingresa tus nombres"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  ) : (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <FaUser className="text-gray-400 mr-3" />
+                      <span>{formData.nombres}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Apellidos
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="apellidos"
+                      value={formData.apellidos}
+                      onChange={handleInputChange}
+                      placeholder="Ingresa tus apellidos"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  ) : (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <FaUser className="text-gray-400 mr-3" />
+                      <span>{formData.apellidos}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <FaEnvelope className="text-gray-400 mr-3" />
+                    <span>{formData.email}</span>
+                    <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">No editable</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Teléfono
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleInputChange}
+                      placeholder="Ingresa tu teléfono"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  ) : (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <FaPhone className="text-gray-400 mr-3" />
+                      <span>{formData.telefono}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Dirección
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleInputChange}
+                      placeholder="Ingresa tu dirección"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  ) : (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <span>{formData.direccion}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Cambio de contraseña */}
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 mt-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Cambiar Contraseña</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contraseña Actual
+                  </label>
+                  <input
+                    type="password"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Ingresa tu contraseña actual"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nueva Contraseña
+                  </label>
+                  <input
+                    type="password"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Ingresa tu nueva contraseña"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirmar Nueva Contraseña
+                  </label>
+                  <input
+                    type="password"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Confirma tu nueva contraseña"
+                  />
+                </div>
+                <button className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                  Cambiar Contraseña
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel lateral */}
+          <div className="space-y-6">
+            {/* Información del rol */}
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Información Académica</h3>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <FaIdCard className="text-purple-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-600">Rol</p>
+                    <p className="font-semibold">{user?.role}</p>
+                  </div>
+                </div>
+                {user?.codigoEstudiante && (
+                  <div className="flex items-center">
+                    <FaIdCard className="text-blue-500 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-600">Código de Estudiante</p>
+                      <p className="font-semibold">{user.codigoEstudiante}</p>
+                    </div>
+                  </div>
+                )}
+                {user?.codigoDocente && (
+                  <div className="flex items-center">
+                    <FaIdCard className="text-green-500 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-600">Código de Docente</p>
+                      <p className="font-semibold">{user.codigoDocente}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Configuraciones rápidas */}
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Configuraciones</h3>
+              <div className="space-y-3">
+                <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="font-medium">Notificaciones</div>
+                  <div className="text-sm text-gray-600">Gestionar preferencias</div>
+                </button>
+                <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="font-medium">Privacidad</div>
+                  <div className="text-sm text-gray-600">Configurar privacidad</div>
+                </button>
+                <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="font-medium">Ayuda</div>
+                  <div className="text-sm text-gray-600">Centro de ayuda</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
