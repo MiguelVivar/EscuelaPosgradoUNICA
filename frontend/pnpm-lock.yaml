@@ -23,6 +23,9 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.1.0)
+      sweetalert2:
+        specifier: ^11.22.1
+        version: 11.22.1
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -1722,6 +1725,9 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  sweetalert2@11.22.1:
+    resolution: {integrity: sha512-3dGb50jlfcJ0OHZ5D4hJWK/cIYAfCnxK5QQVndOJqhyiCYJozINEfHG7wvRbkACj60hDnPWu+t9EFcbYWaSEuQ==}
 
   tailwindcss@4.1.10:
     resolution: {integrity: sha512-P3nr6WkvKV/ONsTzj6Gb57sWPMX29EPNPopo7+FcpkQaNsrNpZ1pv8QmrYI2RqEKD7mlGqLnGovlcYnBK0IqUA==}
@@ -3653,6 +3659,8 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  sweetalert2@11.22.1: {}
 
   tailwindcss@4.1.10: {}
 

@@ -36,6 +36,7 @@ export interface UsuarioResponse {
   nombres: string;
   apellidos: string;
   role: Role;
+  activo: boolean;
   ultimoAcceso?: string;
   codigoEstudiante?: string;
   codigoDocente?: string;

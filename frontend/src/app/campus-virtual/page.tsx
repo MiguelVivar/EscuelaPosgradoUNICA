@@ -19,6 +19,10 @@ export default function CampusVirtualPage() {
     router.push("/");
   };
 
+  const goToAdminPanel = () => {
+    router.push("/campus-virtual/admin");
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
@@ -101,6 +105,21 @@ export default function CampusVirtualPage() {
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Acceso Rápido</h2>
             <div className="space-y-3">
+              {/* Panel de Administración - Solo para ADMIN y COORDINADOR */}
+              {(user.role === 'ADMIN' || user.role === 'COORDINADOR') && (
+                <button 
+                  onClick={goToAdminPanel}
+                  className="w-full p-3 text-left bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200"
+                >
+                  <div className="font-medium text-red-800">
+                    {user.role === 'ADMIN' ? 'Panel de Administración' : 'Panel de Coordinación'}
+                  </div>
+                  <div className="text-sm text-red-600">
+                    {user.role === 'ADMIN' ? 'Gestionar usuarios del sistema' : 'Gestionar información académica'}
+                  </div>
+                </button>
+              )}
+              
               <button className="w-full p-3 text-left bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200">
                 <div className="font-medium text-blue-800">Mis Cursos</div>
                 <div className="text-sm text-blue-600">Ver materias inscritas</div>

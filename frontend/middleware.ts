@@ -4,6 +4,9 @@ import type { NextRequest } from 'next/server';
 // Rutas que requieren autenticación
 const protectedRoutes = ['/campus-virtual'];
 
+// Rutas que requieren rol ADMIN o COORDINADOR
+const adminRoutes = ['/campus-virtual/admin'];
+
 // Rutas que son solo para usuarios no autenticados
 const authRoutes = ['/iniciar-sesion'];
 
@@ -15,6 +18,12 @@ export function middleware(request: NextRequest) {
   
   // Si está en una ruta protegida y no tiene token, redirigir a login
   if (protectedRoutes.some(route => pathname.startsWith(route)) && !token) {
+    return NextResponse.redirect(new URL('/iniciar-sesion', request.url));
+  }
+  
+  // Si está en una ruta de administración, necesita verificación adicional
+  // (la verificación del rol se hace en el componente ya que el middleware no puede decodificar JWT fácilmente)
+  if (adminRoutes.some(route => pathname.startsWith(route)) && !token) {
     return NextResponse.redirect(new URL('/iniciar-sesion', request.url));
   }
   
