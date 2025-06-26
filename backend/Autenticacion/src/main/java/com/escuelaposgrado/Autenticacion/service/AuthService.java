@@ -435,6 +435,9 @@ public class AuthService {
             usuario.getApellidos(), 
             usuario.getRole()
         );
+        response.setDni(usuario.getDni());
+        response.setTelefono(usuario.getTelefono());
+        response.setDireccion(usuario.getDireccion());
         response.setUltimoAcceso(usuario.getUltimoAcceso());
         response.setCodigoEstudiante(usuario.getCodigoEstudiante());
         response.setCodigoDocente(usuario.getCodigoDocente());

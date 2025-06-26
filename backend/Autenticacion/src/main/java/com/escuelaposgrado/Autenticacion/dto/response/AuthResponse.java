@@ -16,6 +16,9 @@ public class AuthResponse {
     private String email;
     private String nombres;
     private String apellidos;
+    private String dni;
+    private String telefono;
+    private String direccion;
     private Role role;
     private LocalDateTime ultimoAcceso;
 
@@ -94,6 +97,30 @@ public class AuthResponse {
 
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public Role getRole() {

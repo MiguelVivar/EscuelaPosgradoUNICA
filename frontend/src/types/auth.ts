@@ -15,6 +15,7 @@ export interface AuthResponse {
   email: string;
   nombres: string;
   apellidos: string;
+  dni?: string;
   telefono?: string;
   direccion?: string;
   role: Role;

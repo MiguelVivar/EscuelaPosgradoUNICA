@@ -15,6 +15,7 @@ export default function PerfilPage() {
   const [formData, setFormData] = useState({
     nombres: user?.nombres || '',
     apellidos: user?.apellidos || '',
+    dni: user?.dni || '',
     email: user?.email || '',
     telefono: user?.telefono || '',
     direccion: user?.direccion || ''
@@ -31,6 +32,7 @@ export default function PerfilPage() {
       setFormData({
         nombres: user.nombres || '',
         apellidos: user.apellidos || '',
+        dni: user.dni || '',
         email: user.email || '',
         telefono: user.telefono || '',
         direccion: user.direccion || ''
@@ -176,6 +178,7 @@ export default function PerfilPage() {
                         setFormData({
                           nombres: user?.nombres || '',
                           apellidos: user?.apellidos || '',
+                          dni: user?.dni || '',
                           email: user?.email || '',
                           telefono: user?.telefono || '',
                           direccion: user?.direccion || ''
@@ -211,42 +214,33 @@ export default function PerfilPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Nombres
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="nombres"
-                      value={formData.nombres}
-                      onChange={handleInputChange}
-                      placeholder="Ingresa tus nombres"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  ) : (
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <FaUser className="text-gray-400 mr-3" />
-                      <span>{formData.nombres}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <FaUser className="text-gray-400 mr-3" />
+                    <span>{formData.nombres}</span>
+                    <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">No editable</span>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Apellidos
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="apellidos"
-                      value={formData.apellidos}
-                      onChange={handleInputChange}
-                      placeholder="Ingresa tus apellidos"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  ) : (
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <FaUser className="text-gray-400 mr-3" />
-                      <span>{formData.apellidos}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <FaUser className="text-gray-400 mr-3" />
+                    <span>{formData.apellidos}</span>
+                    <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">No editable</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    DNI
+                  </label>
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <FaIdCard className="text-gray-400 mr-3" />
+                    <span>{formData.dni || 'No registrado'}</span>
+                    <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">No editable</span>
+                  </div>
                 </div>
 
                 <div>
