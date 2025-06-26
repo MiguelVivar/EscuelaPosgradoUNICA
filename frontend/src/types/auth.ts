@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type Role = 'ADMIN' | 'ALUMNO' | 'DOCENTE' | 'COORDINADOR' | 'POSTULANTE';
 
 export interface LoginRequest {
@@ -60,4 +62,8 @@ export class ApiError extends Error {
     this.status = status;
     this.success = success;
   }
+}
+
+export interface AuthProviderProps {
+  children: ReactNode;
 }
