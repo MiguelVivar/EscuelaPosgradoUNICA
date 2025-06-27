@@ -3,7 +3,6 @@ import {
   FaUser, 
   FaUsers,
   FaHome,
-  FaCog,
   FaBell,
   FaQuestionCircle,
   FaSignOutAlt,
