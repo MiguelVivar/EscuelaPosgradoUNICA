@@ -42,7 +42,7 @@ function usePasswordRecovery() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setEnviado(true);
     } catch (err) {
-      setError("Ocurrió un error. Por favor, intenta nuevamente.");
+      setError(`Ocurrió un error. Por favor, intenta nuevamente. ${err}`);
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +89,6 @@ function RecuperarForm({
   error,
   email,
   setEmail,
-  setError,
   handleSubmit,
   isLoading,
 }: {

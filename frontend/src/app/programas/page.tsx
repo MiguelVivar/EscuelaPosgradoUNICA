@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Fadministracion from "@/assets/Fadministracion.png";
 import portada01 from "@/assets/portada01.jpg";
 import portada02 from "@/assets/portada02.jpeg";
@@ -165,7 +166,7 @@ export default function ProgramasPage() {
       {/* Hero Section */}
       <section className="relative h-96 flex items-center justify-center">
         <div className="absolute inset-0">
-          <img 
+          <Image 
             src={bg.src}
             alt="Universidad Nacional San Luis Gonzaga de Ica"
             className="w-full h-full object-cover"
@@ -192,7 +193,7 @@ export default function ProgramasPage() {
           {doctorados.slice(0, 3).map((doctorado) => (
             <div key={doctorado.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="h-48 bg-gray-300 relative">
-                <img 
+                <Image 
                   src={doctorado.imagen.src} 
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
@@ -217,7 +218,7 @@ export default function ProgramasPage() {
           {doctorados.slice(3, 5).map((doctorado) => (
             <div key={doctorado.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="h-48 bg-gray-300 relative">
-                <img 
+                <Image 
                   src={doctorado.imagen.src}
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
