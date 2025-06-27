@@ -1,14 +1,16 @@
 package com.escuelaposgrado.Autenticacion.config;
 
-import com.escuelaposgrado.Autenticacion.model.entity.Usuario;
-import com.escuelaposgrado.Autenticacion.model.enums.Role;
-import com.escuelaposgrado.Autenticacion.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import com.escuelaposgrado.Autenticacion.model.entity.Usuario;
+import com.escuelaposgrado.Autenticacion.model.enums.Role;
+import com.escuelaposgrado.Autenticacion.repository.UsuarioRepository;
+import com.escuelaposgrado.Autenticacion.service.DataCleanupService;
 
 /**
  * Inicialización de datos por defecto del sistema
@@ -24,8 +26,21 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private DataCleanupService dataCleanupService;
+
     @Override
     public void run(String... args) throws Exception {
+        // Primero limpiar duplicados existentes
+        logger.info("Verificando y limpiando registros duplicados...");
+        if (dataCleanupService.existenDuplicados()) {
+            dataCleanupService.limpiarDuplicados();
+            logger.info("Duplicados eliminados exitosamente");
+        } else {
+            logger.info("No se encontraron duplicados");
+        }
+        
+        // Luego inicializar usuarios por defecto
         initializeDefaultUsers();
     }
 

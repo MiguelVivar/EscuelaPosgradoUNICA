@@ -21,6 +21,7 @@ import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
+import com.escuelaposgrado.Autenticacion.service.DataCleanupService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,6 +46,9 @@ public class AdminController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private DataCleanupService dataCleanupService;
 
     /**
      * Obtener todos los usuarios
@@ -467,5 +471,75 @@ public class AdminController {
             @RequestParam String texto) {
         List<UsuarioResponse> usuarios = authService.buscarUsuariosPorNombre(texto);
         return ResponseEntity.ok(usuarios);
+    }
+
+    /**
+     * Limpiar datos duplicados en la base de datos
+     */
+    @Operation(
+            summary = "Limpiar datos duplicados",
+            description = "Elimina registros duplicados de la base de datos basándose en campos únicos como username, email, DNI, etc.",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Limpieza de duplicados completada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Limpieza exitosa",
+                                    value = """
+                                            {
+                                              "message": "Limpieza de duplicados completada exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error durante la limpieza",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de limpieza",
+                                    value = """
+                                            {
+                                              "message": "Error al limpiar duplicados: <detalle del error>",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @PostMapping("/limpiar-duplicados")
+    public ResponseEntity<MessageResponse> limpiarDuplicados() {
+        try {
+            if (dataCleanupService.existenDuplicados()) {
+                dataCleanupService.limpiarDuplicados();
+                return ResponseEntity.ok(new MessageResponse("Limpieza de duplicados completada exitosamente"));
+            } else {
+                return ResponseEntity.ok(new MessageResponse("No se encontraron registros duplicados"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(new MessageResponse("Error al limpiar duplicados: " + e.getMessage(), false));
+        }
     }
 }

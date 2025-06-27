@@ -341,18 +341,9 @@ public class AuthService {
             if (request.getDireccion() != null) {
                 usuario.setDireccion(request.getDireccion());
             }
-            if (request.getCodigoEstudiante() != null) {
-                usuario.setCodigoEstudiante(request.getCodigoEstudiante());
-            }
-            if (request.getCodigoDocente() != null) {
-                usuario.setCodigoDocente(request.getCodigoDocente());
-            }
-            if (request.getEspecialidad() != null) {
-                usuario.setEspecialidad(request.getEspecialidad());
-            }
-            if (request.getProgramaInteres() != null) {
-                usuario.setProgramaInteres(request.getProgramaInteres());
-            }
+            
+            // Actualizar campos específicos del rol aplicando la lógica correcta
+            setRoleSpecificFields(usuario, request);
 
             // Actualizar contraseña si se proporciona
             if (request.isUpdatingPassword()) {
@@ -421,21 +412,74 @@ public class AuthService {
     }
 
     private void setRoleSpecificFields(Usuario usuario, RegistroRequest request) {
+        // Inicializar todos los campos específicos de rol como null
+        usuario.setCodigoEstudiante(null);
+        usuario.setCodigoDocente(null);
+        usuario.setEspecialidad(null);
+        usuario.setProgramaInteres(null);
+        
         switch (request.getRole()) {
             case ALUMNO:
             case POSTULANTE:
-                usuario.setCodigoEstudiante(request.getCodigoEstudiante());
+                // Solo establecer codigo_estudiante si no está vacío
+                if (request.getCodigoEstudiante() != null && !request.getCodigoEstudiante().trim().isEmpty()) {
+                    usuario.setCodigoEstudiante(request.getCodigoEstudiante().trim());
+                }
                 if (request.getRole() == Role.POSTULANTE) {
-                    usuario.setProgramaInteres(request.getProgramaInteres());
+                    if (request.getProgramaInteres() != null && !request.getProgramaInteres().trim().isEmpty()) {
+                        usuario.setProgramaInteres(request.getProgramaInteres().trim());
+                    }
                 }
                 break;
             case DOCENTE:
             case COORDINADOR:
-                usuario.setCodigoDocente(request.getCodigoDocente());
-                usuario.setEspecialidad(request.getEspecialidad());
+                // Solo establecer codigo_docente si no está vacío
+                if (request.getCodigoDocente() != null && !request.getCodigoDocente().trim().isEmpty()) {
+                    usuario.setCodigoDocente(request.getCodigoDocente().trim());
+                }
+                if (request.getEspecialidad() != null && !request.getEspecialidad().trim().isEmpty()) {
+                    usuario.setEspecialidad(request.getEspecialidad().trim());
+                }
                 break;
             case ADMIN:
-                // Admin no necesita campos adicionales
+                // Admin no necesita campos adicionales, todos quedan como null
+                break;
+        }
+    }
+
+    // Método sobrecargado para ActualizarUsuarioAdminRequest
+    private void setRoleSpecificFields(Usuario usuario, ActualizarUsuarioAdminRequest request) {
+        // Inicializar todos los campos específicos de rol como null
+        usuario.setCodigoEstudiante(null);
+        usuario.setCodigoDocente(null);
+        usuario.setEspecialidad(null);
+        usuario.setProgramaInteres(null);
+        
+        switch (request.getRole()) {
+            case ALUMNO:
+            case POSTULANTE:
+                // Solo establecer codigo_estudiante si no está vacío
+                if (request.getCodigoEstudiante() != null && !request.getCodigoEstudiante().trim().isEmpty()) {
+                    usuario.setCodigoEstudiante(request.getCodigoEstudiante().trim());
+                }
+                if (request.getRole() == Role.POSTULANTE) {
+                    if (request.getProgramaInteres() != null && !request.getProgramaInteres().trim().isEmpty()) {
+                        usuario.setProgramaInteres(request.getProgramaInteres().trim());
+                    }
+                }
+                break;
+            case DOCENTE:
+            case COORDINADOR:
+                // Solo establecer codigo_docente si no está vacío
+                if (request.getCodigoDocente() != null && !request.getCodigoDocente().trim().isEmpty()) {
+                    usuario.setCodigoDocente(request.getCodigoDocente().trim());
+                }
+                if (request.getEspecialidad() != null && !request.getEspecialidad().trim().isEmpty()) {
+                    usuario.setEspecialidad(request.getEspecialidad().trim());
+                }
+                break;
+            case ADMIN:
+                // Admin no necesita campos adicionales, todos quedan como null
                 break;
         }
     }
