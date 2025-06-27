@@ -16,7 +16,7 @@ interface UserInfoCardProps {
 }
 
 interface InfoItem {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   value: string;
   color: string;

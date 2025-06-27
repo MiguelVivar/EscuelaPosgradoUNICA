@@ -4,8 +4,7 @@ import { Card, SectionHeader } from '@/components/ui/common';
 import { Button } from '@/components/common';
 import { AuthResponse } from '@/types/auth';
 import { 
-  FaUserShield, 
-  FaChalkboardTeacher, 
+  FaUserShield,
   FaGraduationCap, 
   FaBook, 
   FaUser, 

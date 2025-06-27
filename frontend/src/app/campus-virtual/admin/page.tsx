@@ -274,8 +274,8 @@ export default function AdminCampusPage() {
   }
 
   return (
-    <div className="min-h-full">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header del Panel */}
         <AdminPageHeader user={user} onLogout={handleLogout} />
 
@@ -308,7 +308,7 @@ export default function AdminCampusPage() {
         <AdminInfoPanel userRole={user.role} />
 
         {/* Espaciador para el footer */}
-        <div className="h-20"></div>
+        <div className="h-16 sm:h-20"></div>
 
         {/* Modal para Crear/Editar Usuario */}
         <UserFormModal

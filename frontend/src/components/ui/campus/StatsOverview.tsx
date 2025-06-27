@@ -6,7 +6,6 @@ import {
   FaBook, 
   FaGraduationCap, 
   FaChartLine,
-  FaUserShield,
   FaChalkboardTeacher
 } from 'react-icons/fa';
 

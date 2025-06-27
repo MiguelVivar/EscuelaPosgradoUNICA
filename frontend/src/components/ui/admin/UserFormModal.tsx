@@ -126,14 +126,14 @@ export default function UserFormModal({
           onChange={handleFieldChange}
         />
 
-        <div className="flex justify-end gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-200 mt-4">
           <Button
             type="button"
             variant="secondary"
             size="md"
             onClick={handleClose}
             disabled={isSubmitting}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-700"
+            className="bg-gray-300 hover:bg-gray-400 text-gray-700 w-full sm:w-auto order-2 sm:order-1"
           >
             Cancelar
           </Button>
@@ -143,6 +143,7 @@ export default function UserFormModal({
             size="md"
             isLoading={isSubmitting}
             disabled={isSubmitting}
+            className="w-full sm:w-auto order-1 sm:order-2"
           >
             {isEditMode ? "Actualizar Usuario" : "Crear Usuario"}
           </Button>
