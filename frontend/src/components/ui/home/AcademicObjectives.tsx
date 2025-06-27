@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import about2 from "@/assets/about2.png";
+import about02 from "@/assets/about02.png";
 import objectives from "@/data/Objectives";
 
 // Registrar ScrollTrigger
@@ -166,7 +166,7 @@ export default function AcademicObjectives() {
           {/* Imagen */}
           <div ref={imageRef} className="relative">
             <Image
-              src={about2}
+              src={about02}
               alt="Objetivos Académicos"
               className="w-full h-auto rounded-lg shadow-lg"
               priority

@@ -1,35 +1,42 @@
 "use client";
 
+import Fadministracion from "@/assets/Fadministracion.png";
+import portada01 from "@/assets/portada01.jpg";
+import portada02 from "@/assets/portada02.jpeg";
+import portada03 from "@/assets/portada03.jpeg";
+import Fenfermeria from "@/assets/Fenfermeria.jpeg";
+import bg from "@/assets/bg.jpg";
+
 // Datos de los doctorados
 const doctorados = [
   {
     id: 1,
     titulo: "Ciencias Empresariales",
-    imagen: "/course-1.png", // Usando la imagen que ya tienes
+    imagen: Fadministracion,
     descripcion: "Programa de doctorado en ciencias empresariales"
   },
   {
     id: 2,
     titulo: "Derecho y Ciencia Política",
-    imagen: "/portada01.jpg",
+    imagen: portada01,
     descripcion: "Programa de doctorado en derecho y ciencia política"
   },
   {
     id: 3,
     titulo: "Educación",
-    imagen: "/descarga.jpeg",
+    imagen: portada02,
     descripcion: "Programa de doctorado en educación"
   },
   {
     id: 4,
     titulo: "Gestión Ambiental",
-    imagen: "/images.jpeg",
+    imagen: portada03,
     descripcion: "Programa de doctorado en gestión ambiental"
   },
   {
     id: 5,
     titulo: "Salud Pública",
-    imagen: "/descarga (1).jpeg",
+    imagen: Fenfermeria,
     descripcion: "Programa de doctorado en salud pública"
   }
 ];
@@ -159,7 +166,7 @@ export default function ProgramasPage() {
       <section className="relative h-96 flex items-center justify-center">
         <div className="absolute inset-0">
           <img 
-            src="/lalupa.pe-anulan-elecciones-de-la-universidad-san-luis-gonzaga-de-ica-que-se-dieron-entre-marzo-y-abril-2022-768x399.jpg" 
+            src={bg.src}
             alt="Universidad Nacional San Luis Gonzaga de Ica"
             className="w-full h-full object-cover"
           />
@@ -186,7 +193,7 @@ export default function ProgramasPage() {
             <div key={doctorado.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="h-48 bg-gray-300 relative">
                 <img 
-                  src={doctorado.imagen} 
+                  src={doctorado.imagen.src} 
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
                 />
@@ -211,7 +218,7 @@ export default function ProgramasPage() {
             <div key={doctorado.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="h-48 bg-gray-300 relative">
                 <img 
-                  src={doctorado.imagen} 
+                  src={doctorado.imagen.src}
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
                 />
