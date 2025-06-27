@@ -165,6 +165,8 @@ function ImagenIlustrativa() {
         fill
         className="object-cover"
         priority
+        height={400}
+        width={800}
       />
       {/* Formas geométricas flotantes */}
       <div className="absolute top-10 right-10 w-32 h-32 bg-white/60 rounded-full rotate-12 drop-shadow-xl"></div>

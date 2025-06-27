@@ -170,6 +170,8 @@ export default function ProgramasPage() {
             src={bg.src}
             alt="Universidad Nacional San Luis Gonzaga de Ica"
             className="w-full h-full object-cover"
+            height={400}
+            width={800}
           />
           <div className="absolute inset-0 bg-black/50"></div>
         </div>
@@ -197,6 +199,8 @@ export default function ProgramasPage() {
                   src={doctorado.imagen.src} 
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
+                  height={192}
+                  width={288}
                 />
                 <div className="absolute bottom-4 left-4">
                   <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
@@ -222,6 +226,8 @@ export default function ProgramasPage() {
                   src={doctorado.imagen.src}
                   alt={doctorado.titulo}
                   className="w-full h-full object-cover"
+                  height={192}
+                  width={288}
                 />
                 <div className="absolute bottom-4 left-4">
                   <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
