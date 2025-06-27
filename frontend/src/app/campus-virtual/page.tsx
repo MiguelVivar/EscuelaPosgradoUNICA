@@ -4,6 +4,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/layout/PageHeader";
+import { 
+  DashboardHeader, 
+  QuickAccessCard, 
+  UserInfoCard, 
+  NotificationsCard,
+  StatsOverview 
+} from "@/components/ui/campus";
+import { FaGraduationCap } from "react-icons/fa";
 
 export default function CampusVirtualPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -15,16 +23,12 @@ export default function CampusVirtualPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  const goToAdminPanel = () => {
-    router.push("/campus-virtual/admin");
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600 font-medium">Cargando Campus Virtual...</p>
         </div>
       </div>
     );
@@ -34,99 +38,76 @@ export default function CampusVirtualPage() {
     return null;
   }
 
+  const showStatsOverview = user.role === 'ADMIN' || user.role === 'COORDINADOR';
+
   return (
     <div className="min-h-full">
       {/* Header dinámico de la página */}
       <PageHeader />
       
-      <div className="container mx-auto px-4 py-8">
-        {/* Contenido específico según el rol */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* Tarjeta de accesos rápidos */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Accesos Rápidos</h3>
-            <div className="space-y-3">
-              {user.role === 'ADMIN' && (
-                <button
-                  onClick={goToAdminPanel}
-                  className="w-full p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Panel de Administración
-                </button>
-              )}
-              {user.role === 'COORDINADOR' && (
-                <>
-                  <button
-                    onClick={goToAdminPanel}
-                    className="w-full p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
-                  >
-                    Panel de Coordinación
-                  </button>
-                  <button
-                    onClick={() => router.push("/campus-virtual/cursos-gestion")}
-                    className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                  >
-                    Gestión de Cursos
-                  </button>
-                </>
-              )}
-              {(user.role === 'DOCENTE' || user.role === 'ALUMNO') && (
-                <button
-                  onClick={() => router.push("/campus-virtual/mis-cursos")}
-                  className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
-                  Mis Cursos
-                </button>
-              )}
-              <button
-                onClick={() => router.push("/campus-virtual/perfil")}
-                className="w-full p-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
-              >
-                Mi Perfil
-              </button>
-            </div>
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        {/* Header del Dashboard */}
+        <DashboardHeader />
+
+        {/* Estadísticas para Admin/Coordinador */}
+        {showStatsOverview && (
+          <div className="mb-6 sm:mb-8">
+            <StatsOverview user={user} />
+          </div>
+        )}
+
+        {/* Grid principal de contenido - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+          {/* Columna izquierda - Accesos rápidos */}
+          <div className="order-1 lg:order-1">
+            <QuickAccessCard user={user} />
           </div>
 
-          {/* Tarjeta de información del usuario */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Mi Información</h3>
-            <div className="space-y-2">
-              <p><span className="font-semibold">Nombre:</span> {user.nombres} {user.apellidos}</p>
-              <p><span className="font-semibold">Email:</span> {user.email}</p>
-              <p><span className="font-semibold">Rol:</span> {user.role}</p>
-              {user.codigoEstudiante && (
-                <p><span className="font-semibold">Código:</span> {user.codigoEstudiante}</p>
-              )}
-              {user.codigoDocente && (
-                <p><span className="font-semibold">Código:</span> {user.codigoDocente}</p>
-              )}
-            </div>
+          {/* Columna central - Información del usuario */}
+          <div className="order-3 lg:order-2">
+            <UserInfoCard user={user} />
           </div>
 
-          {/* Tarjeta de notificaciones */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Notificaciones</h3>
-            <div className="space-y-3 text-gray-600">
-              <p className="text-sm">No tienes notificaciones nuevas</p>
-              <div className="pt-4">
-                <button className="text-amber-600 hover:text-amber-700 text-sm font-medium">
-                  Ver todas las notificaciones
-                </button>
+          {/* Columna derecha - Notificaciones */}
+          <div className="order-2 lg:order-3">
+            <NotificationsCard />
+          </div>
+        </div>
+
+        {/* Información del sistema - Responsive */}
+        <div className="bg-gradient-to-r from-amber-50 to-blue-50 border border-amber-200/50 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="flex-shrink-0">
+              <div className="p-2 sm:p-3 bg-amber-100 rounded-xl">
+                <FaGraduationCap className="text-amber-600 text-lg sm:text-xl" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-gray-800 mb-2 text-base sm:text-lg">
+                Campus Virtual - Escuela de Posgrado UNICA
+              </h3>
+              <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                Bienvenido al sistema integrado de gestión académica. Aquí podrás acceder 
+                a todos los servicios digitales de la Escuela de Posgrado de la Universidad 
+                Nacional San Luis Gonzaga de Ica.
+              </p>
+              <div className="mt-3 sm:mt-4 flex flex-wrap gap-2">
+                <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Sistema Integrado
+                </span>
+                <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Gestión Académica
+                </span>
+                <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  Multiplataforma
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Nota temporal */}
-        <div className="mt-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <p className="text-amber-700">
-            <strong>Nota:</strong> Esta es una página temporal del campus virtual. 
-            Aquí se integrarán los demás microservicios del sistema.
-          </p>
-        </div>
-
-        {/* Espaciador para asegurar que el footer sea visible */}
-        <div className="h-20"></div>
+        {/* Espaciador para footer */}
+        <div className="h-16 sm:h-20"></div>
       </div>
     </div>
   );
