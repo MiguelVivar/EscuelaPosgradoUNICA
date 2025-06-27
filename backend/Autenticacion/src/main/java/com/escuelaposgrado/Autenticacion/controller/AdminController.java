@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
@@ -77,6 +79,79 @@ public class AdminController {
     public ResponseEntity<List<UsuarioResponse>> getAllUsuarios() {
         List<UsuarioResponse> usuarios = authService.getAllUsuarios();
         return ResponseEntity.ok(usuarios);
+    }
+
+    /**
+     * Crear nuevo usuario
+     */
+    @Operation(
+            summary = "Crear nuevo usuario",
+            description = "Permite al administrador crear un nuevo usuario en el sistema",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuario creado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario creado",
+                                    value = """
+                                            {
+                                              "message": "Usuario creado exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en la creación (usuario/email ya existe, campos faltantes, etc.)",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de creación",
+                                    value = """
+                                            {
+                                              "message": "Error: El nombre de usuario ya está en uso!",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @PostMapping("/usuarios")
+    public ResponseEntity<MessageResponse> crearUsuario(
+            @Parameter(description = "Datos del nuevo usuario", required = true)
+            @Valid @RequestBody RegistroRequest registroRequest) {
+        
+        try {
+            MessageResponse response = authService.registro(registroRequest);
+            
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error al crear usuario: " + e.getMessage(), false));
+        }
     }
 
     @Operation(

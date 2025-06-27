@@ -4,6 +4,7 @@ import { SidebarProps } from "@/types";
 import SidebarItem from "./SidebarItem";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import logoUNICA from "@/assets/logoUNICA.png";
 
 export default function Sidebar({
@@ -18,20 +19,6 @@ export default function Sidebar({
   // Determinar el estilo del sidebar según la página actual
   const getSidebarVariant = () => {
     if (pathname.startsWith("/campus-virtual/admin")) {
-      return {
-        backgroundColor: "bg-zinc-900/95",
-        borderColor: "border-zinc-700/50",
-        accentColor: "bg-zinc-600"
-      };
-    }
-    if (pathname.startsWith("/campus-virtual/cursos-gestion")) {
-      return {
-        backgroundColor: "bg-zinc-900/95",
-        borderColor: "border-zinc-700/50",
-        accentColor: "bg-zinc-600"
-      };
-    }
-    if (pathname.startsWith("/campus-virtual/mis-cursos")) {
       return {
         backgroundColor: "bg-zinc-900/95",
         borderColor: "border-zinc-700/50",
@@ -92,11 +79,11 @@ export default function Sidebar({
         border-b ${variant.borderColor} mb-2
       `}>
         {width === "wide" ? (
-          <div className="text-white font-bold text-lg px-4">
+          <Link href="/" className="text-white font-bold text-lg px-4 hover:text-amber-400 transition-colors cursor-pointer">
             {getHeaderText()}
-          </div>
+          </Link>
         ) : (
-          <div className={`w-10 h-10 ${variant.accentColor} rounded-lg flex items-center justify-center p-1`}>
+          <Link href="/" className={`w-10 h-10 ${variant.accentColor} rounded-lg flex items-center justify-center p-1 hover:opacity-80 transition-opacity cursor-pointer`}>
             <Image
               src={logoUNICA}
               alt="Logo UNICA"
@@ -104,7 +91,7 @@ export default function Sidebar({
               height={32}
               className="w-8 h-8 object-contain"
             />
-          </div>
+          </Link>
         )}
       </div>
 

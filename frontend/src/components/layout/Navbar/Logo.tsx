@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
+import Link from "next/link";
 import logoPosgrado from "@/assets/logoPosgrado.png";
 
 export default function Logo() {
@@ -25,22 +26,24 @@ export default function Logo() {
   }, []);
 
   return (
-    <div ref={logoRef} className="flex items-center space-x-3">
-      <div className="relative">
-        <Image
-          src={logoPosgrado}
-          alt="Logo"
-          width={70}
-          height={70}
-          className="w-12 h-12"
-        />
+    <Link href="/" className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity">
+      <div ref={logoRef} className="flex items-center space-x-3">
+        <div className="relative">
+          <Image
+            src={logoPosgrado}
+            alt="Logo"
+            width={70}
+            height={70}
+            className="w-12 h-12"
+          />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm text-amber-500 font-bold">
+            Escuela de Posgrado
+          </span>
+          <span className="text-xl font-bold text-red-600">UNICA</span>
+        </div>
       </div>
-      <div className="flex flex-col">
-        <span className="text-sm text-amber-500 font-bold">
-          Escuela de Posgrado
-        </span>
-        <span className="text-xl font-bold text-red-600">UNICA</span>
-      </div>
-    </div>
+    </Link>
   );
 }
