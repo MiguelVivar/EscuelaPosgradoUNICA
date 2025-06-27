@@ -4,6 +4,19 @@ services:
     build: ./frontend
     ports:
       - "3000:3000"
+    environment:
+      # Variables de entorno de Next.js
+      NEXT_TELEMETRY_DISABLED: 1
+      NODE_ENV: production
+      # Variables de Mailtrap desde archivo .env
+      MAILTRAP_USER: ${MAILTRAP_USER}
+      MAILTRAP_PASSWORD: ${MAILTRAP_PASSWORD}
+      MAILTRAP_FROM_EMAIL: ${MAILTRAP_FROM_EMAIL:-noreply@unica.edu.pe}
+      # URLs base para desarrollo
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    env_file:
+      - ./frontend/.env
     depends_on:
       autenticacion:
         condition: service_healthy
