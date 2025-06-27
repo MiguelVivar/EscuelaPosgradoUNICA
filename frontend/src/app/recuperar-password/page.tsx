@@ -3,10 +3,8 @@ import React, { useState } from "react";
 import { FiMail } from "react-icons/fi";
 import Link from "next/link";
 import Image from "next/image";
-
-// Importar imágenes desde assets
-import posgradoImg from "../../assets/posgrado.png";
-import rpfondoImg from "../../assets/rpfondo.png";
+import posgradoImg from "@/assets/posgrado.png";
+import rpfondoImg from "@/assets/rpfondo.png";
 
 // Hook personalizado para manejar la recuperación de contraseña
 function usePasswordRecovery() {
