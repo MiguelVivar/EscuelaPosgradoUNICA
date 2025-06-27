@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import posgradoImg from "@/assets/posgrado.png";
 import rpfondoImg from "@/assets/rpfondo.png";
+import { RecoveryService } from "@/services/recoveryService";
 
 // Hook personalizado para manejar la recuperación de contraseña
 function usePasswordRecovery() {
@@ -36,11 +37,39 @@ function usePasswordRecovery() {
     }
 
     try {
-      // Simular llamada a API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setEnviado(true);
+      // Llamar al servicio real de recuperación
+      console.log('🚀 Iniciando proceso de recuperación de contraseña...');
+      const response = await RecoveryService.sendRecoveryEmail(email);
+      
+      console.log('📥 Respuesta recibida:', response);
+      
+      if (response.success) {
+        console.log('✅ Email enviado exitosamente');
+        setEnviado(true);
+      } else {
+        console.warn('⚠️ Error en la respuesta:', response.message);
+        setError(response.message || "Error al enviar el correo de recuperación.");
+      }
     } catch (err) {
-      setError(`Ocurrió un error. Por favor, intenta nuevamente. ${err}`);
+      console.error('❌ Error en recuperación de contraseña:', err);
+      
+      // Proporcionar mejor información sobre el tipo de error
+      let errorMessage = 'Ocurrió un error. Por favor, intenta nuevamente.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // En desarrollo, mostrar más detalles del error
+        if (process.env.NODE_ENV === 'development') {
+          console.error('🔍 Detalles del error:', {
+            name: err.name,
+            message: err.message,
+            stack: err.stack
+          });
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
