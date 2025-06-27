@@ -17,7 +17,7 @@ interface StatItem {
   id: string;
   label: string;
   value: string | number;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   color: string;
   bgColor: string;
   change?: string;

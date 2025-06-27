@@ -1,6 +1,7 @@
 import { Role } from "@/types/auth";
 import Button from "@/components/common/Button";
 import { UserManagementFiltersProps } from "@/types/Admin";
+import { FaSearch } from "react-icons/fa";
 
 export default function UserManagementFilters({
   selectedRole,
@@ -75,8 +76,8 @@ export default function UserManagementFilters({
               onClick={onFilterUsers}
               className="w-full sm:w-auto"
             >
+              <FaSearch className="h-4 w-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Filtrar</span>
-              <span className="sm:hidden">🔍</span>
             </Button>
           </div>
 
@@ -91,11 +92,6 @@ export default function UserManagementFilters({
                 placeholder="Buscar por nombres y apellidos... (mínimo 2 caracteres)"
                 className="w-full px-3 sm:px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
               />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
               {searchText && (
                 <button
                   onClick={() => {
@@ -130,8 +126,8 @@ export default function UserManagementFilters({
                 </>
               ) : (
                 <>
+                  <FaSearch className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Buscar</span>
-                  <span className="sm:hidden">🔍</span>
                 </>
               )}
             </Button>

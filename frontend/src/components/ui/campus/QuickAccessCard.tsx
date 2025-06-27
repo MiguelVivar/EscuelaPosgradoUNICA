@@ -18,7 +18,7 @@ interface QuickAccessCardProps {
 interface QuickAction {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   href: string;
   variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   description: string;
