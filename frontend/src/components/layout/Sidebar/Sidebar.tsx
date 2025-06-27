@@ -3,6 +3,8 @@
 import { SidebarProps } from "@/types";
 import SidebarItem from "./SidebarItem";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import logoUNICA from "@/assets/logoUNICA.png";
 
 export default function Sidebar({
   items,
@@ -94,8 +96,14 @@ export default function Sidebar({
             {getHeaderText()}
           </div>
         ) : (
-          <div className={`w-8 h-8 ${variant.accentColor} rounded-lg flex items-center justify-center`}>
-            <span className="text-white font-bold text-sm">{getHeaderText()}</span>
+          <div className={`w-10 h-10 ${variant.accentColor} rounded-lg flex items-center justify-center p-1`}>
+            <Image
+              src={logoUNICA}
+              alt="Logo UNICA"
+              width={32}
+              height={32}
+              className="w-8 h-8 object-contain"
+            />
           </div>
         )}
       </div>

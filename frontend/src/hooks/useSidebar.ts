@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSidebarForPage } from "@/data/PageSidebars";
 import { SidebarItemProps } from "@/types";
@@ -12,6 +12,18 @@ export interface SidebarConfig {
 export function useSidebarConfig(): SidebarConfig {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Función personalizada para cerrar sesión y redirigir
+  const handleLogout = async () => {
+    try {
+      logout();
+      // Redirigir al usuario a la página de inicio de sesión
+      router.push('/iniciar-sesion');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   // Determinar el tipo de página
   const getPageType = (): SidebarConfig['pageType'] => {
@@ -49,7 +61,7 @@ export function useSidebarConfig(): SidebarConfig {
       ...item,
       isActive: item.href === pathname,
       // Agregar funcionalidad especial para cerrar sesión
-      onClick: item.id === "cerrar-sesion" ? logout : item.onClick
+      onClick: item.id === "cerrar-sesion" ? handleLogout : item.onClick
     }));
   };
 
