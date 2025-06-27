@@ -75,7 +75,6 @@ function HeaderPosgrado() {
         width={96}
         height={96}
         className="h-20 sm:h-24 w-auto"
-        priority
       />
     </div>
   );
@@ -162,9 +161,7 @@ function ImagenIlustrativa() {
       <Image
         src={rpfondoImg}
         alt="Personas trabajando"
-        fill
         className="object-cover"
-        priority
         height={400}
         width={800}
       />
