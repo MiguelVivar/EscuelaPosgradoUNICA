@@ -37,8 +37,6 @@ const createTransporter = (port: number = 2525) => {
   } as nodemailer.TransportOptions);
 };
 
-const transporter = createTransporter();
-
 function generateRecoveryToken(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
@@ -221,46 +219,49 @@ export async function POST(request: NextRequest) {
     });
 
     // Función auxiliar para enviar email con reintentos y puertos alternativos
-    async function sendEmailWithRetry(mailOptions: any, maxRetries = 3): Promise<any> {
+    async function sendEmailWithRetry(mailOptions: nodemailer.SendMailOptions, maxRetries = 3): Promise<nodemailer.SentMessageInfo> {
       const ports = [2525, 587, 25]; // Puertos a probar
       
       for (let portIndex = 0; portIndex < ports.length; portIndex++) {
-        const currentPort = ports[portIndex];
-        const currentTransporter = createTransporter(currentPort);
+      const currentPort = ports[portIndex];
+      const currentTransporter = createTransporter(currentPort);
+      
+      console.log(`🔌 Probando puerto ${currentPort}...`);
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+        console.log(`🔍 Puerto ${currentPort}, Intento ${attempt}/${maxRetries} - Verificando conexión SMTP...`);
         
-        console.log(`🔌 Probando puerto ${currentPort}...`);
+        // Verificar conexión solo en el primer intento de cada puerto
+        if (attempt === 1) {
+          await currentTransporter.verify();
+          console.log(`✅ Conexión SMTP verificada en puerto ${currentPort}`);
+        }
         
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          try {
-            console.log(`🔍 Puerto ${currentPort}, Intento ${attempt}/${maxRetries} - Verificando conexión SMTP...`);
-            
-            // Verificar conexión solo en el primer intento de cada puerto
-            if (attempt === 1) {
-              await currentTransporter.verify();
-              console.log(`✅ Conexión SMTP verificada en puerto ${currentPort}`);
-            }
-            
-            const info = await currentTransporter.sendMail(mailOptions);
-            console.log(`✅ Email enviado exitosamente en puerto ${currentPort}:`, info.messageId);
-            return info;
-            
-          } catch (error: any) {
-            console.warn(`⚠️ Puerto ${currentPort}, Intento ${attempt}/${maxRetries} falló:`, error.message);
-            
-            if (attempt === maxRetries) {
-              if (portIndex === ports.length - 1) {
-                throw error; // Re-lanzar el error si es el último puerto y último intento
-              }
-              break; // Pasar al siguiente puerto
-            }
-            
-            // Esperar antes del siguiente intento (backoff exponencial)
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 3000);
-            console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
+        const info = await currentTransporter.sendMail(mailOptions);
+        console.log(`✅ Email enviado exitosamente en puerto ${currentPort}:`, info.messageId);
+        return info;
+        
+        } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        console.warn(`⚠️ Puerto ${currentPort}, Intento ${attempt}/${maxRetries} falló:`, errorMessage);
+        
+        if (attempt === maxRetries) {
+          if (portIndex === ports.length - 1) {
+          throw error; // Re-lanzar el error si es el último puerto y último intento
           }
+          break; // Pasar al siguiente puerto
+        }
+        
+        // Esperar antes del siguiente intento (backoff exponencial)
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 3000);
+        console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
+      }
+      
+      throw new Error('No se pudo enviar el email después de intentar todos los puertos');
     }
 
     // Intentar enviar el email
@@ -277,8 +278,9 @@ export async function POST(request: NextRequest) {
         } : undefined
       });
       
-    } catch (emailError: any) {
-      console.warn('⚠️ Error al enviar email después de todos los intentos:', emailError.message);
+    } catch (emailError: unknown) {
+      const errorMessage = emailError instanceof Error ? emailError.message : 'Error desconocido al enviar email';
+      console.warn('⚠️ Error al enviar email después de todos los intentos:', errorMessage);
       console.warn('🔧 Problema de conectividad detectado. Posibles causas:');
       console.warn('   • Firewall bloqueando puertos SMTP');
       console.warn('   • Problema de DNS o conectividad de red');
@@ -300,30 +302,31 @@ export async function POST(request: NextRequest) {
           mode: "fallback",
           token: recoveryToken,
           link: recoveryLink,
-          error: emailError.message,
+          error: errorMessage,
           note: "Email no enviado - Revisa la consola del servidor para el enlace de testing",
           troubleshooting: "Verifica credenciales Mailtrap y conectividad de red"
         } : undefined
       });
     }
-
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error en el proceso de recuperación:", error);
     
     // Mensaje específico según el error
     let errorMessage = "Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.";
     
-    if (error?.code === 'EAUTH') {
-      errorMessage = "Error de configuración del servidor. Contacta al administrador.";
-    } else if (error?.code === 'ETIMEDOUT') {
-      errorMessage = "Tiempo de espera agotado. Intenta nuevamente.";
+    if (error && typeof error === 'object' && 'code' in error) {
+      if (error.code === 'EAUTH') {
+        errorMessage = "Error de configuración del servidor. Contacta al administrador.";
+      } else if (error.code === 'ETIMEDOUT') {
+        errorMessage = "Tiempo de espera agotado. Intenta nuevamente.";
+      }
     }
     
     return NextResponse.json(
-      { 
+      {
         success: false, 
         message: errorMessage,
-        debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+        debug: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Error desconocido') : undefined
       },
       { status: 500 }
     );
