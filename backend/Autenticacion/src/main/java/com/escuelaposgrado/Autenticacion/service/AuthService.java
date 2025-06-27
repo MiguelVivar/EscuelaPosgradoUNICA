@@ -251,6 +251,20 @@ public class AuthService {
     }
 
     /**
+     * Buscar usuarios por nombres y apellidos
+     */
+    public List<UsuarioResponse> buscarUsuariosPorNombre(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return getAllUsuarios();
+        }
+        
+        List<Usuario> usuarios = usuarioRepository.buscarPorNombre(texto.trim());
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
      * Desactivar usuario
      */
     public MessageResponse desactivarUsuario(Long id) {

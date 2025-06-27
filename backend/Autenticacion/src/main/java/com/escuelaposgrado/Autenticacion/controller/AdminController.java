@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
@@ -354,5 +355,42 @@ public class AdminController {
     public ResponseEntity<List<UsuarioResponse>> getPostulantes() {
         List<UsuarioResponse> postulantes = authService.getUsuariosByRole(Role.POSTULANTE);
         return ResponseEntity.ok(postulantes);
+    }
+
+    /**
+     * Buscar usuarios por nombres y apellidos
+     */
+    @Operation(
+            summary = "Buscar usuarios por nombres y apellidos",
+            description = "Busca usuarios que coincidan parcialmente con el texto proporcionado en nombres o apellidos",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Búsqueda realizada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @GetMapping("/usuarios/buscar")
+    public ResponseEntity<List<UsuarioResponse>> buscarUsuarios(
+            @Parameter(description = "Texto a buscar en nombres y apellidos", required = true)
+            @RequestParam String texto) {
+        List<UsuarioResponse> usuarios = authService.buscarUsuariosPorNombre(texto);
+        return ResponseEntity.ok(usuarios);
     }
 }

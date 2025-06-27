@@ -99,10 +99,14 @@ export interface UserManagementFiltersProps {
   selectedRole: Role | "ALL";
   showInactiveUsers: boolean;
   userRole: Role;
+  searchText: string;
+  isSearching?: boolean;
   onRoleChange: (role: Role | "ALL") => void;
   onToggleInactive: (checked: boolean) => void;
   onCreateUser: () => void;
   onFilterUsers: () => void;
+  onSearchChange: (text: string) => void;
+  onSearchUsers: () => void;
 }
 
 export interface UserStats {

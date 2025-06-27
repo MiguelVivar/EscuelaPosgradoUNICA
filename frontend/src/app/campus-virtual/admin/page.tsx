@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_CONFIG, getAuthHeaders } from "@/lib/api";
@@ -29,6 +29,9 @@ export default function AdminCampusPage() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingUser, setEditingUser] = useState<UsuarioResponse | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Verificar acceso
   useEffect(() => {
@@ -146,6 +149,15 @@ export default function AdminCampusPage() {
       loadUsers();
     }
   }, [showInactiveUsers, selectedRole, isAuthenticated, user, loadUsers]);
+
+  // Cleanup del timeout de búsqueda al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
     if (user?.role !== 'ADMIN') return;
@@ -265,6 +277,67 @@ export default function AdminCampusPage() {
     router.push("/");
   };
 
+  const handleSearchChange = (text: string) => {
+    setSearchText(text);
+    
+    // Limpiar timeout anterior si existe
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Debounce automático de búsqueda después de 800ms de inactividad
+    if (text.trim().length >= 2) {
+      searchTimeoutRef.current = setTimeout(() => {
+        searchUsers();
+      }, 800);
+    } else if (text.trim().length === 0) {
+      // Si se borra todo el texto, recargar todos los usuarios inmediatamente
+      loadUsers();
+    }
+  };
+
+  const searchUsers = async () => {
+    if (!searchText.trim()) {
+      // Si no hay texto de búsqueda, cargar todos los usuarios
+      await loadUsers();
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      setError(null);
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/usuarios/buscar?texto=${encodeURIComponent(searchText.trim())}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        let filteredData = Array.isArray(data) ? data : [];
+        
+        // Aplicar filtros de rol si es necesario
+        if (selectedRole !== 'ALL') {
+          filteredData = filteredData.filter(usuario => usuario.role === selectedRole);
+        }
+        
+        // Aplicar filtro de usuarios inactivos si es necesario
+        if (!showInactiveUsers) {
+          filteredData = filteredData.filter(usuario => usuario.activo === true);
+        }
+        
+        setUsuarios(filteredData);
+      } else {
+        throw new Error('Error en la búsqueda');
+      }
+    } catch (error) {
+      console.error('Error al buscar usuarios:', error);
+      setError('Error al buscar usuarios');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   if (isLoading || loadingData) {
     return <AdminLoading />;
   }
@@ -290,10 +363,14 @@ export default function AdminCampusPage() {
           selectedRole={selectedRole}
           showInactiveUsers={showInactiveUsers}
           userRole={user.role}
+          searchText={searchText}
+          isSearching={isSearching}
           onRoleChange={setSelectedRole}
           onToggleInactive={setShowInactiveUsers}
           onCreateUser={openCreateModal}
           onFilterUsers={loadUsers}
+          onSearchChange={handleSearchChange}
+          onSearchUsers={searchUsers}
         />
 
         {/* Tabla de Usuarios */}
