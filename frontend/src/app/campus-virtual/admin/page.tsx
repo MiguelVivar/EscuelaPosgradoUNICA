@@ -14,7 +14,8 @@ import {
   UserFormModal,
   AdminInfoPanel,
   ErrorMessage,
-  AdminLoading
+  AdminLoading,
+  ExcelManager
 } from "@/components/ui/admin";
 import { UserStats, UserFormData } from "@/types/Admin";
 
@@ -372,6 +373,11 @@ export default function AdminCampusPage() {
           onSearchChange={handleSearchChange}
           onSearchUsers={searchUsers}
         />
+
+        {/* Gestión de Excel - Solo para ADMIN */}
+        {user.role === 'ADMIN' && (
+          <ExcelManager onImportComplete={loadAdminData} />
+        )}
 
         {/* Tabla de Usuarios */}
         <UsersTable

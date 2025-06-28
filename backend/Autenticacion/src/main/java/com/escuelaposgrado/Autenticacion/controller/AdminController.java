@@ -1,8 +1,15 @@
 package com.escuelaposgrado.Autenticacion.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
@@ -22,6 +30,7 @@ import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.model.enums.Role;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
 import com.escuelaposgrado.Autenticacion.service.DataCleanupService;
+import com.escuelaposgrado.Autenticacion.service.ExcelService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,6 +58,9 @@ public class AdminController {
 
     @Autowired
     private DataCleanupService dataCleanupService;
+
+    @Autowired
+    private ExcelService excelService;
 
     /**
      * Obtener todos los usuarios
@@ -540,6 +552,189 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new MessageResponse("Error al limpiar duplicados: " + e.getMessage(), false));
+        }
+    }
+
+    /**
+     * Exportar usuarios a Excel
+     */
+    @Operation(
+            summary = "Exportar usuarios a Excel",
+            description = "Exporta todos los usuarios del sistema a un archivo Excel",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Archivo Excel generado exitosamente",
+                    content = @Content(
+                            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @GetMapping("/usuarios/exportar-excel")
+    public ResponseEntity<InputStreamResource> exportarUsuariosExcel() {
+        try {
+            List<UsuarioResponse> usuarios = authService.getAllUsuariosIncluyendoInactivos();
+            ByteArrayInputStream in = excelService.exportUsuariosToExcel(usuarios);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=usuarios_" + 
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx");
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(in));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Importar usuarios desde Excel
+     */
+    @Operation(
+            summary = "Importar usuarios desde Excel",
+            description = "Importa usuarios al sistema desde un archivo Excel. El archivo debe seguir el formato de la plantilla.",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Importación completada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Importación exitosa",
+                                    value = """
+                                            {
+                                              "message": "Importación completada.\\nUsuarios creados exitosamente: 5\\nErrores encontrados: 1",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Archivo inválido o formato incorrecto",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de formato",
+                                    value = """
+                                            {
+                                              "message": "Error al procesar el archivo Excel: Formato inválido",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @PostMapping(value = "/usuarios/importar-excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MessageResponse> importarUsuariosExcel(
+            @Parameter(description = "Archivo Excel con los usuarios a importar", required = true)
+            @RequestParam("file") MultipartFile file) {
+        
+        // Validar archivo
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("Debe seleccionar un archivo", false));
+        }
+        
+        String filename = file.getOriginalFilename();
+        if (filename == null || !filename.endsWith(".xlsx")) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("El archivo debe ser de formato Excel (.xlsx)", false));
+        }
+        
+        try {
+            MessageResponse response = excelService.importUsuariosFromExcel(file);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new MessageResponse("Error al procesar el archivo: " + e.getMessage(), false));
+        }
+    }
+
+    /**
+     * Descargar plantilla Excel para importar usuarios
+     */
+    @Operation(
+            summary = "Descargar plantilla Excel",
+            description = "Descarga una plantilla de Excel con el formato correcto para importar usuarios",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"👨‍💼 Administración"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Plantilla Excel generada exitosamente",
+                    content = @Content(
+                            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado - Token JWT inválido",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Prohibido - Se requiere rol ADMIN",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    @GetMapping("/usuarios/plantilla-excel")
+    public ResponseEntity<InputStreamResource> descargarPlantillaExcel() {
+        try {
+            ByteArrayInputStream in = excelService.generateExcelTemplate();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=plantilla_usuarios.xlsx");
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(in));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -10,3 +10,4 @@ export { default as Modal } from './Modal';
 export { default as AdminInfoPanel } from './AdminInfoPanel';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as AdminLoading } from './AdminLoading';
+export { ExcelManager } from './ExcelManager';
