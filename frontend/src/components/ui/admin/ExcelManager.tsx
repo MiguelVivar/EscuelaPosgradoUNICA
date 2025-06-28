@@ -400,7 +400,7 @@ export const ExcelManager: React.FC<ExcelManagerProps> = ({
           <li>2. Complete los datos de los usuarios en la plantilla</li>
           <li>3. Elimine las filas de ejemplo antes de importar</li>
           <li>4. Seleccione el archivo y revise la vista previa</li>
-          <li>5. Haga clic en "Importar Usuarios" para completar el proceso</li>
+          <li>5. Haga clic en &quot;Importar Usuarios&quot; para completar el proceso</li>
         </ul>
       </div>
     </div>
