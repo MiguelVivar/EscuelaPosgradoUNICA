@@ -11,7 +11,8 @@ export default function DashboardHeader() {
 
   const handleLogout = () => {
     logout();
-    router.push("/iniciar-sesion");
+    // Forzar una navegación con replace para limpiar el historial
+    router.replace("/iniciar-sesion");
   };
 
   if (!user) return null;

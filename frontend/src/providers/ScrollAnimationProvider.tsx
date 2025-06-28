@@ -28,9 +28,15 @@ export default function ScrollAnimationProvider({
       ScrollTrigger.refresh();
     };
 
+    // Refresh inmediato para asegurar que todo esté bien configurado
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+
     window.addEventListener("resize", handleResize);
 
     return () => {
+      clearTimeout(refreshTimeout);
       window.removeEventListener("resize", handleResize);
       ScrollTrigger.killAll();
     };

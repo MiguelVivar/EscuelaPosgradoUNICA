@@ -73,9 +73,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    authService.logout();
+    // Limpiar el estado local primero
     setUser(null);
     setToken(null);
+    
+    // Luego ejecutar el logout del servicio
+    authService.logout();
+    
+    // Forzar un rerender del contexto
+    setIsLoading(false);
   };
 
   const updateProfile = async (profileData: UpdateProfileRequest): Promise<MessageResponse> => {

@@ -274,7 +274,7 @@ export default function AdminCampusPage() {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.replace("/iniciar-sesion");
   };
 
   const handleSearchChange = (text: string) => {

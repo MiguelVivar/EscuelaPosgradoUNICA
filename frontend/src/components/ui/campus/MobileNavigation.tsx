@@ -19,7 +19,8 @@ export default function MobileNavigation() {
 
   const handleLogout = () => {
     logout();
-    router.push("/iniciar-sesion");
+    // Forzar una navegación con replace para limpiar el historial
+    router.replace("/iniciar-sesion");
     setIsOpen(false);
   };
 

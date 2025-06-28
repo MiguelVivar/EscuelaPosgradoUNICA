@@ -221,11 +221,29 @@ class AuthService {
    * Cierra la sesión del usuario
    */
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    
-    // También eliminar la cookie
-    document.cookie = 'authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    try {
+      // Limpiar localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      
+      // Limpiar todas las cookies de autenticación
+      const cookies = ['authToken'];
+      cookies.forEach(cookieName => {
+        document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+        document.cookie = `${cookieName}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+      });
+      
+      // Limpiar sessionStorage también por si acaso
+      sessionStorage.clear();
+      
+    } catch (error) {
+      console.error('Error durante el logout:', error);
+      // Aún así, intentar limpiar lo básico
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+      }
+    }
   }
 
   /**
