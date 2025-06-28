@@ -67,6 +67,7 @@ export interface AuthContextType {
   user: AuthResponse | null;
   token: string | null;
   login: (credentials: LoginRequest) => Promise<AuthResponse>;
+  loginWithGoogle: (googleToken: string) => Promise<AuthResponse>;
   logout: () => void;
   updateProfile: (profileData: UpdateProfileRequest) => Promise<MessageResponse>;
   changePassword: (passwordData: ChangePasswordRequest) => Promise<MessageResponse>;

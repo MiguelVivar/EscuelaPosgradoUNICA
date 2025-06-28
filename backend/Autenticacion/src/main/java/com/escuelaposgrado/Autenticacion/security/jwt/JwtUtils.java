@@ -54,6 +54,13 @@ public class JwtUtils {
     }
 
     /**
+     * Generar token JWT para un usuario específico (alias para generateTokenFromUsername)
+     */
+    public String generateJwtTokenForUser(String username) {
+        return generateTokenFromUsername(username);
+    }
+
+    /**
      * Obtener username del token JWT
      */
     public String getUserNameFromJwtToken(String token) {

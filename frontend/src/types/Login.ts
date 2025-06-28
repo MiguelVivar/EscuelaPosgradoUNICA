@@ -17,6 +17,8 @@ export interface LoginFormSectionProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   onTogglePassword: () => void;
+  onGoogleSuccess: (credential: string) => void;
+  onGoogleError: (error: any) => void;
 }
 
 export interface PasswordInputProps {

@@ -71,6 +71,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 // Endpoints públicos
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/google-login").permitAll()
                 .requestMatchers("/api/health/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/error").permitAll()

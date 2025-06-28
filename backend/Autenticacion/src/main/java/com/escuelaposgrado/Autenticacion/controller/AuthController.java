@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.CambiarPasswordRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.GoogleLoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
+import com.escuelaposgrado.Autenticacion.service.GoogleOAuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,6 +48,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private GoogleOAuthService googleOAuthService;
 
     /**
      * Endpoint para login
@@ -520,6 +525,73 @@ public class AuthController {
             logger.error("Error inesperado al cambiar contraseña: {}", e.getMessage());
             return ResponseEntity.badRequest().body(
                 new MessageResponse("Error interno del servidor", false)
+            );
+        }
+    }
+
+    /**
+     * Endpoint para login con Google OAuth
+     */
+    @Operation(
+            summary = "Iniciar sesión con Google",
+            description = "Autentica un usuario usando Google OAuth y devuelve un token JWT",
+            tags = {"🔐 Autenticación"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login con Google exitoso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Login con Google exitoso",
+                                    value = """
+                                            {
+                                              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                                              "id": 1,
+                                              "username": "juan.perez",
+                                              "email": "juan.perez@unica.edu.pe",
+                                              "nombres": "Juan Carlos",
+                                              "apellidos": "Pérez García",
+                                              "role": "POSTULANTE",
+                                              "ultimoAcceso": "2024-01-01T10:00:00"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en autenticación con Google",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de autenticación",
+                                    value = """
+                                            {
+                                              "message": "Error: Token de Google inválido",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(
+            @Parameter(description = "Token de Google OAuth", required = true)
+            @Valid @RequestBody GoogleLoginRequest googleLoginRequest) {
+        try {
+            logger.info("Intento de login con Google OAuth");
+            AuthResponse response = googleOAuthService.authenticateWithGoogle(googleLoginRequest);
+            logger.info("Login con Google exitoso para usuario: {}", response.getEmail());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error en login con Google: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error en autenticación con Google: " + e.getMessage(), false)
             );
         }
     }

@@ -84,6 +84,7 @@ El sistema maneja los siguientes roles con sus respectivos permisos:
 
 ```http
 POST /api/auth/login           # Iniciar sesión
+POST /api/auth/google-login    # Iniciar sesión con Google OAuth
 POST /api/auth/registro        # Registrar usuario
 GET  /api/health/status        # Estado del servicio
 GET  /api/health/check         # Health check completo
@@ -236,6 +237,15 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{
     "usernameOrEmail": "admin",
     "password": "admin123"
+  }'
+```
+
+### Login con Google OAuth
+```bash
+curl -X POST http://localhost:8080/api/auth/google-login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "googleToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6..."
   }'
 ```
 

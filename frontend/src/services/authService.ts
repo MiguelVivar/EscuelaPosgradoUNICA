@@ -44,6 +44,45 @@ class AuthService {
   }
 
   /**
+   * Realiza el login con Google OAuth
+   */
+  async loginWithGoogle(googleToken: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/google-login`, {
+        method: 'POST',
+        headers: API_CONFIG.HEADERS,
+        body: JSON.stringify({ googleToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new ApiError(
+          data.message || 'Error al iniciar sesión con Google',
+          response.status,
+          false
+        );
+      }
+
+      // Guardar token en localStorage y cookie
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+        
+        // También establecer cookie para el middleware
+        document.cookie = `authToken=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError('Error de conexión con el servidor');
+    }
+  }
+
+  /**
    * Registra un nuevo usuario
    */
   async register(userData: Record<string, unknown>): Promise<MessageResponse> {

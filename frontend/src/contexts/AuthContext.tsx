@@ -58,6 +58,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (googleToken: string): Promise<AuthResponse> => {
+    setIsLoading(true);
+    try {
+      const response = await authService.loginWithGoogle(googleToken);
+      setUser(response);
+      setToken(response.token);
+      return response;
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -101,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     token,
     login,
+    loginWithGoogle,
     logout,
     updateProfile,
     changePassword,
