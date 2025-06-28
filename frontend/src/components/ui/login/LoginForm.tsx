@@ -156,7 +156,7 @@ export default function LoginForm() {
   );
 
   const handleGoogleError = useCallback(
-    (error: any) => {
+    (error: Error | string | unknown) => {
       console.error("Error en Google Sign-In:", error);
       setLoginError("Error al conectar con Google. Por favor, intente nuevamente.");
     },

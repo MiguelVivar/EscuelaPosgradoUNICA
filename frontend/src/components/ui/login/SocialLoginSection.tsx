@@ -3,7 +3,7 @@ import GoogleSignInButton from "@/components/ui/auth/GoogleSignInButton";
 
 interface SocialLoginSectionProps {
   onGoogleSuccess: (credential: string) => void;
-  onGoogleError: (error: any) => void;
+  onGoogleError: (error: Error) => void;
   isLoading: boolean;
 }
 
