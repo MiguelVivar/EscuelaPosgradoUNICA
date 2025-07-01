@@ -15,7 +15,7 @@ export default function SimplePage() {
       <div className="container mx-auto">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Directorio de la Universidad Nacional "San Luis Gonzaga"
+            Directorio de la Universidad Nacional &quot;San Luis Gonzaga&quot;
           </h1>
           <p className="text-gray-600 mb-8">Consulta de Facultades, Direcciones y Centros.</p>
           {/* Contacto y Mapa */}

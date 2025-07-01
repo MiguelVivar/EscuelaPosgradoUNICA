@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const authorities = [
   {
@@ -72,10 +73,12 @@ const AuthoritiesPage = () => {
           >
             {/* Imagen que ocupa toda la parte superior */}
             <div className="w-full h-64">
-              <img
+              <Image
                 src={authority.image}
                 alt={authority.name}
                 className="w-full h-full object-contain"
+                width={500}
+                height={500}
               />
             </div>
             {/* Información en la parte inferior */}
