@@ -35,120 +35,113 @@ export default function CampusVirtualPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 mt-20">
-      <div className="min-h-screen container mx-auto px-4 py-8">
-        {/* Header del Campus Virtual */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                Campus Virtual - Escuela de Posgrado UNICA
-              </h1>
-              <p className="text-gray-600">
-                Bienvenido/a, <span className="font-semibold text-blue-600">{user.nombres} {user.apellidos}</span>
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {user.role} • {user.email}
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-
-        {/* Información del Usuario */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Información Personal</h2>
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-500">ID de Usuario:</span>
-                <p className="text-gray-800">{user.id}</p>
+    <div>
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 mt-20 flex flex-row">
+        <div className="min-h-screen container mx-auto px-4 py-8">
+          {/* Header del Campus Virtual */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8  mb-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 ml-40 mr-0">
+                <img src="./logoposgrado.png" alt="Logo Posgrado" className="w-36 h-36 object-contain"/>
               </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Usuario:</span>
-                <p className="text-gray-800">{user.username}</p>
+              <div className="flex-1 text-center px-8">
+                <h1 className="text-3xl font-bold text-gray-800 mb-2 ml-0">Campus Virtual - Escuela de Posgrado UNICA</h1>
+                <p className="text-gray-600">Bienvenido/a, <span className="font-semibold text-blue-600">{user.nombres} {user.apellidos}</span></p>
+                <p className="text-sm text-gray-500 mt-1">{user.role} • {user.email}</p>
               </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Rol:</span>
-                <p className="text-gray-800 capitalize">{user.role.toLowerCase()}</p>
-              </div>
-              {user.codigoEstudiante && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Código de Estudiante:</span>
-                  <p className="text-gray-800">{user.codigoEstudiante}</p>
-                </div>
-              )}
-              {user.codigoDocente && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Código de Docente:</span>
-                  <p className="text-gray-800">{user.codigoDocente}</p>
-                </div>
-              )}
-              {user.especialidad && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Especialidad:</span>
-                  <p className="text-gray-800">{user.especialidad}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Acceso Rápido</h2>
-            <div className="space-y-3">
-              <button className="w-full p-3 text-left bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-blue-800">Mis Cursos</div>
-                <div className="text-sm text-blue-600">Ver materias inscritas</div>
-              </button>
-              <button className="w-full p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-green-800">Calificaciones</div>
-                <div className="text-sm text-green-600">Consultar notas</div>
-              </button>
-              <button className="w-full p-3 text-left bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200">
-                <div className="font-medium text-purple-800">Recursos</div>
-                <div className="text-sm text-purple-600">Material de estudio</div>
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Estado de Sesión</h2>
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-500">Token:</span>
-                <p className="text-xs text-gray-600 font-mono bg-gray-100 p-2 rounded mt-1 break-all">
-                  {user.token.substring(0, 50)}...
-                </p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Último Acceso:</span>
-                <p className="text-gray-800">
-                  {user.ultimoAcceso ? new Date(user.ultimoAcceso).toLocaleString() : 'N/A'}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-sm text-green-600 font-medium">Sesión Activa</span>
+              <div className="flex-shrink-0">
+                <button onClick={handleLogout} className="px-6 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200 mr-32">Cerrar Sesión</button>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Nota temporal */}
-        <div className="mt-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <p className="text-amber-700">
-            <strong>Nota:</strong> Esta es una página temporal del campus virtual. 
-            Aquí se integrarán los demás microservicios del sistema.
-          </p>
-        </div>
-
+        {/*Creacion de botones del Campus Virtual */}
+          <div>
+            <div className="flex gap-6">
+              {/* Grid de 8 botones blancos (2x4) */}
+              <div className="grid grid-cols-4 grid-rows-2 gap-4">
+                {/*Intranet*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">INTRANET</h1>
+                  </div>
+                  <img src="./intranet.png" alt="Intranet" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Matricula*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">MATRÍCULA</h1>
+                  </div>
+                  <img src="./matricula.png" alt="Matricula" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Admision*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">ADMISIÓN</h1>
+                  </div>
+                  <img src="./admision.png" alt="Admision" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Gestion de docentes */}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">GESTIÓN</h1>
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">DE DOCENTES</h1>
+                  </div>
+                  <img src="./docentes.png" alt="Docentes" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Aula virtual*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">AULA</h1>
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">VIRTUAL</h1>
+                  </div>
+                  <img src="./aulavirtual.png" alt="Aula virtual" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Caja*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">CAJA</h1>
+                  </div>
+                  <img src="./caja.png" alt="Caja" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Tramites*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">TRÁMITES</h1>
+                  </div>
+                  <img src="./tramites.png" alt="tramites" className="w-24 h-24 object-contain"/>
+                </button>
+                
+                {/*Grado y titulo*/}
+                <button className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-55 h-55 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">GRADO Y</h1>
+                    <h1 className="font-semibold text-blue-600 text-xl leading-tight">TÍTULOS</h1>
+                  </div>
+                  <img src="./grado-titulos.png" alt="Docentes" className="w-24 h-24 object-contain"/>
+                </button>
+              </div>
+              
+              {/* Botón ADMINISTRACIÓN - ocupa todo el espacio restante */}
+              <div className="flex-1">
+                <button className="bg-amber-500 text-red-500 border border-zinc-700/7 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 w-full h-full text-white transition-colors duration-200 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center ">
+                    <h1 className="font-semibold text-white text-3xl leading-tight">ADMINISTRACIÓN</h1>
+                    <img src="./administracion.png" alt="Intranet" className="w-65 h-65 object-contain"/>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div> 
         {/* Espaciador para asegurar que el footer sea visible */}
-        <div className="h-20"></div>
+          <div className="h-20">
+          </div>
+        </div>
       </div>
     </div>
   );
