@@ -42,9 +42,9 @@ export default function UsersTable({
               <th className="text-left py-3 px-4 font-semibold text-gray-700">
                 Último Acceso
               </th>
-              {userRole === "ADMIN" && (
+              {(userRole === "ADMIN" || userRole === "COORDINADOR") && (
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">
-                  Acciones
+                  {userRole === "ADMIN" ? "Acciones" : "Vista"}
                 </th>
               )}
             </tr>
@@ -87,32 +87,40 @@ export default function UsersTable({
                     ? new Date(usuario.ultimoAcceso).toLocaleDateString()
                     : "N/A"}
                 </td>
-                {userRole === "ADMIN" && (
+                {(userRole === "ADMIN" || userRole === "COORDINADOR") && (
                   <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => onEditUser(usuario)}
-                        className="bg-blue-100 hover:bg-blue-200 text-blue-800"
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant={usuario.activo ? "danger" : "primary"}
-                        size="sm"
-                        onClick={() =>
-                          onToggleUserStatus(usuario.id, usuario.activo)
-                        }
-                        className={
-                          usuario.activo
-                            ? "bg-red-100 hover:bg-red-200 text-red-800"
-                            : "bg-green-600 hover:bg-green-800 text-green-800"
-                        }
-                      >
-                        {usuario.activo ? "Desactivar" : "Activar"}
-                      </Button>
-                    </div>
+                    {userRole === "ADMIN" ? (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => onEditUser(usuario)}
+                          className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant={usuario.activo ? "danger" : "primary"}
+                          size="sm"
+                          onClick={() =>
+                            onToggleUserStatus(usuario.id, usuario.activo)
+                          }
+                          className={
+                            usuario.activo
+                              ? "bg-red-100 hover:bg-red-200 text-red-800"
+                              : "bg-green-600 hover:bg-green-800 text-green-800"
+                          }
+                        >
+                          {usuario.activo ? "Desactivar" : "Activar"}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <span className="text-xs text-gray-500">
+                          Solo lectura
+                        </span>
+                      </div>
+                    )}
                   </td>
                 )}
               </tr>
@@ -178,30 +186,40 @@ export default function UsersTable({
               </div>
 
               {/* Acciones */}
-              {userRole === "ADMIN" && (
+              {(userRole === "ADMIN" || userRole === "COORDINADOR") && (
                 <div className="flex flex-col sm:flex-col gap-2 sm:w-auto">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => onEditUser(usuario)}
-                    className="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs sm:text-sm px-2 sm:px-3 py-1"
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant={usuario.activo ? "danger" : "primary"}
-                    size="sm"
-                    onClick={() =>
-                      onToggleUserStatus(usuario.id, usuario.activo)
-                    }
-                    className={`text-xs sm:text-sm px-2 sm:px-3 py-1 ${
-                      usuario.activo
-                        ? "bg-red-100 hover:bg-red-200 text-red-800"
-                        : "bg-green-100 hover:bg-green-200 text-green-800"
-                    }`}
-                  >
-                    {usuario.activo ? "Desactivar" : "Activar"}
-                  </Button>
+                  {userRole === "ADMIN" ? (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => onEditUser(usuario)}
+                        className="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs sm:text-sm px-2 sm:px-3 py-1"
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant={usuario.activo ? "danger" : "primary"}
+                        size="sm"
+                        onClick={() =>
+                          onToggleUserStatus(usuario.id, usuario.activo)
+                        }
+                        className={`text-xs sm:text-sm px-2 sm:px-3 py-1 ${
+                          usuario.activo
+                            ? "bg-red-100 hover:bg-red-200 text-red-800"
+                            : "bg-green-100 hover:bg-green-200 text-green-800"
+                        }`}
+                      >
+                        {usuario.activo ? "Desactivar" : "Activar"}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="text-center py-2">
+                      <span className="text-xs text-gray-500">
+                        Solo lectura
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

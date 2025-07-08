@@ -38,7 +38,7 @@ export default function UserManagementFilters({
               </Button>
             )}
             
-            {userRole === 'ADMIN' && (
+            {(userRole === 'ADMIN' || userRole === 'COORDINADOR') && (
               <label className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 cursor-pointer text-sm sm:text-base order-2 sm:order-none">
                 <input
                   type="checkbox"

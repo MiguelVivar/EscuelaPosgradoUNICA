@@ -356,8 +356,8 @@ export default function AdminCampusPage() {
         {/* Error Message */}
         {error && <ErrorMessage message={error} />}
 
-        {/* Estadísticas - Solo para ADMIN */}
-        {user.role === 'ADMIN' && stats && <UserStatsGrid stats={stats} />}
+        {/* Estadísticas - Para ADMIN y COORDINADOR */}
+        {(user.role === 'ADMIN' || user.role === 'COORDINADOR') && stats && <UserStatsGrid stats={stats} />}
 
         {/* Filtros y Gestión de Usuarios */}
         <UserManagementFilters

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import directorPosgrado from '@/assets/director_posgrado.jpg';
 
 const authorities = [
   {
@@ -9,7 +10,7 @@ const authorities = [
     name: 'Dr. Mario Gustavo REYES MEJÍA',
     title: 'Director General',
     description: 'Encargado de la dirección general de la universidad.',
-    image: '/director_posgrado.jpg',
+    image: directorPosgrado,
     resolution: 'https://www.unica.edu.pe/transparencia/buscador/sistema/upload/archivos/2024/11/27/RR-441-2024.pdf',
     externalLink: 'https://ctivitae.concytec.gob.pe/appDirectorioCTI/VerDatosInvestigador.do?id_investigador=99063',
   },
@@ -61,7 +62,7 @@ const authorities = [
 
 const AuthoritiesPage = () => {
   return (
-    <main className="p-8 bg-zinc-100 min-h-screen">
+    <main className="p-8 bg-zinc-100 min-h-screen mt-20">
       <h1 className="text-3xl font-bold text-red-700 text-center mt-[5%]">
         Autoridades y Jurados
       </h1>
