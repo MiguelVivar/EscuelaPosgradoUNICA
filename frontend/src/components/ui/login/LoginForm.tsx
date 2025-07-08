@@ -22,9 +22,20 @@ export default function LoginForm() {
   const [successMessage, setSuccessMessage] = useState("");
 
   const router = useRouter();
-  const { login, isAuthenticated } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated } = useAuth();
   const { elementRef: formRef, animateOnScroll } = useScrollAnimation();
   const hasAnimated = useRef(false);
+
+  // Resetear todos los estados cuando se monta el componente
+  useEffect(() => {
+    setFormData({ email: "", password: "" });
+    setIsLoading(false);
+    setShowPassword(false);
+    setEmailError("");
+    setLoginError("");
+    setSuccessMessage("");
+    hasAnimated.current = false;
+  }, []);
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -36,13 +47,22 @@ export default function LoginForm() {
   useEffect(() => {
     if (formRef.current && !hasAnimated.current) {
       hasAnimated.current = true;
-      animateOnScroll(formRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        delay: 0.3,
-        ease: "power2.out",
-      });
+      // Asegurar que el elemento sea visible antes de animar
+      if (formRef.current) {
+        formRef.current.style.opacity = "0";
+        formRef.current.style.transform = "translateY(32px)";
+        
+        // Usar requestAnimationFrame para asegurar que el DOM esté listo
+        requestAnimationFrame(() => {
+          animateOnScroll(formRef.current!, {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            delay: 0.3,
+            ease: "power2.out",
+          });
+        });
+      }
     }
   }, [animateOnScroll, formRef]);
 
@@ -128,6 +148,41 @@ export default function LoginForm() {
     setShowPassword(!showPassword);
   }, [showPassword]);
 
+  const handleGoogleSuccess = useCallback(
+    async (credential: string) => {
+      setIsLoading(true);
+      setLoginError("");
+      setSuccessMessage("");
+
+      try {
+        const response = await loginWithGoogle(credential);
+        setSuccessMessage(`¡Bienvenido/a, ${response.nombres}!`);
+
+        setTimeout(() => {
+          router.push("/campus-virtual");
+        }, 1500);
+      } catch (error) {
+        console.error("Error en login con Google:", error);
+        if (error instanceof ApiError) {
+          setLoginError(error.message);
+        } else {
+          setLoginError("Error de conexión con Google. Por favor, intente nuevamente.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [loginWithGoogle, router]
+  );
+
+  const handleGoogleError = useCallback(
+    (error: Error | string | unknown) => {
+      console.error("Error en Google Sign-In:", error);
+      setLoginError("Error al conectar con Google. Por favor, intente nuevamente.");
+    },
+    []
+  );
+
   return (
     <div
       ref={formRef as React.RefObject<HTMLDivElement>}
@@ -149,6 +204,8 @@ export default function LoginForm() {
           onInputChange={handleInputChange}
           onSubmit={handleSubmit}
           onTogglePassword={handleTogglePassword}
+          onGoogleSuccess={handleGoogleSuccess}
+          onGoogleError={handleGoogleError}
         />
       </div>
 

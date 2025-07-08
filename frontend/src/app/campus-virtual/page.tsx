@@ -3,9 +3,18 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import PageHeader from "@/components/layout/PageHeader";
+import { 
+  DashboardHeader, 
+  QuickAccessCard, 
+  UserInfoCard, 
+  NotificationsCard,
+  StatsOverview 
+} from "@/components/ui/campus";
+import { FaGraduationCap } from "react-icons/fa";
 
 export default function CampusVirtualPage() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -14,17 +23,12 @@ export default function CampusVirtualPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600 font-medium">Cargando Campus Virtual...</p>
         </div>
       </div>
     );
@@ -33,6 +37,8 @@ export default function CampusVirtualPage() {
   if (!isAuthenticated || !user) {
     return null;
   }
+
+  const showStatsOverview = user.role === 'ADMIN' || user.role === 'COORDINADOR';
 
   return (
     <div>

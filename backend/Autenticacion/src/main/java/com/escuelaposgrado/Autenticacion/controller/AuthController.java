@@ -8,16 +8,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.CambiarPasswordRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.GoogleLoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.MessageResponse;
 import com.escuelaposgrado.Autenticacion.dto.response.UsuarioResponse;
 import com.escuelaposgrado.Autenticacion.service.AuthService;
+import com.escuelaposgrado.Autenticacion.service.GoogleOAuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,6 +48,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private GoogleOAuthService googleOAuthService;
 
     /**
      * Endpoint para login
@@ -105,7 +113,22 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error en login para usuario {}: {}", loginRequest.getUsernameOrEmail(), e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new MessageResponse("Error en login: " + e.getMessage(), false));
+            
+            // Traducir mensajes específicos al español
+            String errorMessage = e.getMessage();
+            if (errorMessage.contains("User account is locked")) {
+                errorMessage = "La cuenta de usuario está desactivada";
+            } else if (errorMessage.contains("Bad credentials")) {
+                errorMessage = "Credenciales incorrectas";
+            } else if (errorMessage.contains("Account disabled")) {
+                errorMessage = "La cuenta está deshabilitada";
+            } else if (errorMessage.contains("Account expired")) {
+                errorMessage = "La cuenta ha expirado";
+            } else if (errorMessage.contains("Credentials expired")) {
+                errorMessage = "Las credenciales han expirado";
+            }
+            
+            return ResponseEntity.badRequest().body(new MessageResponse("Error en login: " + errorMessage, false));
         }
     }
 
@@ -114,7 +137,8 @@ public class AuthController {
      */
     @Operation(
             summary = "Registrar nuevo usuario",
-            description = "Registra un nuevo usuario en el sistema. Los campos requeridos varían según el rol seleccionado",
+            description = "Registra un nuevo usuario en el sistema. Solo accesible para usuarios con rol ADMIN o COORDINADOR. Los campos requeridos varían según el rol seleccionado",
+            security = @SecurityRequirement(name = "bearerAuth"),
             tags = {"🔐 Autenticación"}
     )
     @ApiResponses(value = {
@@ -146,6 +170,28 @@ public class AuthController {
                                     value = """
                                             {
                                               "message": "Error: El nombre de usuario ya está en uso!",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Token JWT no válido o expirado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso denegado - Solo usuarios con rol ADMIN o COORDINADOR pueden registrar nuevos usuarios",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Acceso denegado",
+                                    value = """
+                                            {
+                                              "message": "Acceso denegado: Solo administradores y coordinadores pueden registrar usuarios",
                                               "success": false
                                             }
                                             """
@@ -280,5 +326,273 @@ public class AuthController {
             return ResponseEntity.ok(new MessageResponse("Token válido"));
         }
         return ResponseEntity.badRequest().body(new MessageResponse("Token inválido", false));
+    }
+
+    /**
+     * Endpoint para actualizar perfil del usuario autenticado
+     */
+    @Operation(
+            summary = "Actualizar perfil personal",
+            description = "Permite al usuario actualizar su información personal. Solo puede modificar: teléfono, dirección y contraseña. No puede cambiar: rol, username, email, nombres, apellidos, dni, códigos o especialidad.",
+            tags = {"🔐 Autenticación"},
+            security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Perfil actualizado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Actualización exitosa",
+                                    value = """
+                                            {
+                                              "message": "Perfil actualizado exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en los datos proporcionados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de validación",
+                                    value = """
+                                            {
+                                              "message": "Error: Las contraseñas no coinciden",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario no encontrado",
+                                    value = """
+                                            {
+                                              "message": "Error: Usuario no encontrado",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PutMapping("/actualizar-perfil")
+    public ResponseEntity<MessageResponse> actualizarPerfil(
+            @Parameter(description = "Datos para actualizar el perfil personal", required = true)
+            @Valid @RequestBody ActualizarPerfilRequest request,
+            Authentication authentication) {
+        
+        try {
+            String username = authentication.getName();
+            logger.info("Actualizando perfil para usuario: {}", username);
+            
+            MessageResponse response = authService.actualizarPerfil(username, request);
+            
+            if (response.isSuccess()) {
+                logger.info("Perfil actualizado exitosamente para usuario: {}", username);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("Error al actualizar perfil para usuario {}: {}", username, response.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error inesperado al actualizar perfil: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error interno del servidor", false)
+            );
+        }
+    }
+
+    /**
+     * Cambiar contraseña del usuario autenticado
+     */
+    @Operation(
+            summary = "Cambiar contraseña",
+            description = "Permite al usuario autenticado cambiar su contraseña proporcionando la contraseña actual y la nueva contraseña",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            tags = {"🔐 Autenticación"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Contraseña cambiada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Contraseña cambiada",
+                                    value = """
+                                            {
+                                              "message": "Contraseña cambiada exitosamente",
+                                              "success": true
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en el cambio de contraseña",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Contraseña actual incorrecta",
+                                            value = """
+                                                    {
+                                                      "message": "Error: La contraseña actual es incorrecta",
+                                                      "success": false
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Contraseñas no coinciden",
+                                            value = """
+                                                    {
+                                                      "message": "Error: Las nuevas contraseñas no coinciden",
+                                                      "success": false
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Usuario no encontrado",
+                                    value = """
+                                            {
+                                              "message": "Error: Usuario no encontrado",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PutMapping("/cambiar-password")
+    public ResponseEntity<MessageResponse> cambiarPassword(
+            @Parameter(description = "Datos para cambiar la contraseña", required = true)
+            @Valid @RequestBody CambiarPasswordRequest request,
+            Authentication authentication) {
+        
+        try {
+            String username = authentication.getName();
+            logger.info("Cambiando contraseña para usuario: {}", username);
+            
+            MessageResponse response = authService.cambiarPassword(username, request);
+            
+            if (response.isSuccess()) {
+                logger.info("Contraseña cambiada exitosamente para usuario: {}", username);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("Error al cambiar contraseña para usuario {}: {}", username, response.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error inesperado al cambiar contraseña: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error interno del servidor", false)
+            );
+        }
+    }
+
+    /**
+     * Endpoint para login con Google OAuth
+     */
+    @Operation(
+            summary = "Iniciar sesión con Google",
+            description = "Autentica un usuario usando Google OAuth y devuelve un token JWT",
+            tags = {"🔐 Autenticación"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login con Google exitoso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Login con Google exitoso",
+                                    value = """
+                                            {
+                                              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                                              "id": 1,
+                                              "username": "juan.perez",
+                                              "email": "juan.perez@unica.edu.pe",
+                                              "nombres": "Juan Carlos",
+                                              "apellidos": "Pérez García",
+                                              "role": "POSTULANTE",
+                                              "ultimoAcceso": "2024-01-01T10:00:00"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Error en autenticación con Google",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Error de autenticación",
+                                    value = """
+                                            {
+                                              "message": "Error: Token de Google inválido",
+                                              "success": false
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(
+            @Parameter(description = "Token de Google OAuth", required = true)
+            @Valid @RequestBody GoogleLoginRequest googleLoginRequest) {
+        try {
+            logger.info("Intento de login con Google OAuth");
+            AuthResponse response = googleOAuthService.authenticateWithGoogle(googleLoginRequest);
+            logger.info("Login con Google exitoso para usuario: {}", response.getEmail());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error en login con Google: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(
+                new MessageResponse("Error en autenticación con Google: " + e.getMessage(), false)
+            );
+        }
     }
 }

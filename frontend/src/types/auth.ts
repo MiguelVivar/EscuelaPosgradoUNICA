@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type Role = 'ADMIN' | 'ALUMNO' | 'DOCENTE' | 'COORDINADOR' | 'POSTULANTE';
 
 export interface LoginRequest {
@@ -13,6 +15,9 @@ export interface AuthResponse {
   email: string;
   nombres: string;
   apellidos: string;
+  dni?: string;
+  telefono?: string;
+  direccion?: string;
   role: Role;
   ultimoAcceso?: string;
   // Campos adicionales según el rol
@@ -33,7 +38,11 @@ export interface UsuarioResponse {
   email: string;
   nombres: string;
   apellidos: string;
+  dni?: string;
+  telefono?: string;
+  direccion?: string;
   role: Role;
+  activo: boolean;
   ultimoAcceso?: string;
   codigoEstudiante?: string;
   codigoDocente?: string;
@@ -41,11 +50,27 @@ export interface UsuarioResponse {
   programaInteres?: string;
 }
 
+export interface UpdateProfileRequest {
+  telefono?: string;
+  direccion?: string;
+  password?: string;
+  confirmarPassword?: string;
+}
+
+export interface ChangePasswordRequest {
+  passwordActual: string;
+  nuevaPassword: string;
+  confirmarNuevaPassword: string;
+}
+
 export interface AuthContextType {
   user: AuthResponse | null;
   token: string | null;
   login: (credentials: LoginRequest) => Promise<AuthResponse>;
+  loginWithGoogle: (googleToken: string) => Promise<AuthResponse>;
   logout: () => void;
+  updateProfile: (profileData: UpdateProfileRequest) => Promise<MessageResponse>;
+  changePassword: (passwordData: ChangePasswordRequest) => Promise<MessageResponse>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
@@ -60,4 +85,8 @@ export class ApiError extends Error {
     this.status = status;
     this.success = success;
   }
+}
+
+export interface AuthProviderProps {
+  children: ReactNode;
 }

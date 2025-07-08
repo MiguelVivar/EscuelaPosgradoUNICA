@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarPerfilRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.ActualizarUsuarioAdminRequest;
+import com.escuelaposgrado.Autenticacion.dto.request.CambiarPasswordRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.LoginRequest;
 import com.escuelaposgrado.Autenticacion.dto.request.RegistroRequest;
 import com.escuelaposgrado.Autenticacion.dto.response.AuthResponse;
@@ -101,10 +104,98 @@ public class AuthService {
         // Establecer otros campos
         usuario.setDni(registroRequest.getDni());
         usuario.setTelefono(registroRequest.getTelefono());
+        usuario.setDireccion(registroRequest.getDireccion());
 
         usuarioRepository.save(usuario);
 
-        return new MessageResponse("Usuario registrado exitosamente!");
+        return new MessageResponse("Usuario registrado exitosamente");
+    }
+
+    /**
+     * Actualizar perfil personal del usuario autenticado
+     */
+    public MessageResponse actualizarPerfil(String username, ActualizarPerfilRequest request) {
+        try {
+            // Buscar usuario por username
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
+            if (!usuarioOpt.isPresent()) {
+                return new MessageResponse("Error: Usuario no encontrado", false);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Validar contraseñas si se está actualizando
+            if (request.isUpdatingPassword() && !request.isPasswordValid()) {
+                return new MessageResponse("Error: Las contraseñas no coinciden", false);
+            }
+
+            // Actualizar campos permitidos
+            if (request.getTelefono() != null) {
+                usuario.setTelefono(request.getTelefono());
+            }
+
+            if (request.getDireccion() != null) {
+                usuario.setDireccion(request.getDireccion());
+            }
+
+            // Actualizar contraseña si se proporciona
+            if (request.isUpdatingPassword()) {
+                usuario.setPassword(encoder.encode(request.getPassword()));
+            }
+
+            // Actualizar fecha de modificación
+            usuario.setFechaActualizacion(LocalDateTime.now());
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Perfil actualizado exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);
+        }
+    }
+
+    /**
+     * Cambiar contraseña del usuario autenticado
+     */
+    public MessageResponse cambiarPassword(String username, CambiarPasswordRequest request) {
+        try {
+            // Buscar usuario por username
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
+            if (!usuarioOpt.isPresent()) {
+                return new MessageResponse("Error: Usuario no encontrado", false);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Validar que las nuevas contraseñas coincidan
+            if (!request.isPasswordValid()) {
+                return new MessageResponse("Error: Las nuevas contraseñas no coinciden", false);
+            }
+
+            // Validar que la contraseña actual sea correcta
+            if (!encoder.matches(request.getPasswordActual(), usuario.getPassword())) {
+                return new MessageResponse("Error: La contraseña actual es incorrecta", false);
+            }
+
+            // Validar que la nueva contraseña sea diferente a la actual
+            if (encoder.matches(request.getNuevaPassword(), usuario.getPassword())) {
+                return new MessageResponse("Error: La nueva contraseña debe ser diferente a la actual", false);
+            }
+
+            // Actualizar contraseña
+            usuario.setPassword(encoder.encode(request.getNuevaPassword()));
+            usuario.setFechaActualizacion(LocalDateTime.now());
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Contraseña cambiada exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);
+        }
     }
 
     /**
@@ -117,6 +208,8 @@ public class AuthService {
         return mapToUsuarioResponse(usuario);
     }
 
+
+
     /**
      * Obtener todos los usuarios por rol
      */
@@ -128,10 +221,44 @@ public class AuthService {
     }
 
     /**
+     * Obtener todos los usuarios por rol (incluidos inactivos)
+     */
+    public List<UsuarioResponse> getUsuariosByRoleIncluyendoInactivos(Role role) {
+        List<Usuario> usuarios = usuarioRepository.findByRole(role);
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
      * Obtener todos los usuarios activos
      */
     public List<UsuarioResponse> getAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findByActivoTrue();
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtener todos los usuarios (incluidos inactivos)
+     */
+    public List<UsuarioResponse> getAllUsuariosIncluyendoInactivos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream()
+                      .map(this::mapToUsuarioResponse)
+                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Buscar usuarios por nombres y apellidos
+     */
+    public List<UsuarioResponse> buscarUsuariosPorNombre(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return getAllUsuarios();
+        }
+        
+        List<Usuario> usuarios = usuarioRepository.buscarPorNombre(texto.trim());
         return usuarios.stream()
                       .map(this::mapToUsuarioResponse)
                       .collect(Collectors.toList());
@@ -167,6 +294,73 @@ public class AuthService {
         usuarioRepository.save(usuario);
 
         return new MessageResponse("Usuario activado exitosamente");
+    }
+
+    /**
+     * Actualizar usuario por administrador
+     */
+    public MessageResponse actualizarUsuarioAdmin(Long id, ActualizarUsuarioAdminRequest request) {
+        try {
+            // Buscar usuario por ID
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+            if (usuarioOpt.isEmpty()) {
+                return new MessageResponse("Usuario no encontrado", false);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Validar que el username y email no estén siendo usados por otro usuario
+            if (!usuario.getUsername().equals(request.getUsername())) {
+                Optional<Usuario> existeUsername = usuarioRepository.findByUsername(request.getUsername());
+                if (existeUsername.isPresent() && !existeUsername.get().getId().equals(id)) {
+                    return new MessageResponse("Error: El nombre de usuario ya está en uso", false);
+                }
+            }
+
+            if (!usuario.getEmail().equals(request.getEmail())) {
+                Optional<Usuario> existeEmail = usuarioRepository.findByEmail(request.getEmail());
+                if (existeEmail.isPresent() && !existeEmail.get().getId().equals(id)) {
+                    return new MessageResponse("Error: El email ya está en uso", false);
+                }
+            }
+
+            // Actualizar campos básicos
+            usuario.setUsername(request.getUsername());
+            usuario.setEmail(request.getEmail());
+            usuario.setNombres(request.getNombres());
+            usuario.setApellidos(request.getApellidos());
+            usuario.setRole(request.getRole());
+
+            // Actualizar campos opcionales
+            if (request.getDni() != null) {
+                usuario.setDni(request.getDni());
+            }
+            if (request.getTelefono() != null) {
+                usuario.setTelefono(request.getTelefono());
+            }
+            if (request.getDireccion() != null) {
+                usuario.setDireccion(request.getDireccion());
+            }
+            
+            // Actualizar campos específicos del rol aplicando la lógica correcta
+            setRoleSpecificFields(usuario, request);
+
+            // Actualizar contraseña si se proporciona
+            if (request.isUpdatingPassword()) {
+                usuario.setPassword(encoder.encode(request.getPassword()));
+            }
+
+            // Actualizar fecha de modificación
+            usuario.setFechaActualizacion(LocalDateTime.now());
+
+            // Guardar cambios
+            usuarioRepository.save(usuario);
+
+            return new MessageResponse("Usuario actualizado exitosamente", true);
+
+        } catch (Exception e) {
+            return new MessageResponse("Error interno del servidor: " + e.getMessage(), false);
+        }
     }
 
     /**
@@ -218,21 +412,74 @@ public class AuthService {
     }
 
     private void setRoleSpecificFields(Usuario usuario, RegistroRequest request) {
+        // Inicializar todos los campos específicos de rol como null
+        usuario.setCodigoEstudiante(null);
+        usuario.setCodigoDocente(null);
+        usuario.setEspecialidad(null);
+        usuario.setProgramaInteres(null);
+        
         switch (request.getRole()) {
             case ALUMNO:
             case POSTULANTE:
-                usuario.setCodigoEstudiante(request.getCodigoEstudiante());
+                // Solo establecer codigo_estudiante si no está vacío
+                if (request.getCodigoEstudiante() != null && !request.getCodigoEstudiante().trim().isEmpty()) {
+                    usuario.setCodigoEstudiante(request.getCodigoEstudiante().trim());
+                }
                 if (request.getRole() == Role.POSTULANTE) {
-                    usuario.setProgramaInteres(request.getProgramaInteres());
+                    if (request.getProgramaInteres() != null && !request.getProgramaInteres().trim().isEmpty()) {
+                        usuario.setProgramaInteres(request.getProgramaInteres().trim());
+                    }
                 }
                 break;
             case DOCENTE:
             case COORDINADOR:
-                usuario.setCodigoDocente(request.getCodigoDocente());
-                usuario.setEspecialidad(request.getEspecialidad());
+                // Solo establecer codigo_docente si no está vacío
+                if (request.getCodigoDocente() != null && !request.getCodigoDocente().trim().isEmpty()) {
+                    usuario.setCodigoDocente(request.getCodigoDocente().trim());
+                }
+                if (request.getEspecialidad() != null && !request.getEspecialidad().trim().isEmpty()) {
+                    usuario.setEspecialidad(request.getEspecialidad().trim());
+                }
                 break;
             case ADMIN:
-                // Admin no necesita campos adicionales
+                // Admin no necesita campos adicionales, todos quedan como null
+                break;
+        }
+    }
+
+    // Método sobrecargado para ActualizarUsuarioAdminRequest
+    private void setRoleSpecificFields(Usuario usuario, ActualizarUsuarioAdminRequest request) {
+        // Inicializar todos los campos específicos de rol como null
+        usuario.setCodigoEstudiante(null);
+        usuario.setCodigoDocente(null);
+        usuario.setEspecialidad(null);
+        usuario.setProgramaInteres(null);
+        
+        switch (request.getRole()) {
+            case ALUMNO:
+            case POSTULANTE:
+                // Solo establecer codigo_estudiante si no está vacío
+                if (request.getCodigoEstudiante() != null && !request.getCodigoEstudiante().trim().isEmpty()) {
+                    usuario.setCodigoEstudiante(request.getCodigoEstudiante().trim());
+                }
+                if (request.getRole() == Role.POSTULANTE) {
+                    if (request.getProgramaInteres() != null && !request.getProgramaInteres().trim().isEmpty()) {
+                        usuario.setProgramaInteres(request.getProgramaInteres().trim());
+                    }
+                }
+                break;
+            case DOCENTE:
+            case COORDINADOR:
+                // Solo establecer codigo_docente si no está vacío
+                if (request.getCodigoDocente() != null && !request.getCodigoDocente().trim().isEmpty()) {
+                    usuario.setCodigoDocente(request.getCodigoDocente().trim());
+                }
+                if (request.getEspecialidad() != null && !request.getEspecialidad().trim().isEmpty()) {
+                    usuario.setEspecialidad(request.getEspecialidad().trim());
+                }
+                break;
+            case ADMIN:
+                // Admin no necesita campos adicionales, todos quedan como null
                 break;
         }
     }
@@ -247,6 +494,9 @@ public class AuthService {
             usuario.getApellidos(), 
             usuario.getRole()
         );
+        response.setDni(usuario.getDni());
+        response.setTelefono(usuario.getTelefono());
+        response.setDireccion(usuario.getDireccion());
         response.setUltimoAcceso(usuario.getUltimoAcceso());
         response.setCodigoEstudiante(usuario.getCodigoEstudiante());
         response.setCodigoDocente(usuario.getCodigoDocente());
@@ -265,6 +515,7 @@ public class AuthService {
         response.setApellidos(usuario.getApellidos());
         response.setDni(usuario.getDni());
         response.setTelefono(usuario.getTelefono());
+        response.setDireccion(usuario.getDireccion());
         response.setRole(usuario.getRole());
         response.setActivo(usuario.getActivo());
         response.setFechaCreacion(usuario.getFechaCreacion());

@@ -3,21 +3,8 @@ import EmailInput from "./EmailInput";
 import PasswordInput from "./PasswordInput";
 import FormActions from "./FormActions";
 import SubmitButton from "./SubmitButton";
-
-interface LoginFormSectionProps {
-  formData: {
-    email: string;
-    password: string;
-  };
-  isLoading: boolean;
-  showPassword: boolean;
-  emailError: string;
-  loginError?: string;
-  successMessage?: string;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  onTogglePassword: () => void;
-}
+import SocialLoginSection from "./SocialLoginSection";
+import { LoginFormSectionProps } from "../../../types/Login";
 
 export default function LoginFormSection({
   formData,
@@ -29,6 +16,8 @@ export default function LoginFormSection({
   onInputChange,
   onSubmit,
   onTogglePassword,
+  onGoogleSuccess,
+  onGoogleError,
 }: LoginFormSectionProps) {
   return (
     <div className="px-8 py-10 lg:px-12 lg:py-12 flex flex-col justify-center">
@@ -41,7 +30,6 @@ export default function LoginFormSection({
             Accede a tu cuenta institucional
           </p>
         </div>
-
         {/* Mensajes de error y éxito */}
         {loginError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -61,7 +49,6 @@ export default function LoginFormSection({
             </p>
           </div>
         )}
-
         {successMessage && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-green-700 text-sm font-medium flex items-center">
@@ -80,7 +67,6 @@ export default function LoginFormSection({
             </p>
           </div>
         )}
-
         <form onSubmit={onSubmit} className="space-y-6">
           <EmailInput
             value={formData.email}
@@ -99,6 +85,14 @@ export default function LoginFormSection({
 
           <SubmitButton isLoading={isLoading} onSubmit={onSubmit} />
         </form>
+        {/* Sección de login social */}
+        <div className="mt-8">
+          <SocialLoginSection
+            onGoogleSuccess={onGoogleSuccess}
+            onGoogleError={onGoogleError}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );

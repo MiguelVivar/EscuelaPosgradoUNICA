@@ -71,7 +71,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 // Endpoints públicos
                 .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/api/auth/registro").permitAll()
+                .requestMatchers("/api/auth/google-login").permitAll()
                 .requestMatchers("/api/health/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/error").permitAll()
@@ -82,6 +82,9 @@ public class WebSecurityConfig {
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-resources/**").permitAll()
                 .requestMatchers("/webjars/**").permitAll()
+                
+                // Endpoint de registro restringido a ADMIN y COORDINADOR
+                .requestMatchers("/api/auth/registro").hasAnyRole("ADMIN", "COORDINADOR")
                 
                 // Endpoints para diferentes roles
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

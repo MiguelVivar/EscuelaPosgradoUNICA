@@ -1,10 +1,5 @@
 import React from "react";
-
-interface EmailInputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-}
+import { EmailInputProps } from "@/types/Login";
 
 export default function EmailInput({
   value,

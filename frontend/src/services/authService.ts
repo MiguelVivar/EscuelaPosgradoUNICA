@@ -1,5 +1,5 @@
 import { API_CONFIG, getAuthHeaders } from '@/lib/api';
-import { LoginRequest, AuthResponse, MessageResponse, UsuarioResponse, ApiError } from '@/types/auth';
+import { LoginRequest, AuthResponse, MessageResponse, UsuarioResponse, ApiError, UpdateProfileRequest, ChangePasswordRequest } from '@/types/auth';
 
 class AuthService {
   private baseUrl = API_CONFIG.BASE_URL;
@@ -20,6 +20,45 @@ class AuthService {
       if (!response.ok) {
         throw new ApiError(
           data.message || 'Error al iniciar sesión',
+          response.status,
+          false
+        );
+      }
+
+      // Guardar token en localStorage y cookie
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+        
+        // También establecer cookie para el middleware
+        document.cookie = `authToken=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError('Error de conexión con el servidor');
+    }
+  }
+
+  /**
+   * Realiza el login con Google OAuth
+   */
+  async loginWithGoogle(googleToken: string): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/google-login`, {
+        method: 'POST',
+        headers: API_CONFIG.HEADERS,
+        body: JSON.stringify({ googleToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new ApiError(
+          data.message || 'Error al iniciar sesión con Google',
           response.status,
           false
         );
@@ -103,6 +142,66 @@ class AuthService {
   }
 
   /**
+   * Actualiza el perfil del usuario autenticado
+   */
+  async updateProfile(profileData: UpdateProfileRequest): Promise<MessageResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.UPDATE_PROFILE}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(profileData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new ApiError(
+          data.message || 'Error al actualizar perfil',
+          response.status,
+          false
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError('Error de conexión con el servidor');
+    }
+  }
+
+  /**
+   * Cambia la contraseña del usuario autenticado
+   */
+  async changePassword(passwordData: ChangePasswordRequest): Promise<MessageResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.CHANGE_PASSWORD}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(passwordData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new ApiError(
+          data.message || 'Error al cambiar contraseña',
+          response.status,
+          false
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError('Error de conexión con el servidor');
+    }
+  }
+
+  /**
    * Valida si el token actual es válido
    */
   async validateToken(): Promise<boolean> {
@@ -122,11 +221,29 @@ class AuthService {
    * Cierra la sesión del usuario
    */
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    
-    // También eliminar la cookie
-    document.cookie = 'authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    try {
+      // Limpiar localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      
+      // Limpiar todas las cookies de autenticación
+      const cookies = ['authToken'];
+      cookies.forEach(cookieName => {
+        document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+        document.cookie = `${cookieName}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+      });
+      
+      // Limpiar sessionStorage también por si acaso
+      sessionStorage.clear();
+      
+    } catch (error) {
+      console.error('Error durante el logout:', error);
+      // Aún así, intentar limpiar lo básico
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+      }
+    }
   }
 
   /**

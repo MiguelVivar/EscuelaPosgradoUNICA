@@ -1,14 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, AuthResponse, LoginRequest } from '@/types/auth';
+import React, { createContext, useContext, useState, useEffect} from 'react';
+import { AuthContextType, AuthResponse, LoginRequest, UpdateProfileRequest, ChangePasswordRequest, MessageResponse } from '@/types/auth';
 import authService from '@/services/authService';
+import { AuthProviderProps } from '@/types/auth'; 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthResponse | null>(null);
@@ -59,17 +58,73 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (googleToken: string): Promise<AuthResponse> => {
+    setIsLoading(true);
+    try {
+      const response = await authService.loginWithGoogle(googleToken);
+      setUser(response);
+      setToken(response.token);
+      return response;
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
-    authService.logout();
+    // Limpiar el estado local primero
     setUser(null);
     setToken(null);
+    
+    // Luego ejecutar el logout del servicio
+    authService.logout();
+    
+    // Forzar un rerender del contexto
+    setIsLoading(false);
+  };
+
+  const updateProfile = async (profileData: UpdateProfileRequest): Promise<MessageResponse> => {
+    try {
+      const response = await authService.updateProfile(profileData);
+      
+      // Si la actualización fue exitosa, actualizar los datos del usuario local
+      if (response.success && user) {
+        const updatedUser = { 
+          ...user,
+          // Solo actualizar los campos que pueden haberse modificado
+          ...(profileData.telefono !== undefined && { telefono: profileData.telefono }),
+          ...(profileData.direccion !== undefined && { direccion: profileData.direccion })
+        };
+        setUser(updatedUser);
+        
+        // También actualizar en localStorage
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const changePassword = async (passwordData: ChangePasswordRequest): Promise<MessageResponse> => {
+    try {
+      const response = await authService.changePassword(passwordData);
+      return response;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const value: AuthContextType = {
     user,
     token,
     login,
+    loginWithGoogle,
     logout,
+    updateProfile,
+    changePassword,
     isLoading,
     isAuthenticated: !!user && !!token,
   };

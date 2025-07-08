@@ -1067,57 +1067,15 @@ docker-compose exec autenticacion env | grep SPRING
 
 ### 👨‍💻 **Integrantes del Equipo de Desarrollo**
 
-| # | Desarrollador | GitHub | Rol Principal | Especialización |
-|---|---------------|--------|---------------|-----------------|
-| 1 | **Miguel Vivar** | [@MiguelVivar](https://github.com/MiguelVivar) | Team Lead & Full Stack | Arquitectura y Backend |
-| 2 | **Mario Muñoz** | [@ChuchiPr](https://github.com/ChuchiPr) | Backend Developer | Microservicios y API |
-| 3 | **Angelina Soto** | [@VinnBon](https://github.com/VinnBon) | Frontend Developer | UI/UX y React |
-| 4 | **Luis Mitma** | [@Elextranjero1942](https://github.com/Elextranjero1942) | DevOps & Database | Docker y PostgreSQL |
-| 5 | **Juan Ttito** | [@juanttito1003](https://github.com/juanttito1003) | Backend Developer | Spring Security y JWT |
-| 6 | **Rodrigo Conislla** | [@Rodricrak25](https://github.com/Rodricrak25) | Frontend Developer | Next.js y TypeScript |
-| 7 | **Dylan Palomino** | [@DaPcxD](https://github.com/DaPcxD) | QA & Testing | Testing y Documentación |
-
-### 🏆 **Distribución de Responsabilidades**
-
-#### **🌐 Equipo Frontend (Next.js + React)**
-- **Líderes**: Angelina Soto, Rodrigo Conislla
-- **Responsabilidades**:
-  - ✅ Desarrollo de componentes React reutilizables
-  - ✅ Implementación de Next.js 15 con App Router
-  - ✅ Integración de TailwindCSS 4 y diseño responsivo
-  - ✅ Animaciones con GSAP 3.13.0
-  - ✅ Middleware de autenticación y protección de rutas
-  - ✅ Context API para manejo de estado global
-
-#### **🔐 Equipo Backend (Spring Boot + Microservicios)**
-- **Líderes**: Miguel Vivar, Mario Muñoz, Juan Ttito
-- **Responsabilidades**:
-  - ✅ Arquitectura de microservicios con Spring Boot 3.5.3
-  - ✅ Sistema de autenticación JWT con Spring Security 6
-  - ✅ 60+ endpoints API REST documentados con Swagger
-  - ✅ Diseño de base de datos multi-schema PostgreSQL
-  - ✅ Implementación de 5 roles de usuario con permisos granulares
-  - ✅ Health checks y monitoreo con Spring Boot Actuator
-
-#### **🗄️ Equipo DevOps y Base de Datos**
-- **Líder**: Luis Mitma
-- **Responsabilidades**:
-  - ✅ Configuración Docker Compose con 6 servicios
-  - ✅ Setup PostgreSQL 17.5 multi-database
-  - ✅ Configuración de pgAdmin para administración
-  - ✅ Health checks y monitoring automático
-  - ✅ Scripts de inicialización y deployment
-  - ✅ Gestión de volúmenes y persistencia de datos
-
-#### **🔍 Equipo QA y Documentación**
-- **Líder**: Dylan Palomino
-- **Responsabilidades**:
-  - ✅ Testing integral de APIs con 60+ endpoints
-  - ✅ Documentación técnica completa (README, Swagger)
-  - ✅ Validación de funcionalidades por rol de usuario
-  - ✅ Scripts de testing automatizado
-  - ✅ Control de calidad de código y estándares
-  - ✅ Documentación de procesos de deployment
+| # | Desarrollador | GitHub | 
+|---|---------------|--------|
+| 1 | **Miguel Vivar** | [@MiguelVivar](https://github.com/MiguelVivar) |
+| 2 | **Mario Muñoz** | [@ChuchiPr](https://github.com/ChuchiPr) |
+| 3 | **Angielina Soto** | [@VinnBon](https://github.com/VinnBon) |
+| 4 | **Luis Mitma** | [@Elextranjero1942](https://github.com/Elextranjero1942) |
+| 5 | **Juan Ttito** | [@juanttito1003](https://github.com/juanttito1003) |
+| 6 | **Rodrigo Conislla** | [@Rodricrak25](https://github.com/Rodricrak25) |
+| 7 | **Dylan Palomino** | [@DaPcxD](https://github.com/DaPcxD) |
 
 ### 📋 **Metodología de Trabajo Implementada**
 

@@ -1,11 +1,5 @@
 import React from "react";
-
-interface PasswordInputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  showPassword: boolean;
-  onToggleVisibility: () => void;
-}
+import { PasswordInputProps } from "@/types/Login";
 
 export default function PasswordInput({
   value,

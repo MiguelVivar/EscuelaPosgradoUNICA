@@ -63,11 +63,14 @@ public class Usuario implements UserDetails {
     @Column(name = "apellido_materno", length = 100)
     private String apellidoMaterno;
 
-    @Column(length = 8)
+    @Column(length = 8, unique = true)
     private String dni;
 
     @Column(length = 15)
     private String telefono;
+
+    @Column(length = 500)
+    private String direccion;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
@@ -89,10 +92,10 @@ public class Usuario implements UserDetails {
     private LocalDateTime ultimoAcceso;
 
     // Información adicional según el rol
-    @Column(name = "codigo_estudiante")
+    @Column(name = "codigo_estudiante", unique = true)
     private String codigoEstudiante; // Para ALUMNO y POSTULANTE
 
-    @Column(name = "codigo_docente")
+    @Column(name = "codigo_docente", unique = true)
     private String codigoDocente; // Para DOCENTE y COORDINADOR
 
     @Column(name = "especialidad")
@@ -271,6 +274,14 @@ public class Usuario implements UserDetails {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public Role getRole() {
