@@ -14,6 +14,9 @@ public class PeriodoAcademicoRequest {
     @Size(max = 50, message = "El nombre no puede exceder 50 caracteres")
     private String nombre;
 
+    @Size(max = 20, message = "El código no puede exceder 20 caracteres")
+    private String codigo; // Opcional, se auto-genera si no se proporciona
+
     @NotBlank(message = "El año es obligatorio")
     private String anio;
 
@@ -43,6 +46,9 @@ public class PeriodoAcademicoRequest {
     // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
 
     public String getAnio() { return anio; }
     public void setAnio(String anio) { this.anio = anio; }

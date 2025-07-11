@@ -36,7 +36,7 @@ public class PeriodoAcademicoController {
 
     @Operation(
         summary = "📋 Listar todos los períodos académicos",
-        description = "Obtiene todos los períodos académicos activos del sistema"
+        description = "Obtiene todos los períodos académicos del sistema (activos e inactivos)"
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente"),
@@ -46,6 +46,21 @@ public class PeriodoAcademicoController {
     @GetMapping
     public ResponseEntity<List<PeriodoAcademicoResponse>> getAllPeriodos() {
         List<PeriodoAcademicoResponse> periodos = periodoAcademicoService.findAll();
+        return ResponseEntity.ok(periodos);
+    }
+
+    @Operation(
+        summary = "📋 Listar períodos académicos activos",
+        description = "Obtiene solo los períodos académicos activos del sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente"),
+        @ApiResponse(responseCode = "401", description = "No autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acceso prohibido")
+    })
+    @GetMapping("/activos")
+    public ResponseEntity<List<PeriodoAcademicoResponse>> getPeriodosActivos() {
+        List<PeriodoAcademicoResponse> periodos = periodoAcademicoService.findActivos();
         return ResponseEntity.ok(periodos);
     }
 

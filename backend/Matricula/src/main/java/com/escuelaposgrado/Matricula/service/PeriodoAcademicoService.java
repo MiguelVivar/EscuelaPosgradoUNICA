@@ -24,10 +24,21 @@ public class PeriodoAcademicoService {
     private PeriodoAcademicoRepository periodoAcademicoRepository;
 
     /**
-     * Obtener todos los períodos académicos
+     * Obtener todos los períodos académicos (incluye activos e inactivos)
      */
     @Transactional(readOnly = true)
     public List<PeriodoAcademicoResponse> findAll() {
+        return periodoAcademicoRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtener solo períodos activos
+     */
+    @Transactional(readOnly = true)
+    public List<PeriodoAcademicoResponse> findActivos() {
         return periodoAcademicoRepository.findByActivoTrueOrderByFechaCreacionDesc()
                 .stream()
                 .map(this::convertToResponse)
@@ -48,6 +59,16 @@ public class PeriodoAcademicoService {
      * Crear nuevo período académico
      */
     public PeriodoAcademicoResponse create(PeriodoAcademicoRequest request) {
+        // Auto-generar código si no se proporciona
+        String codigo = (request.getCodigo() != null && !request.getCodigo().trim().isEmpty()) 
+            ? request.getCodigo().trim() 
+            : request.getAnio() + "-" + request.getSemestre();
+
+        // Validar que no exista otro período con el mismo código
+        if (periodoAcademicoRepository.findByCodigo(codigo).isPresent()) {
+            throw new BadRequestException("Ya existe un período académico con el código: " + codigo);
+        }
+
         // Validar que no exista otro período con el mismo nombre
         if (periodoAcademicoRepository.findByNombre(request.getNombre()).isPresent()) {
             throw new BadRequestException("Ya existe un período académico con el nombre: " + request.getNombre());
@@ -68,6 +89,7 @@ public class PeriodoAcademicoService {
         }
 
         PeriodoAcademico periodo = new PeriodoAcademico();
+        periodo.setCodigo(codigo);
         periodo.setNombre(request.getNombre());
         periodo.setAnio(request.getAnio());
         periodo.setSemestre(request.getSemestre());
@@ -89,6 +111,19 @@ public class PeriodoAcademicoService {
         PeriodoAcademico periodo = periodoAcademicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Período académico no encontrado con ID: " + id));
 
+        // Auto-generar código si no se proporciona
+        String codigo = (request.getCodigo() != null && !request.getCodigo().trim().isEmpty()) 
+            ? request.getCodigo().trim() 
+            : request.getAnio() + "-" + request.getSemestre();
+
+        // Validar que no exista otro período con el mismo código (excepto el actual)
+        periodoAcademicoRepository.findByCodigo(codigo)
+                .ifPresent(existingPeriodo -> {
+                    if (!existingPeriodo.getId().equals(id)) {
+                        throw new BadRequestException("Ya existe un período académico con el código: " + codigo);
+                    }
+                });
+
         // Validar que no exista otro período con el mismo nombre (excepto el actual)
         periodoAcademicoRepository.findByNombre(request.getNombre())
                 .ifPresent(existingPeriodo -> {
@@ -106,6 +141,7 @@ public class PeriodoAcademicoService {
             throw new BadRequestException("La fecha de inicio de matrícula no puede ser posterior a la fecha de fin de matrícula");
         }
 
+        periodo.setCodigo(codigo);
         periodo.setNombre(request.getNombre());
         periodo.setAnio(request.getAnio());
         periodo.setSemestre(request.getSemestre());
@@ -160,6 +196,7 @@ public class PeriodoAcademicoService {
     private PeriodoAcademicoResponse convertToResponse(PeriodoAcademico periodo) {
         return new PeriodoAcademicoResponse(
                 periodo.getId(),
+                periodo.getCodigo(),
                 periodo.getNombre(),
                 periodo.getAnio(),
                 periodo.getSemestre(),

@@ -23,6 +23,10 @@ public class PeriodoAcademico {
     @Size(max = 50, message = "El nombre no puede exceder 50 caracteres")
     private String nombre;
 
+    @Column(nullable = false, unique = true, length = 20)
+    @NotBlank(message = "El código del período es obligatorio")
+    private String codigo; // "2025-I", "2025-II", etc.
+
     @Column(nullable = false, length = 10)
     @NotBlank(message = "El año es obligatorio")
     private String anio;
@@ -66,11 +70,19 @@ public class PeriodoAcademico {
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
         fechaActualizacion = LocalDateTime.now();
+        // Auto-generar código si no se ha proporcionado
+        if (codigo == null || codigo.trim().isEmpty()) {
+            codigo = anio + "-" + semestre;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         fechaActualizacion = LocalDateTime.now();
+        // Auto-actualizar código si se cambiaron año o semestre
+        if (codigo == null || codigo.trim().isEmpty()) {
+            codigo = anio + "-" + semestre;
+        }
     }
 
     // Constructores
@@ -94,6 +106,9 @@ public class PeriodoAcademico {
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
 
     public String getAnio() { return anio; }
     public void setAnio(String anio) { this.anio = anio; }

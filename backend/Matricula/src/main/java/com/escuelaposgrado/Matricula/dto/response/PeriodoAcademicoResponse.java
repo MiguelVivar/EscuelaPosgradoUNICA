@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class PeriodoAcademicoResponse {
 
     private Long id;
+    private String codigo;
     private String nombre;
     private String anio;
     private String semestre;
@@ -24,12 +25,13 @@ public class PeriodoAcademicoResponse {
     // Constructores
     public PeriodoAcademicoResponse() {}
 
-    public PeriodoAcademicoResponse(Long id, String nombre, String anio, String semestre,
+    public PeriodoAcademicoResponse(Long id, String codigo, String nombre, String anio, String semestre,
                                    LocalDateTime fechaInicio, LocalDateTime fechaFin,
                                    LocalDateTime fechaInicioMatricula, LocalDateTime fechaFinMatricula,
                                    Boolean activo, Boolean habilitado, String descripcion,
                                    LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
         this.id = id;
+        this.codigo = codigo;
         this.nombre = nombre;
         this.anio = anio;
         this.semestre = semestre;
@@ -50,6 +52,9 @@ public class PeriodoAcademicoResponse {
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
 
     public String getAnio() { return anio; }
     public void setAnio(String anio) { this.anio = anio; }

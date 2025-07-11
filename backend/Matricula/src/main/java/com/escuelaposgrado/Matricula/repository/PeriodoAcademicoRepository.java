@@ -19,6 +19,11 @@ public interface PeriodoAcademicoRepository extends JpaRepository<PeriodoAcademi
     Optional<PeriodoAcademico> findByNombre(String nombre);
 
     /**
+     * Buscar por código
+     */
+    Optional<PeriodoAcademico> findByCodigo(String codigo);
+
+    /**
      * Buscar períodos activos
      */
     List<PeriodoAcademico> findByActivoTrueOrderByFechaCreacionDesc();

@@ -63,21 +63,32 @@ class MatriculaService {
    */
   async getPeriodosAcademicos(): Promise<PeriodoAcademico[]> {
     try {
+      console.log('🔍 [MATRICULA SERVICE] Iniciando getPeriodosAcademicos...');
+      console.log('🔍 [MATRICULA SERVICE] Base URL:', this.baseUrl);
+      console.log('🔍 [MATRICULA SERVICE] Endpoint:', MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.LIST);
+      console.log('🔍 [MATRICULA SERVICE] URL completa:', `${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.LIST}`);
+      
       // Validar token antes de hacer la solicitud
       if (!validateStoredToken()) {
+        console.error('🔍 [MATRICULA SERVICE] Token no válido o expirado');
         throw new Error('Error 403: Token no válido o expirado');
       }
 
       const token = localStorage.getItem('authToken');
-      console.log('Token disponible:', !!token);
+      console.log('🔍 [MATRICULA SERVICE] Token disponible:', !!token);
+      console.log('🔍 [MATRICULA SERVICE] Token preview:', token ? `${token.substring(0, 30)}...` : 'No token');
       
+      const headers = getAuthHeaders(token ?? undefined);
+      console.log('🔍 [MATRICULA SERVICE] Headers:', headers);
+      
+      console.log('🔍 [MATRICULA SERVICE] Realizando fetch...');
       const response = await fetch(`${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.LIST}`, {
         method: 'GET',
-        headers: getAuthHeaders(token ?? undefined),
+        headers,
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('🔍 [MATRICULA SERVICE] Response status:', response.status);
+      console.log('🔍 [MATRICULA SERVICE] Response headers:', Object.fromEntries(response.headers.entries()));
 
       // Si el servicio no está disponible, devolver array vacío
       if (!response.ok) {

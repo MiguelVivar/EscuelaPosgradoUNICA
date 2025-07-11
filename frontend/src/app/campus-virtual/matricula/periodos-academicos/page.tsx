@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { FiCalendar, FiPlus, FiEdit, FiTrash2, FiToggleLeft, FiToggleRight, FiArrowLeft, FiRefreshCw } from "react-icons/fi";
+import { FiCalendar, FiPlus, FiEdit, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiArrowLeft, FiRefreshCw, FiEye, FiEyeOff } from "react-icons/fi";
 import Link from "next/link";
 import { matriculaService, PeriodoAcademico, PeriodoForm } from "@/services/matriculaService";
 import ServiceStatus from "@/components/ui/ServiceStatus";
@@ -84,21 +84,39 @@ export default function PeriodosAcademicosPage() {
   }, []);
 
   const checkServiceStatus = async () => {
+    console.log("🔍 [DEBUG] Verificando estado del servicio de matrícula...");
     const isAvailable = await matriculaService.checkHealth();
+    console.log("🔍 [DEBUG] Estado del servicio:", isAvailable);
     setServiceAvailable(isAvailable);
   };
 
   const loadPeriodos = async () => {
     try {
       setLoading(true);
+      console.log("🔍 [DEBUG] Iniciando carga de períodos académicos...");
+      console.log("🔍 [DEBUG] Usuario autenticado:", isAuthenticated);
+      console.log("🔍 [DEBUG] Usuario actual:", user);
       
+      // Verificar token en localStorage
+      const token = localStorage.getItem('authToken');
+      console.log("🔍 [DEBUG] Token en localStorage:", token ? "Presente" : "Ausente");
+      
+      // Llamar al servicio
+      console.log("🔍 [DEBUG] Llamando a matriculaService.getPeriodosAcademicos()...");
       const periodosData = await matriculaService.getPeriodosAcademicos();
+      console.log("🔍 [DEBUG] Respuesta del servicio:", periodosData);
+      console.log("🔍 [DEBUG] Número de períodos recibidos:", Array.isArray(periodosData) ? periodosData.length : 'No es array');
+      
       setPeriodos(periodosData);
+      console.log("🔍 [DEBUG] Períodos establecidos en el estado");
     } catch (error) {
-      console.error("Error al cargar períodos:", error);
+      console.error("❌ [ERROR] Error al cargar períodos:", error);
+      console.error("❌ [ERROR] Tipo de error:", typeof error);
+      console.error("❌ [ERROR] Stack trace:", error instanceof Error ? error.stack : 'No stack available');
       
       // Manejo específico para errores 403
       if (error instanceof Error && error.message.includes('403')) {
+        console.log("🔍 [DEBUG] Error 403 detectado - sesión expirada");
         Swal.fire({
           icon: "error",
           title: "Acceso Denegado",
@@ -121,6 +139,7 @@ export default function PeriodosAcademicosPage() {
       }
       
       // Otros errores
+      console.log("🔍 [DEBUG] Mostrando mensaje de error de conexión");
       Swal.fire({
         icon: "error",
         title: "Error de Conexión",
@@ -129,6 +148,7 @@ export default function PeriodosAcademicosPage() {
       });
     } finally {
       setLoading(false);
+      console.log("🔍 [DEBUG] Carga de períodos finalizada");
     }
   };
 
@@ -372,7 +392,96 @@ export default function PeriodosAcademicosPage() {
   };
 
   const testDirectApiCall = async () => {
-    // Function removed - API testing functionality disabled
+    console.log("🧪 [TEST] Iniciando prueba directa de API...");
+    
+    try {
+      // Verificar token
+      const token = localStorage.getItem('authToken');
+      console.log("🧪 [TEST] Token:", token ? "Presente" : "Ausente");
+      
+      // Probar conectividad básica al servicio
+      const healthUrl = 'http://localhost:8082/actuator/health';
+      console.log("🧪 [TEST] Verificando health check:", healthUrl);
+      
+      const healthResponse = await fetch(healthUrl);
+      console.log("🧪 [TEST] Health response status:", healthResponse.status);
+      
+      if (healthResponse.ok) {
+        const healthData = await healthResponse.text();
+        console.log("🧪 [TEST] Health data:", healthData);
+      }
+      
+      // Probar endpoint directo de períodos
+      const periodosUrl = 'http://localhost:8082/api/periodos-academicos';
+      console.log("🧪 [TEST] Probando endpoint directo:", periodosUrl);
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      console.log("🧪 [TEST] Headers:", headers);
+      
+      const periodosResponse = await fetch(periodosUrl, {
+        method: 'GET',
+        headers
+      });
+      
+      console.log("🧪 [TEST] Períodos response status:", periodosResponse.status);
+      console.log("🧪 [TEST] Períodos response headers:", Object.fromEntries(periodosResponse.headers.entries()));
+      
+      const periodosText = await periodosResponse.text();
+      console.log("🧪 [TEST] Períodos raw response:", periodosText);
+      
+      if (periodosResponse.ok) {
+        try {
+          const periodosData = JSON.parse(periodosText);
+          console.log("🧪 [TEST] Períodos parsed data:", periodosData);
+          console.log("🧪 [TEST] Es array?", Array.isArray(periodosData));
+          console.log("🧪 [TEST] Longitud:", Array.isArray(periodosData) ? periodosData.length : 'No es array');
+          
+          // Mostrar resultado en una alerta
+          Swal.fire({
+            title: "Resultado de Prueba Directa",
+            html: `
+              <div style="text-align: left; font-size: 12px;">
+                <p><strong>Health Check:</strong> ${healthResponse.status}</p>
+                <p><strong>API Status:</strong> ${periodosResponse.status}</p>
+                <p><strong>Tipo de respuesta:</strong> ${Array.isArray(periodosData) ? 'Array' : typeof periodosData}</p>
+                <p><strong>Cantidad de elementos:</strong> ${Array.isArray(periodosData) ? periodosData.length : 'N/A'}</p>
+                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto;">${JSON.stringify(periodosData, null, 2)}</pre>
+              </div>
+            `,
+            width: '600px'
+          });
+        } catch (parseError) {
+          console.error("🧪 [TEST] Error parsing JSON:", parseError);
+          Swal.fire({
+            title: "Error de Parsing",
+            text: `No se pudo parsear la respuesta JSON: ${parseError}`,
+            icon: 'error'
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Error en API",
+          text: `Status: ${periodosResponse.status}, Response: ${periodosText}`,
+          icon: 'error'
+        });
+      }
+      
+    } catch (error) {
+      console.error("🧪 [TEST] Error en prueba directa:", error);
+      Swal.fire({
+        title: "Error de Conexión",
+        text: `Error: ${error}`,
+        icon: 'error'
+      });
+    }
   };
 
   const handleCloseModal = () => {
@@ -452,6 +561,14 @@ export default function PeriodosAcademicosPage() {
               
               <div className="flex items-center gap-3">
                 <button
+                  onClick={testDirectApiCall}
+                  className="px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium bg-purple-100 hover:bg-purple-200 text-purple-700 border-2 border-purple-300"
+                  title="Probar conexión directa con la API"
+                >
+                  🧪 Test API
+                </button>
+                
+                <button
                   onClick={handleRefreshList}
                   disabled={serviceAvailable === false}
                   className={`px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium ${
@@ -478,6 +595,20 @@ export default function PeriodosAcademicosPage() {
                   <FiPlus className="w-5 h-5" />
                   Nuevo Período
                 </button>
+              </div>
+            </div>
+
+            {/* Información de Debug */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+              <h4 className="font-medium text-yellow-800 mb-2">🔍 Información de Debug:</h4>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <div>• Usuario autenticado: {isAuthenticated ? '✅ Sí' : '❌ No'}</div>
+                <div>• Role del usuario: {user?.role || 'No disponible'}</div>
+                <div>• Token presente: {localStorage.getItem('authToken') ? '✅ Sí' : '❌ No'}</div>
+                <div>• Servicio disponible: {serviceAvailable === null ? '⏳ Verificando...' : serviceAvailable ? '✅ Sí' : '❌ No'}</div>
+                <div>• Cargando: {loading ? '⏳ Sí' : '✅ No'}</div>
+                <div>• Períodos en estado: {periodos.length}</div>
+                <div>• URL del servicio: http://localhost:8082</div>
               </div>
             </div>
 
