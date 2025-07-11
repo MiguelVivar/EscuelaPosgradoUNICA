@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -73,6 +73,38 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<!-- JWT support -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Swagger/OpenAPI -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		
+		<!-- Bean Validation -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 	</dependencies>
 
