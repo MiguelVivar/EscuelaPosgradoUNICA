@@ -8,7 +8,6 @@ import { FiCalendar, FiPlus, FiEdit, FiTrash2, FiToggleLeft, FiToggleRight, FiAr
 import Link from "next/link";
 import { matriculaService, PeriodoAcademico, PeriodoForm } from "@/services/matriculaService";
 import ServiceStatus from "@/components/ui/ServiceStatus";
-import { debugTokenStatus } from "@/utils/tokenDebug";
 
 export default function PeriodosAcademicosPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -93,15 +92,7 @@ export default function PeriodosAcademicosPage() {
     try {
       setLoading(true);
       
-      // Debug token status
-      console.log('=== LOADING PERIODOS - TOKEN DEBUG ===');
-      debugTokenStatus();
-      
       const periodosData = await matriculaService.getPeriodosAcademicos();
-      console.log('📊 PERIODOS RECIBIDOS:', periodosData);
-      console.log('📊 CANTIDAD DE PERIODOS:', periodosData.length);
-      console.log('📊 PRIMER PERIODO:', periodosData[0]);
-      
       setPeriodos(periodosData);
     } catch (error) {
       console.error("Error al cargar períodos:", error);
@@ -381,54 +372,7 @@ export default function PeriodosAcademicosPage() {
   };
 
   const testDirectApiCall = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:8082/api/periodos-academicos', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      
-      console.log('🧪 DIRECT API TEST - Status:', response.status);
-      console.log('🧪 DIRECT API TEST - Headers:', Object.fromEntries(response.headers.entries()));
-      
-      const responseText = await response.text();
-      console.log('🧪 DIRECT API TEST - Raw Response:', responseText);
-      
-      try {
-        const jsonResponse = JSON.parse(responseText);
-        console.log('🧪 DIRECT API TEST - Parsed JSON:', jsonResponse);
-        
-        Swal.fire({
-          icon: "info",
-          title: "Prueba de API Directa",
-          html: `
-            <div style="text-align: left; font-family: monospace;">
-              <strong>Status:</strong> ${response.status}<br/>
-              <strong>Response:</strong><br/>
-              <pre style="background: #f5f5f5; padding: 10px; margin: 10px 0; overflow: auto; max-height: 300px;">${JSON.stringify(jsonResponse, null, 2)}</pre>
-            </div>
-          `,
-          width: '800px'
-        });
-      } catch (parseError) {
-        Swal.fire({
-          icon: "error",
-          title: "Error en respuesta de API",
-          text: `No se pudo parsear la respuesta JSON: ${responseText.substring(0, 200)}...`
-        });
-      }
-    } catch (error: any) {
-      console.error('🧪 DIRECT API TEST - Error:', error);
-      Swal.fire({
-        icon: "error",
-        title: "Error en prueba directa",
-        text: error.message
-      });
-    }
+    // Function removed - API testing functionality disabled
   };
 
   const handleCloseModal = () => {
@@ -508,14 +452,6 @@ export default function PeriodosAcademicosPage() {
               
               <div className="flex items-center gap-3">
                 <button
-                  onClick={testDirectApiCall}
-                  className="px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-300"
-                  title="Probar API directamente"
-                >
-                  🧪 Test API
-                </button>
-                
-                <button
                   onClick={handleRefreshList}
                   disabled={serviceAvailable === false}
                   className={`px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium ${
@@ -569,18 +505,6 @@ export default function PeriodosAcademicosPage() {
 
         {/* Tabla de Períodos */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 overflow-hidden">
-          {/* DEBUG INFO */}
-          <div className="bg-yellow-50 border-b border-yellow-200 p-3 text-sm">
-            <strong>🐛 DEBUG INFO:</strong> 
-            <span className="ml-2">Períodos cargados: {periodos.length}</span>
-            <span className="ml-4">Loading: {loading.toString()}</span>
-            <span className="ml-4">Servicio disponible: {serviceAvailable?.toString()}</span>
-            {periodos.length > 0 && (
-              <div className="mt-1">
-                <strong>Primer período:</strong> {JSON.stringify(periodos[0], null, 2)}
-              </div>
-            )}
-          </div>
           
           {loading ? (
             <div className="p-8 text-center">
