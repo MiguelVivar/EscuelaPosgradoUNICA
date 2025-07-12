@@ -297,7 +297,7 @@ export default function FacultadesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-600"></div>
           <p className="text-gray-600 text-lg">Cargando facultades...</p>
@@ -307,7 +307,7 @@ export default function FacultadesPage() {
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-gray-50 py-8">
+    <div ref={containerRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
