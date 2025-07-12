@@ -11,6 +11,16 @@ const MATRICULA_API_CONFIG = {
       DELETE: (id: number) => `/api/periodos-academicos/${id}`,
       TOGGLE_HABILITADO: (id: number) => `/api/periodos-academicos/periodos-toggle?id=${id}`,
       REACTIVAR: (id: number) => `/api/periodos-academicos/periodos-reactivar?id=${id}`
+    },
+    SEDES: {
+      LIST: '/api/matricula/sedes',
+      LIST_ACTIVE: '/api/matricula/sedes/activas',
+      CREATE: '/api/matricula/sedes',
+      UPDATE: (id: number) => `/api/matricula/sedes/${id}`,
+      DELETE: (id: number) => `/api/matricula/sedes/${id}`,
+      TOGGLE_ACTIVE: (id: number) => `/api/matricula/sedes/${id}/toggle-active`,
+      BY_ID: (id: number) => `/api/matricula/sedes/${id}`,
+      SEARCH: '/api/matricula/sedes/buscar'
     }
   },
   HEADERS: {

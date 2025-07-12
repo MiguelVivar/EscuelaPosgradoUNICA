@@ -7,6 +7,10 @@ import {
   FaQuestionCircle,
   FaSignOutAlt,
   FaTachometerAlt,
+  FaGraduationCap,
+  FaBuilding,
+  FaCalendarAlt,
+  FaMapMarkerAlt
 } from "react-icons/fa";
 
 // Configuración de sidebars por página y rol
@@ -134,6 +138,12 @@ export const adminPanelSidebar: PageSidebarConfig = {
         href: "/campus-virtual/admin"
       },
       {
+        id: "matricula",
+        icon: <FaGraduationCap />,
+        label: "Módulo Matrícula",
+        href: "/campus-virtual/matricula"
+      },
+      {
         id: "cerrar-sesion",
         icon: <FaSignOutAlt />,
         label: "Cerrar Sesión",
@@ -151,6 +161,12 @@ export const adminPanelSidebar: PageSidebarConfig = {
         icon: <FaUsers />,
         label: "Panel Coordinación",
         href: "/campus-virtual/admin"
+      },
+      {
+        id: "matricula",
+        icon: <FaGraduationCap />,
+        label: "Módulo Matrícula",
+        href: "/campus-virtual/matricula"
       },
       {
         id: "cerrar-sesion",
@@ -198,13 +214,76 @@ export const perfilSidebar: PageSidebarConfig = {
   }
 };
 
+// Sidebar para el módulo de matrícula
+export const matriculaSidebar: PageSidebarConfig = {
+  "/campus-virtual/matricula": {
+    "ADMIN": [
+      {
+        id: "volver",
+        icon: <FaHome />,
+        label: "Campus Virtual",
+        href: "/campus-virtual"
+      },
+      {
+        id: "periodos-academicos",
+        icon: <FaCalendarAlt />,
+        label: "Períodos Académicos",
+        href: "/campus-virtual/matricula/periodos-academicos"
+      },
+      {
+        id: "sedes",
+        icon: <FaMapMarkerAlt />,
+        label: "Gestión de Sedes",
+        href: "/campus-virtual/matricula/sedes"
+      },
+      {
+        id: "programas",
+        icon: <FaGraduationCap />,
+        label: "Programas Académicos",
+        href: "/campus-virtual/matricula/programas"
+      },
+      {
+        id: "cerrar-sesion",
+        icon: <FaSignOutAlt />,
+        label: "Cerrar Sesión",
+      }
+    ],
+    "COORDINADOR": [
+      {
+        id: "volver",
+        icon: <FaHome />,
+        label: "Campus Virtual",
+        href: "/campus-virtual"
+      },
+      {
+        id: "periodos-academicos",
+        icon: <FaCalendarAlt />,
+        label: "Períodos Académicos",
+        href: "/campus-virtual/matricula/periodos-academicos"
+      },
+      {
+        id: "sedes",
+        icon: <FaMapMarkerAlt />,
+        label: "Gestión de Sedes",
+        href: "/campus-virtual/matricula/sedes"
+      },
+      {
+        id: "cerrar-sesion",
+        icon: <FaSignOutAlt />,
+        label: "Cerrar Sesión",
+      }
+    ]
+  }
+};
+
 // Función para obtener el sidebar apropiado según la página y el rol
 export function getSidebarForPage(pathname: string, userRole?: string): SidebarItemProps[] {
   // Configuraciones de sidebar por página
   const sidebarConfigs = [
     campusVirtualMainSidebar,
     adminPanelSidebar,
-    perfilSidebar
+    perfilSidebar,
+    matriculaSidebar
   ];
 
   // Buscar configuración exacta

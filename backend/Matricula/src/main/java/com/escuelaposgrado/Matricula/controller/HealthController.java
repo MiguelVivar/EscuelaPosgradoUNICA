@@ -1,15 +1,18 @@
 package com.escuelaposgrado.Matricula.controller;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controlador para verificación de salud del microservicio
@@ -17,7 +20,6 @@ import java.util.Map;
 @Tag(name = "🏥 Health Check", description = "Endpoints para verificar el estado del microservicio")
 @RestController
 @RequestMapping("/health")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class HealthController {
 
     @Operation(

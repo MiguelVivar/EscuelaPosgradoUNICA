@@ -28,6 +28,7 @@ export function useSidebarConfig(): SidebarConfig {
   // Determinar el tipo de página
   const getPageType = (): SidebarConfig['pageType'] => {
     if (pathname.startsWith("/campus-virtual/admin")) return 'admin';
+    if (pathname.startsWith("/campus-virtual/matricula")) return 'admin'; // Usar el mismo tipo para matrícula
     if (pathname.startsWith("/campus-virtual/cursos-gestion")) return 'cursos';
     if (pathname.startsWith("/campus-virtual/mis-cursos")) return 'cursos';
     if (pathname.startsWith("/campus-virtual/perfil")) return 'perfil';
@@ -40,6 +41,9 @@ export function useSidebarConfig(): SidebarConfig {
     const pageType = getPageType();
     switch (pageType) {
       case 'admin':
+        if (pathname.startsWith("/campus-virtual/matricula")) {
+          return 'Gestión de Matrícula';
+        }
         return user?.role === 'ADMIN' ? 'Panel de Administración' : 'Panel de Coordinación';
       case 'cursos':
         if (pathname.startsWith("/campus-virtual/cursos-gestion")) {
@@ -99,6 +103,30 @@ export function useBreadcrumbs() {
         label: 'Administración',
         href: '/campus-virtual/admin',
         isActive: pathname === '/campus-virtual/admin'
+      });
+    }
+    
+    if (segments.includes('matricula')) {
+      breadcrumbs.push({
+        label: 'Matrícula',
+        href: '/campus-virtual/matricula',
+        isActive: pathname === '/campus-virtual/matricula'
+      });
+    }
+    
+    if (segments.includes('sedes')) {
+      breadcrumbs.push({
+        label: 'Gestión de Sedes',
+        href: '/campus-virtual/matricula/sedes',
+        isActive: pathname === '/campus-virtual/matricula/sedes'
+      });
+    }
+    
+    if (segments.includes('periodos-academicos')) {
+      breadcrumbs.push({
+        label: 'Períodos Académicos',
+        href: '/campus-virtual/matricula/periodos-academicos',
+        isActive: pathname === '/campus-virtual/matricula/periodos-academicos'
       });
     }
     

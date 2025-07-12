@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
 @SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/periodos-academicos")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class PeriodoAcademicoController {
 
     @Autowired

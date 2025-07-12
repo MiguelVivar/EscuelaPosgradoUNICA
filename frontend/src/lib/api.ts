@@ -1,6 +1,7 @@
 // API configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  MATRICULA_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/api/auth/login',
