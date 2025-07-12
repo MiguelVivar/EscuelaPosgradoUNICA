@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { FiCalendar, FiPlus, FiEdit, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiArrowLeft, FiRefreshCw, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiCalendar, FiPlus, FiEdit, FiTrash2, FiToggleLeft, FiToggleRight, FiArrowLeft, FiRefreshCw } from "react-icons/fi";
 import Link from "next/link";
 import { matriculaService, PeriodoAcademico, PeriodoForm } from "@/services/matriculaService";
 import ServiceStatus from "@/components/ui/ServiceStatus";
@@ -308,15 +308,15 @@ export default function PeriodosAcademicosPage() {
     setShowModal(true);
   };
 
-  const handleDelete = async (periodo: PeriodoAcademico) => {
+  const handleDeactivate = async (periodo: PeriodoAcademico) => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
-      text: `Se eliminará el período académico "${periodo.nombre}"`,
+      text: `Se desactivará el período académico "${periodo.nombre}"`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, desactivar",
       cancelButtonText: "Cancelar"
     });
 
@@ -324,8 +324,8 @@ export default function PeriodosAcademicosPage() {
       try {
         // Mostrar indicador de carga
         Swal.fire({
-          title: 'Eliminando...',
-          text: 'Por favor espera mientras se elimina el período',
+          title: 'Desactivando...',
+          text: 'Por favor espera mientras se desactiva el período',
           allowOutsideClick: false,
           didOpen: () => {
             Swal.showLoading();
@@ -339,18 +339,100 @@ export default function PeriodosAcademicosPage() {
         
         Swal.fire({
           icon: "success",
-          title: "¡Eliminado!",
-          text: `El período académico "${periodo.codigo}" ha sido eliminado`,
+          title: "¡Desactivado!",
+          text: `El período académico "${periodo.codigo}" ha sido desactivado`,
           timer: 2000,
           showConfirmButton: false
         });
       } catch (error: any) {
         Swal.fire({
           icon: "error",
-          title: "Error al eliminar",
-          text: error.message || "No se pudo eliminar el período académico",
+          title: "Error al desactivar",
+          text: error.message || "No se pudo desactivar el período académico",
           footer: "Verifica que no existan dependencias asociadas al período"
         });
+      }
+    }
+  };
+
+  const handleReactivate = async (periodo: PeriodoAcademico) => {
+    const result = await Swal.fire({
+      title: "¿Reactivar período?",
+      text: `Se reactivará el período académico "${periodo.nombre}"`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#10b981",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, reactivar",
+      cancelButtonText: "Cancelar"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Mostrar indicador de carga
+        Swal.fire({
+          title: 'Reactivando...',
+          text: 'Por favor espera mientras se reactiva el período',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        // Crear un nuevo período con los mismos datos (ya que delete es permanente)
+        const dataToReactivate: PeriodoForm = {
+          codigo: periodo.codigo,
+          nombre: periodo.nombre,
+          anio: periodo.anio,
+          semestre: periodo.semestre,
+          fechaInicio: periodo.fechaInicio.split('T')[0],
+          fechaFin: periodo.fechaFin.split('T')[0],
+          fechaInicioMatricula: periodo.fechaInicioMatricula.split('T')[0],
+          fechaFinMatricula: periodo.fechaFinMatricula.split('T')[0],
+          habilitado: false, // Lo reactivamos pero deshabilitado por seguridad
+          descripcion: periodo.descripcion || ""
+        };
+
+        await matriculaService.createPeriodoAcademico(dataToReactivate);
+        
+        // Recargar la lista completa para asegurar sincronización
+        await loadPeriodos();
+        
+        Swal.fire({
+          icon: "success",
+          title: "¡Reactivado!",
+          text: `El período académico "${periodo.codigo}" ha sido reactivado`,
+          footer: "El período ha sido reactivado como 'deshabilitado'. Puedes habilitarlo usando el botón de toggle.",
+          timer: 3000,
+          showConfirmButton: false
+        });
+      } catch (error: any) {
+        console.error("Error al reactivar período:", error);
+        
+        // Manejo específico para errores de duplicados
+        if (error.message && (
+          error.message.includes('ya existe') || 
+          error.message.includes('duplicate') ||
+          error.message.includes('UNIQUE constraint') ||
+          error.message.includes('Duplicate entry')
+        )) {
+          Swal.fire({
+            icon: "info",
+            title: "Período ya existe",
+            text: `El período académico "${periodo.codigo}" ya existe activo en la base de datos.`,
+            footer: "La página se actualizará para mostrar el estado actual",
+            confirmButtonText: "Actualizar lista"
+          }).then(() => {
+            loadPeriodos();
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error al reactivar",
+            text: error.message || "No se pudo reactivar el período académico",
+            footer: "Verifica la conexión con el servidor"
+          });
+        }
       }
     }
   };
@@ -389,99 +471,6 @@ export default function PeriodosAcademicosPage() {
       timer: 1500,
       showConfirmButton: false
     });
-  };
-
-  const testDirectApiCall = async () => {
-    console.log("🧪 [TEST] Iniciando prueba directa de API...");
-    
-    try {
-      // Verificar token
-      const token = localStorage.getItem('authToken');
-      console.log("🧪 [TEST] Token:", token ? "Presente" : "Ausente");
-      
-      // Probar conectividad básica al servicio
-      const healthUrl = 'http://localhost:8082/actuator/health';
-      console.log("🧪 [TEST] Verificando health check:", healthUrl);
-      
-      const healthResponse = await fetch(healthUrl);
-      console.log("🧪 [TEST] Health response status:", healthResponse.status);
-      
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.text();
-        console.log("🧪 [TEST] Health data:", healthData);
-      }
-      
-      // Probar endpoint directo de períodos
-      const periodosUrl = 'http://localhost:8082/api/periodos-academicos';
-      console.log("🧪 [TEST] Probando endpoint directo:", periodosUrl);
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      console.log("🧪 [TEST] Headers:", headers);
-      
-      const periodosResponse = await fetch(periodosUrl, {
-        method: 'GET',
-        headers
-      });
-      
-      console.log("🧪 [TEST] Períodos response status:", periodosResponse.status);
-      console.log("🧪 [TEST] Períodos response headers:", Object.fromEntries(periodosResponse.headers.entries()));
-      
-      const periodosText = await periodosResponse.text();
-      console.log("🧪 [TEST] Períodos raw response:", periodosText);
-      
-      if (periodosResponse.ok) {
-        try {
-          const periodosData = JSON.parse(periodosText);
-          console.log("🧪 [TEST] Períodos parsed data:", periodosData);
-          console.log("🧪 [TEST] Es array?", Array.isArray(periodosData));
-          console.log("🧪 [TEST] Longitud:", Array.isArray(periodosData) ? periodosData.length : 'No es array');
-          
-          // Mostrar resultado en una alerta
-          Swal.fire({
-            title: "Resultado de Prueba Directa",
-            html: `
-              <div style="text-align: left; font-size: 12px;">
-                <p><strong>Health Check:</strong> ${healthResponse.status}</p>
-                <p><strong>API Status:</strong> ${periodosResponse.status}</p>
-                <p><strong>Tipo de respuesta:</strong> ${Array.isArray(periodosData) ? 'Array' : typeof periodosData}</p>
-                <p><strong>Cantidad de elementos:</strong> ${Array.isArray(periodosData) ? periodosData.length : 'N/A'}</p>
-                <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto;">${JSON.stringify(periodosData, null, 2)}</pre>
-              </div>
-            `,
-            width: '600px'
-          });
-        } catch (parseError) {
-          console.error("🧪 [TEST] Error parsing JSON:", parseError);
-          Swal.fire({
-            title: "Error de Parsing",
-            text: `No se pudo parsear la respuesta JSON: ${parseError}`,
-            icon: 'error'
-          });
-        }
-      } else {
-        Swal.fire({
-          title: "Error en API",
-          text: `Status: ${periodosResponse.status}, Response: ${periodosText}`,
-          icon: 'error'
-        });
-      }
-      
-    } catch (error) {
-      console.error("🧪 [TEST] Error en prueba directa:", error);
-      Swal.fire({
-        title: "Error de Conexión",
-        text: `Error: ${error}`,
-        icon: 'error'
-      });
-    }
   };
 
   const handleCloseModal = () => {
@@ -561,14 +550,6 @@ export default function PeriodosAcademicosPage() {
               
               <div className="flex items-center gap-3">
                 <button
-                  onClick={testDirectApiCall}
-                  className="px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium bg-purple-100 hover:bg-purple-200 text-purple-700 border-2 border-purple-300"
-                  title="Probar conexión directa con la API"
-                >
-                  🧪 Test API
-                </button>
-                
-                <button
                   onClick={handleRefreshList}
                   disabled={serviceAvailable === false}
                   className={`px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium ${
@@ -595,20 +576,6 @@ export default function PeriodosAcademicosPage() {
                   <FiPlus className="w-5 h-5" />
                   Nuevo Período
                 </button>
-              </div>
-            </div>
-
-            {/* Información de Debug */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
-              <h4 className="font-medium text-yellow-800 mb-2">🔍 Información de Debug:</h4>
-              <div className="text-sm text-yellow-700 space-y-1">
-                <div>• Usuario autenticado: {isAuthenticated ? '✅ Sí' : '❌ No'}</div>
-                <div>• Role del usuario: {user?.role || 'No disponible'}</div>
-                <div>• Token presente: {localStorage.getItem('authToken') ? '✅ Sí' : '❌ No'}</div>
-                <div>• Servicio disponible: {serviceAvailable === null ? '⏳ Verificando...' : serviceAvailable ? '✅ Sí' : '❌ No'}</div>
-                <div>• Cargando: {loading ? '⏳ Sí' : '✅ No'}</div>
-                <div>• Períodos en estado: {periodos.length}</div>
-                <div>• URL del servicio: http://localhost:8082</div>
               </div>
             </div>
 
@@ -749,31 +716,54 @@ export default function PeriodosAcademicosPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleToggleHabilitado(periodo)}
-                            className={`p-2 rounded-lg transition-colors ${
-                              periodo.habilitado
-                                ? 'text-green-600 hover:bg-green-50 border border-green-200'
-                                : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
-                            }`}
-                            title={periodo.habilitado ? 'Deshabilitar' : 'Habilitar'}
-                          >
-                            {periodo.habilitado ? <FiToggleRight className="w-5 h-5" /> : <FiToggleLeft className="w-5 h-5" />}
-                          </button>
-                          <button
-                            onClick={() => handleEdit(periodo)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
-                            title="Editar"
-                          >
-                            <FiEdit className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(periodo)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
-                            title="Eliminar"
-                          >
-                            <FiTrash2 className="w-5 h-5" />
-                          </button>
+                          {periodo.activo ? (
+                            <>
+                              <button
+                                onClick={() => handleToggleHabilitado(periodo)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                  periodo.habilitado
+                                    ? 'text-green-600 hover:bg-green-50 border border-green-200'
+                                    : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
+                                }`}
+                                title={periodo.habilitado ? 'Deshabilitar' : 'Habilitar'}
+                              >
+                                {periodo.habilitado ? <FiToggleRight className="w-5 h-5" /> : <FiToggleLeft className="w-5 h-5" />}
+                              </button>
+                              <button
+                                onClick={() => handleEdit(periodo)}
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                                title="Editar"
+                              >
+                                <FiEdit className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeactivate(periodo)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                                title="Desactivar"
+                              >
+                                <FiTrash2 className="w-5 h-5" />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleReactivate(periodo)}
+                                className="px-3 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200 text-sm font-medium flex items-center gap-2"
+                                title="Reactivar período"
+                              >
+                                <FiRefreshCw className="w-4 h-4" />
+                                Reactivar
+                              </button>
+                              <button
+                                onClick={() => handleEdit(periodo)}
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                                title="Ver/Editar (solo lectura)"
+                                disabled
+                              >
+                                <FiEdit className="w-5 h-5 opacity-50" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
