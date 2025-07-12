@@ -138,13 +138,34 @@ export default function PeriodosAcademicosPage() {
         return;
       }
       
+      // Errores de conectividad (Failed to fetch)
+      if (error instanceof Error && error.message.includes('Failed to fetch')) {
+        console.log("🔍 [DEBUG] Error de conectividad detectado");
+        Swal.fire({
+          icon: "error",
+          title: "Error de Conexión",
+          text: "No se pudo conectar con el microservicio de Matrícula. Verifica que esté ejecutándose.",
+          footer: "¿El contenedor docker-compose está activo?",
+          confirmButtonText: "Verificar Estado",
+          showCancelButton: true,
+          cancelButtonText: "Reintentar"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            checkServiceStatus();
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            loadPeriodos();
+          }
+        });
+        return;
+      }
+      
       // Otros errores
-      console.log("🔍 [DEBUG] Mostrando mensaje de error de conexión");
+      console.log("🔍 [DEBUG] Mostrando mensaje de error genérico");
       Swal.fire({
         icon: "error",
-        title: "Error de Conexión",
-        text: "No se pudieron cargar los períodos académicos. Verifica que el microservicio de Matrícula esté ejecutándose.",
-        footer: "¿El contenedor docker-compose está activo?"
+        title: "Error",
+        text: error instanceof Error ? error.message : "No se pudieron cargar los períodos académicos",
+        footer: "Si el problema persiste, verifica que el microservicio de Matrícula esté ejecutándose"
       });
     } finally {
       setLoading(false);
@@ -345,6 +366,7 @@ export default function PeriodosAcademicosPage() {
           showConfirmButton: false
         });
       } catch (error: any) {
+        console.error("Error al desactivar período:", error);
         Swal.fire({
           icon: "error",
           title: "Error al desactivar",
@@ -379,21 +401,8 @@ export default function PeriodosAcademicosPage() {
           }
         });
 
-        // Crear un nuevo período con los mismos datos (ya que delete es permanente)
-        const dataToReactivate: PeriodoForm = {
-          codigo: periodo.codigo,
-          nombre: periodo.nombre,
-          anio: periodo.anio,
-          semestre: periodo.semestre,
-          fechaInicio: periodo.fechaInicio.split('T')[0],
-          fechaFin: periodo.fechaFin.split('T')[0],
-          fechaInicioMatricula: periodo.fechaInicioMatricula.split('T')[0],
-          fechaFinMatricula: periodo.fechaFinMatricula.split('T')[0],
-          habilitado: false, // Lo reactivamos pero deshabilitado por seguridad
-          descripcion: periodo.descripcion || ""
-        };
-
-        await matriculaService.createPeriodoAcademico(dataToReactivate);
+        // Usar el nuevo endpoint de reactivación
+        const reactivatedPeriodo = await matriculaService.reactivarPeriodoAcademico(periodo.id);
         
         // Recargar la lista completa para asegurar sincronización
         await loadPeriodos();
@@ -409,30 +418,12 @@ export default function PeriodosAcademicosPage() {
       } catch (error: any) {
         console.error("Error al reactivar período:", error);
         
-        // Manejo específico para errores de duplicados
-        if (error.message && (
-          error.message.includes('ya existe') || 
-          error.message.includes('duplicate') ||
-          error.message.includes('UNIQUE constraint') ||
-          error.message.includes('Duplicate entry')
-        )) {
-          Swal.fire({
-            icon: "info",
-            title: "Período ya existe",
-            text: `El período académico "${periodo.codigo}" ya existe activo en la base de datos.`,
-            footer: "La página se actualizará para mostrar el estado actual",
-            confirmButtonText: "Actualizar lista"
-          }).then(() => {
-            loadPeriodos();
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error al reactivar",
-            text: error.message || "No se pudo reactivar el período académico",
-            footer: "Verifica la conexión con el servidor"
-          });
-        }
+        Swal.fire({
+          icon: "error",
+          title: "Error al reactivar",
+          text: error.message || "No se pudo reactivar el período académico",
+          footer: "Verifica la conexión con el servidor"
+        });
       }
     }
   };

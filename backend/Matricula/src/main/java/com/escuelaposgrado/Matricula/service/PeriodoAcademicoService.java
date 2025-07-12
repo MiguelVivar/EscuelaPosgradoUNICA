@@ -1,17 +1,18 @@
 package com.escuelaposgrado.Matricula.service;
 
-import com.escuelaposgrado.Matricula.model.entity.PeriodoAcademico;
-import com.escuelaposgrado.Matricula.dto.request.PeriodoAcademicoRequest;
-import com.escuelaposgrado.Matricula.dto.response.PeriodoAcademicoResponse;
-import com.escuelaposgrado.Matricula.repository.PeriodoAcademicoRepository;
-import com.escuelaposgrado.Matricula.exception.ResourceNotFoundException;
-import com.escuelaposgrado.Matricula.exception.BadRequestException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.escuelaposgrado.Matricula.dto.request.PeriodoAcademicoRequest;
+import com.escuelaposgrado.Matricula.dto.response.PeriodoAcademicoResponse;
+import com.escuelaposgrado.Matricula.exception.BadRequestException;
+import com.escuelaposgrado.Matricula.exception.ResourceNotFoundException;
+import com.escuelaposgrado.Matricula.model.entity.PeriodoAcademico;
+import com.escuelaposgrado.Matricula.repository.PeriodoAcademicoRepository;
 
 /**
  * Servicio para la gestión de Períodos Académicos
@@ -177,6 +178,21 @@ public class PeriodoAcademicoService {
         periodo.setHabilitado(!periodo.getHabilitado());
         PeriodoAcademico updatedPeriodo = periodoAcademicoRepository.save(periodo);
         return convertToResponse(updatedPeriodo);
+    }
+
+    /**
+     * Reactivar período académico (cambiar activo a true)
+     */
+    public PeriodoAcademicoResponse reactivar(Long id) {
+        PeriodoAcademico periodo = periodoAcademicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Período académico no encontrado con ID: " + id));
+
+        // Cambiar estado activo a true y deshabilitado por seguridad
+        periodo.setActivo(true);
+        periodo.setHabilitado(false); // Lo reactivamos pero deshabilitado por seguridad
+        
+        PeriodoAcademico reactivatedPeriodo = periodoAcademicoRepository.save(periodo);
+        return convertToResponse(reactivatedPeriodo);
     }
 
     /**

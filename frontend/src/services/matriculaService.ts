@@ -9,7 +9,8 @@ const MATRICULA_API_CONFIG = {
       CREATE: '/api/periodos-academicos',
       UPDATE: (id: number) => `/api/periodos-academicos/${id}`,
       DELETE: (id: number) => `/api/periodos-academicos/${id}`,
-      TOGGLE_HABILITADO: (id: number) => `/api/periodos-academicos/${id}/toggle-habilitado`
+      TOGGLE_HABILITADO: (id: number) => `/api/periodos-academicos/periodos-toggle?id=${id}`,
+      REACTIVAR: (id: number) => `/api/periodos-academicos/periodos-reactivar?id=${id}`
     }
   },
   HEADERS: {
@@ -217,12 +218,9 @@ class MatriculaService {
         throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
       }
 
-      const result: ApiResponse<PeriodoAcademico> = await response.json();
-      if (!result.success || !result.data) {
-        throw new Error(result.message || 'Error al crear período académico');
-      }
-
-      return result.data;
+      // El backend devuelve directamente el objeto PeriodoAcademico
+      const result: PeriodoAcademico = await response.json();
+      return result;
     } catch (error) {
       console.error('Error al crear período académico:', error);
       throw error;
@@ -259,15 +257,12 @@ class MatriculaService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        throw new Error(errorData.message || `Error al actualizar período académico`);
       }
 
-      const result: ApiResponse<PeriodoAcademico> = await response.json();
-      if (!result.success || !result.data) {
-        throw new Error(result.message || 'Error al actualizar período académico');
-      }
-
-      return result.data;
+      // El backend devuelve directamente el objeto PeriodoAcademico
+      const result: PeriodoAcademico = await response.json();
+      return result;
     } catch (error) {
       console.error('Error al actualizar período académico:', error);
       throw error;
@@ -287,13 +282,10 @@ class MatriculaService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        throw new Error(errorData.message || `Error al eliminar período académico`);
       }
 
-      const result: ApiResponse<void> = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || 'Error al eliminar período académico');
-      }
+      // El endpoint DELETE puede devolver solo un mensaje de confirmación o void
     } catch (error) {
       console.error('Error al eliminar período académico:', error);
       throw error;
@@ -305,26 +297,202 @@ class MatriculaService {
    */
   async togglePeriodoHabilitado(id: number): Promise<PeriodoAcademico> {
     try {
+      console.log('🔍 [MATRICULA SERVICE] Iniciando togglePeriodoHabilitado...');
+      console.log('🔍 [MATRICULA SERVICE] ID del período:', id);
+      console.log('🔍 [MATRICULA SERVICE] Base URL:', this.baseUrl);
+      console.log('🔍 [MATRICULA SERVICE] Endpoint completo:', `${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.TOGGLE_HABILITADO(id)}`);
+      
+      // Validar token antes de hacer la solicitud
+      if (!validateStoredToken()) {
+        console.error('🔍 [MATRICULA SERVICE] Token no válido o expirado');
+        throw new Error('Error 403: Token no válido o expirado');
+      }
+
       const token = localStorage.getItem('authToken');
+      console.log('🔍 [MATRICULA SERVICE] Token disponible:', !!token);
+      console.log('🔍 [MATRICULA SERVICE] Token preview:', token ? `${token.substring(0, 30)}...` : 'No token');
+      
+      const headers = getAuthHeaders(token ?? undefined);
+      console.log('🔍 [MATRICULA SERVICE] Headers:', headers);
+      
+      console.log('🔍 [MATRICULA SERVICE] Realizando fetch para toggle...');
       const response = await fetch(`${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.TOGGLE_HABILITADO(id)}`, {
-        method: 'PATCH',
-        headers: getAuthHeaders(token ?? undefined),
+        method: 'POST', // Cambiado temporalmente de PATCH a POST para evitar problemas de CORS
+        headers,
       });
 
+      console.log('🔍 [MATRICULA SERVICE] Response status:', response.status);
+      console.log('🔍 [MATRICULA SERVICE] Response ok:', response.ok);
+      console.log('🔍 [MATRICULA SERVICE] Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        console.error('🔍 [MATRICULA SERVICE] Response no exitosa');
+        
+        // Intentar obtener información del error
+        let errorData: any = {};
+        let errorText = '';
+        
+        try {
+          errorText = await response.text();
+          console.log('🔍 [MATRICULA SERVICE] Error response text:', errorText);
+          
+          if (errorText) {
+            try {
+              errorData = JSON.parse(errorText);
+              console.log('🔍 [MATRICULA SERVICE] Error data parsed:', errorData);
+            } catch (parseError) {
+              console.log('🔍 [MATRICULA SERVICE] No se pudo parsear como JSON, usando texto crudo');
+              errorData.message = errorText;
+            }
+          }
+        } catch (textError) {
+          console.error('🔍 [MATRICULA SERVICE] Error al leer response text:', textError);
+        }
+        
+        // Manejo específico por código de estado
+        if (response.status === 403) {
+          throw new Error(`Error 403: Acceso denegado. ${errorData.message || errorText || 'Token inválido o permisos insuficientes'}`);
+        } else if (response.status === 404) {
+          throw new Error(`Error 404: El período académico con ID ${id} no fue encontrado.`);
+        } else if (response.status >= 500) {
+          throw new Error(`Error del servidor (${response.status}): ${errorData.message || errorText || 'Error interno del servidor'}`);
+        } else {
+          throw new Error(errorData.message || errorText || `Error ${response.status}: ${response.statusText}`);
+        }
       }
 
-      const result: ApiResponse<PeriodoAcademico> = await response.json();
-      if (!result.success || !result.data) {
-        throw new Error(result.message || 'Error al cambiar estado del período académico');
+      // Leer respuesta exitosa
+      const responseText = await response.text();
+      console.log('🔍 [MATRICULA SERVICE] Response text exitoso:', responseText);
+      
+      let result: PeriodoAcademico;
+      try {
+        result = JSON.parse(responseText);
+        console.log('🔍 [MATRICULA SERVICE] Estado cambiado exitosamente:', result);
+      } catch (parseError) {
+        console.error('🔍 [MATRICULA SERVICE] Error parsing successful response:', parseError);
+        throw new Error('Error al procesar la respuesta del servidor');
       }
-
-      return result.data;
+      
+      return result;
     } catch (error) {
-      console.error('Error al cambiar estado del período académico:', error);
-      throw error;
+      console.error('🔍 [MATRICULA SERVICE] Error completo al cambiar estado del período académico:', error);
+      
+      // Si es un error de red (Failed to fetch), proporcionar mejor información
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('🔍 [MATRICULA SERVICE] Error de conectividad detectado');
+        throw new Error('Error de conexión: No se pudo conectar con el servidor. Verifique su conexión a internet y que el servicio esté disponible.');
+      }
+      
+      // Si es un error personalizado nuestro, propagarlo
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      // Error genérico
+      throw new Error('Error inesperado al cambiar el estado del período académico');
+    }
+  }
+
+  /**
+   * Reactivar un período académico desactivado
+   */
+  async reactivarPeriodoAcademico(id: number): Promise<PeriodoAcademico> {
+    try {
+      console.log('🔍 [MATRICULA SERVICE] Iniciando reactivarPeriodoAcademico...');
+      console.log('🔍 [MATRICULA SERVICE] ID del período:', id);
+      console.log('🔍 [MATRICULA SERVICE] Base URL:', this.baseUrl);
+      console.log('🔍 [MATRICULA SERVICE] Endpoint completo:', `${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.REACTIVAR(id)}`);
+      
+      // Validar token antes de hacer la solicitud
+      if (!validateStoredToken()) {
+        console.error('🔍 [MATRICULA SERVICE] Token no válido o expirado');
+        throw new Error('Error 403: Token no válido o expirado');
+      }
+
+      const token = localStorage.getItem('authToken');
+      console.log('🔍 [MATRICULA SERVICE] Token disponible:', !!token);
+      console.log('🔍 [MATRICULA SERVICE] Token preview:', token ? `${token.substring(0, 30)}...` : 'No token');
+      
+      const headers = getAuthHeaders(token ?? undefined);
+      console.log('🔍 [MATRICULA SERVICE] Headers:', headers);
+      
+      console.log('🔍 [MATRICULA SERVICE] Realizando fetch para reactivar...');
+      const response = await fetch(`${this.baseUrl}${MATRICULA_API_CONFIG.ENDPOINTS.PERIODOS.REACTIVAR(id)}`, {
+        method: 'POST', // Cambiado temporalmente de PATCH a POST para evitar problemas de CORS
+        headers,
+      });
+
+      console.log('🔍 [MATRICULA SERVICE] Response status:', response.status);
+      console.log('🔍 [MATRICULA SERVICE] Response ok:', response.ok);
+      console.log('🔍 [MATRICULA SERVICE] Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        console.error('🔍 [MATRICULA SERVICE] Response no exitosa');
+        
+        // Intentar obtener información del error
+        let errorData: any = {};
+        let errorText = '';
+        
+        try {
+          errorText = await response.text();
+          console.log('🔍 [MATRICULA SERVICE] Error response text:', errorText);
+          
+          if (errorText) {
+            try {
+              errorData = JSON.parse(errorText);
+              console.log('🔍 [MATRICULA SERVICE] Error data parsed:', errorData);
+            } catch (parseError) {
+              console.log('🔍 [MATRICULA SERVICE] No se pudo parsear como JSON, usando texto crudo');
+              errorData.message = errorText;
+            }
+          }
+        } catch (textError) {
+          console.error('🔍 [MATRICULA SERVICE] Error al leer response text:', textError);
+        }
+        
+        // Manejo específico por código de estado
+        if (response.status === 403) {
+          throw new Error(`Error 403: Acceso denegado. ${errorData.message || errorText || 'Token inválido o permisos insuficientes'}`);
+        } else if (response.status === 404) {
+          throw new Error(`Error 404: El período académico con ID ${id} no fue encontrado.`);
+        } else if (response.status >= 500) {
+          throw new Error(`Error del servidor (${response.status}): ${errorData.message || errorText || 'Error interno del servidor'}`);
+        } else {
+          throw new Error(errorData.message || errorText || `Error ${response.status}: ${response.statusText}`);
+        }
+      }
+
+      // Leer respuesta exitosa
+      const responseText = await response.text();
+      console.log('🔍 [MATRICULA SERVICE] Response text exitoso:', responseText);
+      
+      let result: PeriodoAcademico;
+      try {
+        result = JSON.parse(responseText);
+        console.log('🔍 [MATRICULA SERVICE] Período reactivado exitosamente:', result);
+      } catch (parseError) {
+        console.error('🔍 [MATRICULA SERVICE] Error parsing successful response:', parseError);
+        throw new Error('Error al procesar la respuesta del servidor');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('🔍 [MATRICULA SERVICE] Error completo al reactivar período académico:', error);
+      
+      // Si es un error de red (Failed to fetch), proporcionar mejor información
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('🔍 [MATRICULA SERVICE] Error de conectividad detectado');
+        throw new Error('Error de conexión: No se pudo conectar con el servidor. Verifique su conexión a internet y que el servicio esté disponible.');
+      }
+      
+      // Si es un error personalizado nuestro, propagarlo
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      // Error genérico
+      throw new Error('Error inesperado al reactivar el período académico');
     }
   }
 

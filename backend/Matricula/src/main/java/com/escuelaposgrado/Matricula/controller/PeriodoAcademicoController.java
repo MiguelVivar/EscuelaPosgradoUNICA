@@ -1,24 +1,33 @@
 package com.escuelaposgrado.Matricula.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelaposgrado.Matricula.dto.common.MessageResponse;
 import com.escuelaposgrado.Matricula.dto.request.PeriodoAcademicoRequest;
 import com.escuelaposgrado.Matricula.dto.response.PeriodoAcademicoResponse;
-import com.escuelaposgrado.Matricula.dto.common.MessageResponse;
 import com.escuelaposgrado.Matricula.service.PeriodoAcademicoService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controlador REST para la gestión de Períodos Académicos
@@ -160,11 +169,33 @@ public class PeriodoAcademicoController {
         @ApiResponse(responseCode = "404", description = "Período no encontrado"),
         @ApiResponse(responseCode = "401", description = "No autorizado")
     })
-    @PatchMapping("/{id}/toggle-habilitado")
+    @CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"}, 
+                 allowCredentials = "true")
+    @PostMapping("/periodos-toggle")
     public ResponseEntity<PeriodoAcademicoResponse> toggleHabilitado(
             @Parameter(description = "ID del período académico", required = true)
-            @PathVariable Long id) {
+            @RequestParam Long id) {
         PeriodoAcademicoResponse periodo = periodoAcademicoService.toggleHabilitado(id);
+        return ResponseEntity.ok(periodo);
+    }
+
+    @Operation(
+        summary = "♻️ Reactivar período académico",
+        description = "Reactiva un período académico previamente desactivado (eliminado lógicamente)"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Período reactivado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Período no encontrado"),
+        @ApiResponse(responseCode = "401", description = "No autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acceso prohibido")
+    })
+    @CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"}, 
+                 allowCredentials = "true")
+    @PostMapping("/periodos-reactivar")
+    public ResponseEntity<PeriodoAcademicoResponse> reactivarPeriodo(
+            @Parameter(description = "ID del período académico", required = true)
+            @RequestParam Long id) {
+        PeriodoAcademicoResponse periodo = periodoAcademicoService.reactivar(id);
         return ResponseEntity.ok(periodo);
     }
 }
