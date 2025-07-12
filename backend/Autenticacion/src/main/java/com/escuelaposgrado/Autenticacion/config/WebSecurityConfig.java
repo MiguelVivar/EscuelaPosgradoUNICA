@@ -108,7 +108,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Permitir orígenes específicos (frontend en desarrollo y producción)
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

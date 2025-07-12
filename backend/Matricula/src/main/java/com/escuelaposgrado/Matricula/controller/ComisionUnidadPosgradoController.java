@@ -35,7 +35,8 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/comisiones")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"}, 
+             allowCredentials = "true", maxAge = 3600)
 @Tag(name = "Comisiones Unidad Posgrado", description = "API para la gestión de comisiones de unidades de posgrado")
 public class ComisionUnidadPosgradoController {
 

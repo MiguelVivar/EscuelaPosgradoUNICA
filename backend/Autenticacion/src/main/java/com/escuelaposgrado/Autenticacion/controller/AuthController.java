@@ -39,7 +39,8 @@ import jakarta.validation.Valid;
  * Controlador REST para la autenticación
  */
 @Tag(name = "🔐 Autenticación", description = "Endpoints para autenticación y registro de usuarios")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"}, 
+             allowCredentials = "true", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

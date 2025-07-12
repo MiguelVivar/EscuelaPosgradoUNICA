@@ -6,9 +6,9 @@ const PERIODOS_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
   ENDPOINTS: {
     PERIODOS: {
-      LIST: '/api/matricula/periodos-academicos',
-      LIST_ACTIVE: '/api/matricula/periodos-academicos/activos',
-      BY_ID: (id: number) => `/api/matricula/periodos-academicos/${id}`
+      LIST: '/api/periodos-academicos',
+      LIST_ACTIVE: '/api/periodos-academicos/activos',
+      BY_ID: (id: number) => `/api/periodos-academicos/${id}`
     }
   },
   HEADERS: {

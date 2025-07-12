@@ -24,7 +24,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * Controlador REST para operaciones de alumnos
  */
 @Tag(name = "🎓 Alumnos", description = "Endpoints específicos para estudiantes")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"}, 
+             allowCredentials = "true", maxAge = 3600)
 @RestController
 @RequestMapping("/api/alumno")
 @PreAuthorize("hasAnyRole('ALUMNO', 'ADMIN')")
