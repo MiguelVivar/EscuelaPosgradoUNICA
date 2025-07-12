@@ -10,7 +10,8 @@ import {
   FaGraduationCap,
   FaBuilding,
   FaCalendarAlt,
-  FaMapMarkerAlt
+  FaMapMarkerAlt,
+  FaUniversity
 } from "react-icons/fa";
 
 // Configuración de sidebars por página y rol
@@ -237,6 +238,18 @@ export const matriculaSidebar: PageSidebarConfig = {
         href: "/campus-virtual/matricula/sedes"
       },
       {
+        id: "facultades",
+        icon: <FaUniversity />,
+        label: "Gestión de Facultades",
+        href: "/campus-virtual/matricula/facultades"
+      },
+      {
+        id: "aulas",
+        icon: <FaBuilding />,
+        label: "Gestión de Aulas",
+        href: "/campus-virtual/matricula/aulas"
+      },
+      {
         id: "programas",
         icon: <FaGraduationCap />,
         label: "Programas Académicos",
@@ -266,6 +279,18 @@ export const matriculaSidebar: PageSidebarConfig = {
         icon: <FaMapMarkerAlt />,
         label: "Gestión de Sedes",
         href: "/campus-virtual/matricula/sedes"
+      },
+      {
+        id: "facultades",
+        icon: <FaUniversity />,
+        label: "Gestión de Facultades",
+        href: "/campus-virtual/matricula/facultades"
+      },
+      {
+        id: "aulas",
+        icon: <FaBuilding />,
+        label: "Gestión de Aulas",
+        href: "/campus-virtual/matricula/aulas"
       },
       {
         id: "cerrar-sesion",

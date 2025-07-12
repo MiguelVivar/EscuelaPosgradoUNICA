@@ -21,6 +21,18 @@ const MATRICULA_API_CONFIG = {
       TOGGLE_ACTIVE: (id: number) => `/api/matricula/sedes/${id}/toggle-active`,
       BY_ID: (id: number) => `/api/matricula/sedes/${id}`,
       SEARCH: '/api/matricula/sedes/buscar'
+    },
+    FACULTADES: {
+      LIST: '/api/matricula/facultades',
+      LIST_ACTIVE: '/api/matricula/facultades/activas',
+      CON_PROGRAMAS: '/api/matricula/facultades/con-programas',
+      CREATE: '/api/matricula/facultades',
+      UPDATE: (id: number) => `/api/matricula/facultades/${id}`,
+      DELETE: (id: number) => `/api/matricula/facultades/${id}`,
+      TOGGLE_ACTIVE: (id: number) => `/api/matricula/facultades/${id}/toggle-active`,
+      BY_ID: (id: number) => `/api/matricula/facultades/${id}`,
+      SEARCH: '/api/matricula/facultades/buscar',
+      SEARCH_BY_DECANO: '/api/matricula/facultades/buscar-por-decano'
     }
   },
   HEADERS: {

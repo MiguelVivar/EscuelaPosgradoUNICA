@@ -122,6 +122,22 @@ export function useBreadcrumbs() {
       });
     }
     
+    if (segments.includes('facultades')) {
+      breadcrumbs.push({
+        label: 'Gestión de Facultades',
+        href: '/campus-virtual/matricula/facultades',
+        isActive: pathname === '/campus-virtual/matricula/facultades'
+      });
+    }
+    
+    if (segments.includes('aulas')) {
+      breadcrumbs.push({
+        label: 'Gestión de Aulas',
+        href: '/campus-virtual/matricula/aulas',
+        isActive: pathname === '/campus-virtual/matricula/aulas'
+      });
+    }
+    
     if (segments.includes('periodos-academicos')) {
       breadcrumbs.push({
         label: 'Períodos Académicos',
