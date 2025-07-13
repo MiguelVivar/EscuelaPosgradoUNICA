@@ -1,39 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/common';
+import { sedesService } from '@/services/sedesService';
+import { Sede, SedeForm } from '@/types/sede';
+import Swal from 'sweetalert2';
+import { gsap } from 'gsap';
 import { 
-  FiMapPin, 
-  FiPlus, 
-  FiEdit, 
-  FiTrash2, 
-  FiToggleLeft, 
-  FiToggleRight, 
-  FiArrowLeft, 
-  FiRefreshCw,
-  FiSearch,
-  FiMail,
-  FiPhone,
-  FiHome
-} from "react-icons/fi";
-import Link from "next/link";
-import { sedesService } from "@/services/sedesService";
-import { Sede, SedeForm } from "@/types/sede";
-import ServiceStatus from "@/components/ui/ServiceStatus";
+  FaPlus, 
+  FaEdit, 
+  FaTrash, 
+  FaSearch, 
+  FaPowerOff,
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaPhone,
+  FaEnvelope,
+  FaInfoCircle,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaHome
+} from 'react-icons/fa';
 
 export default function SedesPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   
   const [sedes, setSedes] = useState<Sede[]>([]);
-  const [filteredSedes, setFilteredSedes] = useState<Sede[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingSede, setEditingSede] = useState<Sede | null>(null);
-  const [serviceAvailable, setServiceAvailable] = useState<boolean | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState<SedeForm>({
     nombre: "",
     codigo: "",
@@ -42,88 +39,69 @@ export default function SedesPage() {
     email: ""
   });
 
-  // Verificar autenticación y autorización
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.push("/iniciar-sesion");
-        return;
-      }
-      
-      if (user && user.role !== 'ADMIN' && user.role !== 'COORDINADOR') {
-        router.push("/campus-virtual");
-        return;
-      }
-    }
-  }, [isLoading, isAuthenticated, user, router]);
+  // Refs para animaciones
+  const containerRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
 
-  // Cargar sedes
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      loadSedes();
-    }
-  }, [isAuthenticated, user]);
+  // Verificar permisos
+  const canManage = user?.role === 'ADMIN' || user?.role === 'COORDINADOR';
 
-  // Verificar estado del servicio al cargar
   useEffect(() => {
-    checkServiceStatus();
+    loadSedes();
   }, []);
 
-  // Filtrar sedes cuando cambia el término de búsqueda
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredSedes(sedes);
-    } else {
-      const filtered = sedes.filter(sede =>
-        sede.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sede.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sede.direccion.toLowerCase().includes(searchTerm.toLowerCase())
+    if (containerRef.current) {
+      gsap.fromTo(containerRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
-      setFilteredSedes(filtered);
     }
-  }, [searchTerm, sedes]);
+  }, []);
 
-  const checkServiceStatus = async () => {
-    console.log("🔍 [DEBUG] Verificando estado del servicio de sedes...");
-    const isAvailable = await sedesService.checkHealth();
-    console.log("🔍 [DEBUG] Estado del servicio:", isAvailable);
-    setServiceAvailable(isAvailable);
-  };
+  useEffect(() => {
+    if (showModal && modalRef.current) {
+      gsap.fromTo(modalRef.current,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.7)" }
+      );
+    }
+  }, [showModal]);
+
+  useEffect(() => {
+    if (sedes.length > 0 && tableRef.current) {
+      const rows = tableRef.current.querySelectorAll('tbody tr');
+      gsap.fromTo(rows,
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: "power2.out" }
+      );
+    }
+  }, [sedes]);
 
   const loadSedes = async () => {
     try {
       setLoading(true);
-      console.log("🔍 [DEBUG] Iniciando carga de sedes...");
-      
       const data = await sedesService.getSedes();
-      console.log("🔍 [DEBUG] Sedes cargadas:", data);
-      
       setSedes(data);
-      setFilteredSedes(data);
     } catch (error) {
-      console.error("Error al cargar sedes:", error);
-      
-      let errorMessage = "Error al cargar las sedes";
-      if (error instanceof Error) {
-        if (error.message.includes("403")) {
-          errorMessage = "No tienes permisos para acceder a esta funcionalidad";
-        } else if (error.message.includes("network") || error.message.includes("fetch")) {
-          errorMessage = "Error de conexión. Verifica tu conexión a internet.";
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
-      await Swal.fire({
-        title: "Error",
-        text: errorMessage,
-        icon: "error",
-        confirmButtonText: "Entendido"
+      console.error('Error al cargar sedes:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudieron cargar las sedes',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
     } finally {
       setLoading(false);
     }
   };
+
+  const filteredSedes = sedes.filter(sede => {
+    return sede.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           sede.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           sede.direccion.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const openModal = (sede?: Sede) => {
     if (sede) {
@@ -151,13 +129,6 @@ export default function SedesPage() {
   const closeModal = () => {
     setShowModal(false);
     setEditingSede(null);
-    setFormData({
-      nombre: "",
-      codigo: "",
-      direccion: "",
-      telefono: "",
-      email: ""
-    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,38 +136,42 @@ export default function SedesPage() {
 
     // Validaciones básicas
     if (!formData.nombre.trim()) {
-      await Swal.fire({
-        title: "Error",
-        text: "El nombre de la sede es obligatorio",
-        icon: "error"
+      Swal.fire({
+        title: 'Error',
+        text: 'El nombre de la sede es obligatorio',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
       return;
     }
 
     if (!formData.codigo.trim()) {
-      await Swal.fire({
-        title: "Error",
-        text: "El código de la sede es obligatorio",
-        icon: "error"
+      Swal.fire({
+        title: 'Error',
+        text: 'El código de la sede es obligatorio',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
       return;
     }
 
     if (!formData.direccion.trim()) {
-      await Swal.fire({
-        title: "Error",
-        text: "La dirección de la sede es obligatoria",
-        icon: "error"
+      Swal.fire({
+        title: 'Error',
+        text: 'La dirección de la sede es obligatoria',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
       return;
     }
 
     // Validación de email si se proporciona
     if (formData.email && !isValidEmail(formData.email)) {
-      await Swal.fire({
-        title: "Error",
-        text: "El formato del email no es válido",
-        icon: "error"
+      Swal.fire({
+        title: 'Error',
+        text: 'El formato del email no es válido',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
       return;
     }
@@ -210,91 +185,64 @@ export default function SedesPage() {
         email: formData.email.trim() || undefined
       };
 
-      let result: Sede;
-      
       if (editingSede) {
-        result = await sedesService.updateSede(editingSede.id, sedeData);
-        await Swal.fire({
-          title: "¡Éxito!",
-          text: "Sede actualizada correctamente",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false
+        await sedesService.updateSede(editingSede.id, sedeData);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Sede actualizada correctamente',
+          icon: 'success',
+          confirmButtonColor: '#f59e0b'
         });
       } else {
-        result = await sedesService.createSede(sedeData);
-        await Swal.fire({
-          title: "¡Éxito!",
-          text: "Sede creada correctamente",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false
+        await sedesService.createSede(sedeData);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Sede creada correctamente',
+          icon: 'success',
+          confirmButtonColor: '#f59e0b'
         });
       }
 
       closeModal();
-      await loadSedes();
-    } catch (error) {
-      console.error("Error al guardar sede:", error);
-      
-      let errorMessage = "Error al guardar la sede";
-      if (error instanceof Error) {
-        if (error.message.includes("ya existe")) {
-          errorMessage = "Ya existe una sede con ese nombre o código";
-        } else if (error.message.includes("403")) {
-          errorMessage = "No tienes permisos para realizar esta acción";
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
-      await Swal.fire({
-        title: "Error",
-        text: errorMessage,
-        icon: "error"
+      loadSedes();
+    } catch (error: any) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'Error al guardar la sede',
+        icon: 'error',
+        confirmButtonColor: '#f59e0b'
       });
     }
   };
 
   const handleToggleActive = async (sede: Sede) => {
-    const action = sede.activo ? "desactivar" : "activar";
-    
     const result = await Swal.fire({
-      title: `¿${action.charAt(0).toUpperCase() + action.slice(1)} sede?`,
-      text: `¿Estás seguro de que quieres ${action} la sede "${sede.nombre}"?`,
-      icon: "question",
+      title: '¿Estás seguro?',
+      text: `¿Deseas ${sede.activo ? 'desactivar' : 'activar'} la sede "${sede.nombre}"?`,
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: sede.activo ? "#ef4444" : "#10b981",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: `Sí, ${action}`,
-      cancelButtonText: "Cancelar"
+      confirmButtonColor: '#f59e0b',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: sede.activo ? 'Desactivar' : 'Activar',
+      cancelButtonText: 'Cancelar'
     });
 
     if (result.isConfirmed) {
       try {
         await sedesService.toggleSedeActiva(sede.id);
-        
-        await Swal.fire({
-          title: "¡Éxito!",
-          text: `Sede ${sede.activo ? "desactivada" : "activada"} correctamente`,
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false
+        Swal.fire({
+          title: '¡Éxito!',
+          text: `Sede ${sede.activo ? 'desactivada' : 'activada'} correctamente`,
+          icon: 'success',
+          confirmButtonColor: '#f59e0b'
         });
-        
-        await loadSedes();
-      } catch (error) {
-        console.error("Error al cambiar estado de sede:", error);
-        
-        let errorMessage = "Error al cambiar el estado de la sede";
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-        
-        await Swal.fire({
-          title: "Error",
-          text: errorMessage,
-          icon: "error"
+        loadSedes();
+      } catch (error: any) {
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'Error al cambiar el estado de la sede',
+          icon: 'error',
+          confirmButtonColor: '#f59e0b'
         });
       }
     }
@@ -302,41 +250,32 @@ export default function SedesPage() {
 
   const handleDelete = async (sede: Sede) => {
     const result = await Swal.fire({
-      title: "¿Eliminar sede?",
-      text: `¿Estás seguro de que quieres eliminar la sede "${sede.nombre}"? Esta acción no se puede deshacer.`,
-      icon: "warning",
+      title: '¿Estás seguro?',
+      text: `Esta acción eliminará la sede "${sede.nombre}" de forma permanente`,
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
     });
 
     if (result.isConfirmed) {
       try {
         await sedesService.deleteSede(sede.id);
-        
-        await Swal.fire({
-          title: "¡Eliminada!",
-          text: "La sede ha sido eliminada correctamente",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false
+        Swal.fire({
+          title: '¡Eliminada!',
+          text: 'La sede ha sido eliminada correctamente',
+          icon: 'success',
+          confirmButtonColor: '#f59e0b'
         });
-        
-        await loadSedes();
-      } catch (error) {
-        console.error("Error al eliminar sede:", error);
-        
-        let errorMessage = "Error al eliminar la sede";
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-        
-        await Swal.fire({
-          title: "Error",
-          text: errorMessage,
-          icon: "error"
+        loadSedes();
+      } catch (error: any) {
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'Error al eliminar la sede',
+          icon: 'error',
+          confirmButtonColor: '#f59e0b'
         });
       }
     }
@@ -361,271 +300,290 @@ export default function SedesPage() {
     }
   };
 
-  // Mostrar loading mientras se verifica autenticación
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Verificando autenticación...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Cargando sedes...</p>
         </div>
       </div>
     );
   }
 
-  // Si no está autenticado o no tiene permisos, no mostrar nada (el useEffect manejará la redirección)
-  if (!isAuthenticated || !user || (user.role !== 'ADMIN' && user.role !== 'COORDINADOR')) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <Link 
-                  href="/campus-virtual/matricula"
-                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-200"
-                >
-                  <FiArrowLeft className="w-5 h-5" />
-                  <span>Volver a Matrícula</span>
-                </Link>
+    <div ref={containerRef} className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="p-3 bg-amber-100 rounded-lg">
+            <FaMapMarkerAlt className="text-2xl text-amber-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Gestión de Sedes</h1>
+            <p className="text-gray-600">Administra las sedes del sistema educativo</p>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Sedes</p>
+                <p className="text-2xl font-bold text-gray-900">{sedes.length}</p>
               </div>
-              
-              <div className="flex items-center gap-4">
-                <ServiceStatus 
-                  isAvailable={serviceAvailable} 
-                  serviceName="Matrícula - Sedes"
-                  onRetry={checkServiceStatus}
+              <FaBuilding className="text-2xl text-blue-500" />
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Activas</p>
+                <p className="text-2xl font-bold text-green-600">{sedes.filter(s => s.activo).length}</p>
+              </div>
+              <FaCheckCircle className="text-2xl text-green-500" />
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Inactivas</p>
+                <p className="text-2xl font-bold text-red-600">{sedes.filter(s => !s.activo).length}</p>
+              </div>
+              <FaTimesCircle className="text-2xl text-red-500" />
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Con Email</p>
+                <p className="text-2xl font-bold text-purple-600">{sedes.filter(s => s.email).length}</p>
+              </div>
+              <FaEnvelope className="text-2xl text-purple-500" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Actions */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Search */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="relative">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar sedes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 />
-                <button
-                  onClick={loadSedes}
-                  disabled={loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 disabled:opacity-50"
+              </div>
+            </div>
+
+            {/* Add Button */}
+            {canManage && (
+              <div>
+                <Button
+                  variant="primary"
+                  onClick={() => openModal()}
+                  leftIcon={FaPlus}
+                  fullWidth
                 >
-                  <FiRefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                  Actualizar
-                </button>
+                  Nueva Sede
+                </Button>
               </div>
-            </div>
-
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-                <FiMapPin className="w-8 h-8 text-green-600" />
-                Gestión de Sedes
-              </h1>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                Administra las sedes donde se realizan las clases. Gestiona información de ubicación, 
-                contacto y estado de cada sede de la institución.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Barra de acciones */}
-        <div className="mb-6">
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              {/* Búsqueda */}
-              <div className="flex-1 max-w-md">
-                <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Buscar por nombre, código o dirección..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Botón agregar */}
-              <button
-                onClick={() => openModal()}
-                className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                <FiPlus className="w-5 h-5" />
-                Nueva Sede
-              </button>
-            </div>
-
-            {/* Estadísticas */}
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
-              <span>Total: <strong>{sedes.length}</strong></span>
-              <span>Activas: <strong>{sedes.filter(s => s.activo).length}</strong></span>
-              <span>Inactivas: <strong>{sedes.filter(s => !s.activo).length}</strong></span>
-              {searchTerm && (
-                <span>Encontradas: <strong>{filteredSedes.length}</strong></span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Lista de sedes */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Cargando sedes...</p>
-          </div>
-        ) : filteredSedes.length === 0 ? (
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-12 text-center">
-            <FiMapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              {searchTerm ? "No se encontraron sedes" : "No hay sedes registradas"}
-            </h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm 
-                ? "Intenta con otros términos de búsqueda" 
-                : "Comienza agregando la primera sede"}
-            </p>
-            {!searchTerm && (
-              <button
-                onClick={() => openModal()}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl mx-auto"
-              >
-                <FiPlus className="w-5 h-5" />
-                Crear primera sede
-              </button>
             )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSedes.map((sede) => (
-              <div
-                key={sede.id}
-                className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-xl transition-all duration-300"
-              >
-                {/* Header de la tarjeta */}
-                <div className={`p-6 ${sede.activo 
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
-                  : 'bg-gradient-to-r from-gray-400 to-gray-500'} text-white`}>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-1">{sede.nombre}</h3>
-                      <p className="text-green-100 font-medium">Código: {sede.codigo}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        sede.activo 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {sede.activo ? 'Activa' : 'Inactiva'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+        </div>
+      </div>
 
-                {/* Contenido de la tarjeta */}
-                <div className="p-6">
-                  {/* Información de contacto */}
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-start gap-3">
-                      <FiHome className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+      {/* Table */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table ref={tableRef} className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Sede
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ubicación
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contacto
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Estado
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fechas
+                </th>
+                {canManage && (
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                  </th>
+                )}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredSedes.map((sede) => (
+                <tr key={sede.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                        <FaBuilding className="text-blue-600" />
+                      </div>
                       <div>
-                        <p className="text-sm text-gray-500">Dirección</p>
-                        <p className="text-gray-800 font-medium">{sede.direccion}</p>
+                        <div className="text-sm font-medium text-gray-900">{sede.nombre}</div>
+                        <div className="text-sm text-gray-500">{sede.codigo}</div>
                       </div>
                     </div>
-
-                    {sede.telefono && (
-                      <div className="flex items-center gap-3">
-                        <FiPhone className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm text-gray-500">Teléfono</p>
-                          <p className="text-gray-800 font-medium">{sede.telefono}</p>
-                        </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-start">
+                      <FaMapMarkerAlt className="text-gray-400 mr-2 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm text-gray-900 max-w-xs break-words">{sede.direccion}</div>
                       </div>
-                    )}
-
-                    {sede.email && (
-                      <div className="flex items-center gap-3">
-                        <FiMail className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm text-gray-500">Email</p>
-                          <p className="text-gray-800 font-medium">{sede.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      {sede.telefono && (
+                        <div className="flex items-center">
+                          <FaPhone className="text-gray-400 mr-2 text-xs" />
+                          <span className="text-sm text-gray-900">{sede.telefono}</span>
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Fechas */}
-                  <div className="text-xs text-gray-500 mb-4 space-y-1">
-                    <p>Creada: {formatDate(sede.fechaCreacion)}</p>
-                    <p>Actualizada: {formatDate(sede.fechaActualizacion)}</p>
-                  </div>
-
-                  {/* Acciones */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <button
-                      onClick={() => handleToggleActive(sede)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        sede.activo
-                          ? 'text-red-600 hover:bg-red-50'
-                          : 'text-green-600 hover:bg-green-50'
-                      }`}
-                    >
+                      )}
+                      {sede.email && (
+                        <div className="flex items-center">
+                          <FaEnvelope className="text-gray-400 mr-2 text-xs" />
+                          <span className="text-sm text-gray-900 truncate max-w-xs" title={sede.email}>
+                            {sede.email}
+                          </span>
+                        </div>
+                      )}
+                      {!sede.telefono && !sede.email && (
+                        <span className="text-sm text-gray-400">Sin contacto</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      sede.activo 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
                       {sede.activo ? (
                         <>
-                          <FiToggleRight className="w-4 h-4" />
-                          Desactivar
+                          <FaCheckCircle className="mr-1" />
+                          Activa
                         </>
                       ) : (
                         <>
-                          <FiToggleLeft className="w-4 h-4" />
-                          Activar
+                          <FaTimesCircle className="mr-1" />
+                          Inactiva
                         </>
                       )}
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => openModal(sede)}
-                        className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition-all duration-200"
-                      >
-                        <FiEdit className="w-4 h-4" />
-                        Editar
-                      </button>
-                      
-                      <button
-                        onClick={() => handleDelete(sede)}
-                        className="flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all duration-200"
-                      >
-                        <FiTrash2 className="w-4 h-4" />
-                        Eliminar
-                      </button>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div>Creada: {formatDate(sede.fechaCreacion)}</div>
+                      <div>Actualizada: {formatDate(sede.fechaActualizacion)}</div>
                     </div>
+                  </td>
+                  {canManage && (
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openModal(sede)}
+                          leftIcon={FaEdit}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant={sede.activo ? 'secondary' : 'primary'}
+                          size="sm"
+                          onClick={() => handleToggleActive(sede)}
+                          leftIcon={FaPowerOff}
+                        >
+                          {sede.activo ? 'Desactivar' : 'Activar'}
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDelete(sede)}
+                          leftIcon={FaTrash}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {filteredSedes.length === 0 && (
+            <div className="text-center py-12">
+              <FaInfoCircle className="mx-auto text-4xl text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron sedes</h3>
+              <p className="text-gray-500">
+                {searchTerm
+                  ? 'Intenta ajustar los filtros de búsqueda'
+                  : 'Aún no hay sedes registradas en el sistema'
+                }
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div ref={modalRef} className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-amber-100 rounded-lg">
+                    <FaMapMarkerAlt className="text-amber-600" />
                   </div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {editingSede ? 'Editar Sede' : 'Nueva Sede'}
+                  </h2>
                 </div>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Modal para agregar/editar sede */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                  {editingSede ? "Editar Sede" : "Nueva Sede"}
-                </h2>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Nombre */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nombre de la Sede *
                     </label>
                     <input
                       type="text"
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Ej: Sede Central"
                       required
                       maxLength={100}
@@ -634,14 +592,14 @@ export default function SedesPage() {
 
                   {/* Código */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Código *
                     </label>
                     <input
                       type="text"
                       value={formData.codigo}
                       onChange={(e) => setFormData({ ...formData, codigo: e.target.value.toUpperCase() })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Ej: SC001"
                       required
                       maxLength={20}
@@ -649,14 +607,14 @@ export default function SedesPage() {
                   </div>
 
                   {/* Dirección */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Dirección *
                     </label>
                     <textarea
                       value={formData.direccion}
                       onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Dirección completa de la sede"
                       required
                       rows={3}
@@ -666,14 +624,14 @@ export default function SedesPage() {
 
                   {/* Teléfono */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Teléfono
                     </label>
                     <input
                       type="tel"
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Ej: (056) 123-4567"
                       maxLength={15}
                     />
@@ -681,41 +639,40 @@ export default function SedesPage() {
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email
                     </label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Ej: sede@universidad.edu.pe"
                       maxLength={100}
                     />
                   </div>
+                </div>
 
-                  {/* Botones */}
-                  <div className="flex gap-4 pt-6">
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      className="flex-1 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-medium transition-all duration-200"
-                    >
-                      {editingSede ? "Actualizar" : "Crear"}
-                    </button>
-                  </div>
-                </form>
-              </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <Button
+                    variant="secondary"
+                    onClick={closeModal}
+                    type="button"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                  >
+                    {editingSede ? 'Actualizar' : 'Crear'} Sede
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,14 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { gsap } from "gsap";
 import { FiCalendar, FiMapPin, FiBookOpen, FiUsers, FiCreditCard, FiClock, FiSettings, FiTool } from "react-icons/fi";
+import { Button, LoadingSpinner } from "@/components/common";
 
 export default function MatriculaPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -25,13 +30,38 @@ export default function MatriculaPage() {
     }
   }, [isAuthenticated, isLoading, user, router]);
 
+  // Animaciones GSAP
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user && (user.role === 'ADMIN' || user.role === 'COORDINADOR')) {
+      const tl = gsap.timeline();
+      
+      // Animar entrada del header
+      tl.fromTo(headerRef.current, 
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+      );
+      
+      // Animar cards con stagger
+      if (cardsRef.current) {
+        const cards = Array.from(cardsRef.current.children);
+        tl.fromTo(cards, 
+          { opacity: 0, y: 30, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+        );
+      }
+      
+      // Animar footer
+      tl.fromTo(footerRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+    }
+  }, [isLoading, isAuthenticated, user]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Cargando Gestión de Matrícula...</p>
-        </div>
+        <LoadingSpinner size="lg" message="Cargando Gestión de Matrícula..." />
       </div>
     );
   }
@@ -46,7 +76,10 @@ export default function MatriculaPage() {
       description: "Gestionar períodos académicos y habilitar matrículas",
       icon: FiCalendar,
       href: "/campus-virtual/matricula/periodos-academicos",
-      color: "from-blue-500 to-cyan-500",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-200",
       requirement: "c) Gestionar períodos académicos para habilitar matrícula"
     },
     {
@@ -54,7 +87,10 @@ export default function MatriculaPage() {
       description: "Administrar sedes donde se realizan las clases",
       icon: FiMapPin,
       href: "/campus-virtual/matricula/sedes",
-      color: "from-green-500 to-emerald-500",
+      color: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-800",
+      borderColor: "border-amber-200",
       requirement: "d) Gestionar sedes para registro de aulas"
     },
     {
@@ -62,7 +98,10 @@ export default function MatriculaPage() {
       description: "Gestionar aulas donde se imparten las sesiones",
       icon: FiTool,
       href: "/campus-virtual/matricula/aulas",
-      color: "from-purple-500 to-indigo-500",
+      color: "from-slate-500 to-slate-600",
+      bgColor: "bg-slate-50",
+      textColor: "text-slate-800",
+      borderColor: "border-slate-200",
       requirement: "e) Gestionar aulas para sesiones de clase"
     },
     {
@@ -70,7 +109,10 @@ export default function MatriculaPage() {
       description: "Administrar facultades para otorgar grados académicos",
       icon: FiBookOpen,
       href: "/campus-virtual/matricula/facultades",
-      color: "from-amber-500 to-orange-500",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-200",
       requirement: "f) Gestionar facultades para grados académicos"
     },
     {
@@ -78,7 +120,10 @@ export default function MatriculaPage() {
       description: "Gestionar programas asociados a facultades",
       icon: FiSettings,
       href: "/campus-virtual/matricula/programas-estudio",
-      color: "from-red-500 to-pink-500",
+      color: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-800",
+      borderColor: "border-amber-200",
       requirement: "g) Gestionar programas de estudio asociados a facultades"
     },
     {
@@ -86,7 +131,10 @@ export default function MatriculaPage() {
       description: "Administrar menciones asociadas a programas",
       icon: FiUsers,
       href: "/campus-virtual/matricula/menciones",
-      color: "from-teal-500 to-cyan-500",
+      color: "from-slate-500 to-slate-600",
+      bgColor: "bg-slate-50",
+      textColor: "text-slate-800",
+      borderColor: "border-slate-200",
       requirement: "h) Gestionar menciones asociadas a programas"
     },
     {
@@ -94,7 +142,10 @@ export default function MatriculaPage() {
       description: "Configurar tasas de pago por programa de estudios",
       icon: FiCreditCard,
       href: "/campus-virtual/matricula/tasas-pago",
-      color: "from-violet-500 to-purple-500",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-200",
       requirement: "t) Asociar tasas de pago a programas de estudios"
     },
     {
@@ -102,7 +153,10 @@ export default function MatriculaPage() {
       description: "Registrar comisiones de unidades de posgrado",
       icon: FiUsers,
       href: "/campus-virtual/matricula/comisiones",
-      color: "from-gray-500 to-slate-500",
+      color: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-800",
+      borderColor: "border-amber-200",
       requirement: "y) Registrar comisiones de unidades de posgrado"
     },
     {
@@ -110,94 +164,112 @@ export default function MatriculaPage() {
       description: "Definir calendario de matrículas por programa",
       icon: FiClock,
       href: "/campus-virtual/matricula/turnos-matricula",
-      color: "from-rose-500 to-pink-500",
+      color: "from-slate-500 to-slate-600",
+      bgColor: "bg-slate-50",
+      textColor: "text-slate-800",
+      borderColor: "border-slate-200",
       requirement: "aa) Gestionar turnos de matrícula por programa"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">
-              🎓 Gestión de Matrícula
-            </h1>
-            <p className="text-gray-600 text-lg leading-relaxed">
-              Sistema integral para la administración de todos los componentes del proceso de matrícula. 
-              Gestiona períodos académicos, infraestructura, programas de estudio y configuraciones necesarias 
-              para el correcto funcionamiento del sistema de matrícula.
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-sm text-amber-700 bg-amber-50 px-4 py-2 rounded-lg">
-              <FiSettings className="w-4 h-4" />
-              <span>Acceso exclusivo para Administradores y Coordinadores</span>
+        <div ref={headerRef} className="mb-6 sm:mb-8">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                🎓 Gestión de Matrícula
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-4xl mx-auto">
+                Sistema integral para la administración de todos los componentes del proceso de matrícula. 
+                Gestiona períodos académicos, infraestructura, programas de estudio y configuraciones necesarias 
+                para el correcto funcionamiento del sistema de matrícula.
+              </p>
+              <div className="mt-4 sm:mt-6 inline-flex items-center gap-2 text-sm bg-amber-50 text-amber-700 px-4 py-2 rounded-lg border border-amber-200">
+                <FiSettings className="w-4 h-4" />
+                <span>Acceso exclusivo para Administradores y Coordinadores</span>
+              </div>
+            </div>
+            
+            {/* Botón de regreso */}
+            <div className="mt-6 flex justify-center">
+              <Button
+                href="/campus-virtual"
+                variant="outline"
+                leftIcon={FiSettings}
+                className="hover:scale-105 transition-transform duration-200"
+              >
+                Volver al Campus Virtual
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Grid de Módulos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
             
             return (
-              <Link 
+              <div
                 key={index} 
-                href={item.href}
-                className="group block"
+                className="group block transform hover:scale-105 transition-all duration-300"
               >
-                <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 
-                              hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden h-full">
-                  {/* Header con gradiente */}
-                  <div className={`bg-gradient-to-r ${item.color} p-6 text-white`}>
-                    <div className="flex items-center gap-4">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                        <IconComponent className="w-8 h-8" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold">{item.title}</h3>
+                <Link href={item.href} className="block h-full">
+                  <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 
+                                hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col">
+                    {/* Header con gradiente */}
+                    <div className={`bg-gradient-to-r ${item.color} p-4 sm:p-6 text-white`}>
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 sm:p-3 flex-shrink-0">
+                          <IconComponent className="w-6 h-6 sm:w-8 sm:h-8" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-lg sm:text-xl font-bold leading-tight">{item.title}</h3>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Contenido */}
-                  <div className="p-6">
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      {item.description}
-                    </p>
-                    
-                    {/* Requerimiento */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-blue-800 font-medium">
-                        📋 {item.requirement}
+                    {/* Contenido */}
+                    <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                      <p className="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base flex-1">
+                        {item.description}
                       </p>
-                    </div>
+                      
+                      {/* Requerimiento */}
+                      <div className={`${item.bgColor} border ${item.borderColor} rounded-lg p-3 mb-4`}>
+                        <p className={`text-xs sm:text-sm ${item.textColor} font-medium`}>
+                          📋 {item.requirement}
+                        </p>
+                      </div>
 
-                    {/* Botón de acción */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">
-                        Gestión completa CRUD
-                      </span>
-                      <div className="bg-gray-100 group-hover:bg-gray-200 transition-colors duration-200 
-                                    rounded-lg px-3 py-1 text-sm font-medium text-gray-700">
-                        Administrar →
+                      {/* Botón de acción */}
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className="text-xs sm:text-sm text-gray-500">
+                          Gestión completa CRUD
+                        </span>
+                        <div className="bg-gray-100 group-hover:bg-gray-200 transition-colors duration-200 
+                                      rounded-lg px-3 py-1 text-xs sm:text-sm font-medium text-gray-700">
+                          Administrar →
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             );
           })}
         </div>
 
         {/* Footer con información adicional */}
-        <div className="mt-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-6">
+        <div ref={footerRef} className="mt-6 sm:mt-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-4 sm:p-6">
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
               💡 Información del Sistema
             </h3>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-sm sm:text-base leading-relaxed max-w-4xl mx-auto">
               Cada módulo permite operaciones CRUD completas (Crear, Leer, Actualizar, Eliminar) 
               con validaciones de negocio y notificaciones mediante SweetAlert2. 
               Todos los datos se almacenan en la base de datos PostgreSQL del microservicio de matrícula.

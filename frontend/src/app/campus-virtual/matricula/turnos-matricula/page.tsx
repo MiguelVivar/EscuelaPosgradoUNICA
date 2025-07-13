@@ -924,8 +924,8 @@ export default function TurnosMatriculaPage() {
                 <div className="flex justify-end space-x-4 pt-4">
                   <Button
                     type="button"
+                    variant='secondary'
                     onClick={closeModal}
-                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   >
                     Cancelar
                   </Button>
