@@ -1,6 +1,15 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { TurnoMatricula, TurnoMatriculaRequest } from '@/types/turnoMatricula';
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: TurnoMatricula[];
+  content?: TurnoMatricula[];
+  items?: TurnoMatricula[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Turnos
 const TURNOS_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -77,11 +86,11 @@ class TurnosMatriculaService {
       const responseText = await response.text();
       console.log('🔍 [TURNOS SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -141,11 +150,11 @@ class TurnosMatriculaService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -194,10 +203,10 @@ class TurnosMatriculaService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         return [];
       }
 
@@ -284,10 +293,10 @@ class TurnosMatriculaService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         return [];
       }
 
@@ -336,10 +345,10 @@ class TurnosMatriculaService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         return [];
       }
 
@@ -575,10 +584,10 @@ class TurnosMatriculaService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TurnoMatricula[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         return [];
       }
 

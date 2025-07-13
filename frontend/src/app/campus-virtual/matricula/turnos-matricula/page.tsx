@@ -25,7 +25,6 @@ import {
   FaPlayCircle,
   FaPauseCircle,
   FaListOl,
-  FaFileAlt,
   FaTasks
 } from 'react-icons/fa';
 
@@ -229,10 +228,11 @@ export default function TurnosMatriculaPage() {
 
       closeModal();
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar el turno';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al guardar el turno',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -261,10 +261,11 @@ export default function TurnosMatriculaPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado del turno';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar el estado del turno',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -294,10 +295,11 @@ export default function TurnosMatriculaPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado habilitado del turno';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar el estado habilitado del turno',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -327,10 +329,11 @@ export default function TurnosMatriculaPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al eliminar el turno'; 
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al eliminar el turno',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });

@@ -9,12 +9,10 @@ import { gsap } from 'gsap';
 import { 
   FaPlus, 
   FaEdit, 
-  FaTrash, 
   FaSearch, 
   FaPowerOff,
   FaCalendarAlt,
   FaCalendarCheck,
-  FaCalendarTimes,
   FaInfoCircle,
   FaCheckCircle,
   FaTimesCircle,
@@ -257,15 +255,15 @@ export default function PeriodosAcademicosPage() {
       }
 
       handleCloseModal();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al guardar período:", error);
-      
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo guardar el período académico.';
       // Manejo específico para errores de duplicados
-      if (error.message && (
-        error.message.includes('ya existe') || 
-        error.message.includes('duplicate') ||
-        error.message.includes('UNIQUE constraint') ||
-        error.message.includes('Duplicate entry')
+      if (errorMessage && (
+        errorMessage.includes('ya existe') || 
+        errorMessage.includes('duplicate') ||
+        errorMessage.includes('UNIQUE constraint') ||
+        errorMessage.includes('Duplicate entry')
       )) {
         Swal.fire({
           icon: "warning",
@@ -281,7 +279,7 @@ export default function PeriodosAcademicosPage() {
         Swal.fire({
           icon: "error",
           title: "Error al guardar",
-          text: error.message || "No se pudo guardar el período académico.",
+          text: errorMessage || "No se pudo guardar el período académico.",
           confirmButtonColor: '#f59e0b'
         });
       }
@@ -333,12 +331,13 @@ export default function PeriodosAcademicosPage() {
           text: `El período académico "${periodo.codigo}" ha sido ${periodo.activo ? 'desactivado' : 'reactivado'}`,
           confirmButtonColor: '#f59e0b'
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error al cambiar estado del período:", error);
+        const errorMessage = error instanceof Error ? error.message : `No se pudo ${periodo.activo ? 'desactivar' : 'reactivar'} el período académico`;
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: error.message || `No se pudo ${periodo.activo ? 'desactivar' : 'reactivar'} el período académico`,
+          text: errorMessage,
           confirmButtonColor: '#f59e0b'
         });
       }
@@ -359,11 +358,12 @@ export default function PeriodosAcademicosPage() {
         text: `Período ${updatedPeriodo.habilitado ? 'habilitado' : 'deshabilitado'} para matrícula`,
         confirmButtonColor: '#f59e0b'
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "No se pudo cambiar el estado del período";
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.message || "No se pudo cambiar el estado del período",
+        text: errorMessage,
         confirmButtonColor: '#f59e0b'
       });
     }

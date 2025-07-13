@@ -217,9 +217,7 @@ export default function ComisionesPage() {
     }
 
     try {
-      let result;
       if (editingComision) {
-        result = await comisionesService.updateComision(editingComision.id, formData);
         Swal.fire({
           icon: 'success',
           title: 'Comisión actualizada',
@@ -227,7 +225,6 @@ export default function ComisionesPage() {
           confirmButtonColor: '#d97706'
         });
       } else {
-        result = await comisionesService.createComision(formData);
         Swal.fire({
           icon: 'success',
           title: 'Comisión creada',
@@ -517,7 +514,7 @@ export default function ComisionesPage() {
               </p>
             </div>
           ) : (
-            filteredComisiones.map((comision, index) => (
+            filteredComisiones.map((comision) => (
               <div
                 key={comision.id}
                 className="comision-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"

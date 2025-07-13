@@ -78,7 +78,7 @@ class AulasService {
       const responseText = await response.text();
       console.log('🔍 [AULAS SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: unknown;
       try {
         result = JSON.parse(responseText);
       } catch (parseError) {
@@ -95,21 +95,22 @@ class AulasService {
         // Respuesta directa como array
         finalData = result;
         console.log('🔍 [AULAS SERVICE] DIRECT ARRAY RESPONSE');
-      } else if (result.data && Array.isArray(result.data)) {
+      } else if (result && typeof result === 'object' && 'data' in result && Array.isArray((result as Record<string, unknown>).data)) {
         // Respuesta envuelta en objeto con propiedad 'data'
-        finalData = result.data;
+        finalData = (result as Record<string, unknown>).data as Aula[];
         console.log('🔍 [AULAS SERVICE] WRAPPED DATA RESPONSE');
-      } else if (result.content && Array.isArray(result.content)) {
+      } else if (result && typeof result === 'object' && 'content' in result && Array.isArray((result as Record<string, unknown>).content)) {
         // Respuesta paginada con Spring Boot
-        finalData = result.content;
+        finalData = (result as Record<string, unknown>).content as Aula[];
         console.log('🔍 [AULAS SERVICE] PAGINATED CONTENT RESPONSE');
-      } else if (result.items && Array.isArray(result.items)) {
+      } else if (result && typeof result === 'object' && 'items' in result && Array.isArray((result as Record<string, unknown>).items)) {
         // Otra estructura común
-        finalData = result.items;
+        finalData = (result as Record<string, unknown>).items as Aula[];
         console.log('🔍 [AULAS SERVICE] ITEMS RESPONSE');
-      } else if (result.success && result.data) {
+      } else if (result && typeof result === 'object' && 'success' in result && 'data' in result && (result as Record<string, unknown>).success) {
         // Estructura con success flag
-        finalData = Array.isArray(result.data) ? result.data : [result.data];
+        const data = (result as Record<string, unknown>).data;
+        finalData = Array.isArray(data) ? data : [data];
         console.log('🔍 [AULAS SERVICE] SUCCESS FLAG RESPONSE');
       } else {
         console.warn('🔍 [AULAS SERVICE] UNKNOWN RESPONSE STRUCTURE:', result);
@@ -264,11 +265,11 @@ class AulasService {
         const errorText = await response.text();
         console.log('🔍 [AULAS SERVICE] Error response text:', errorText);
         
-        let errorData: any = {};
+        let errorData: Record<string, unknown> = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -280,24 +281,24 @@ class AulasService {
         } else if (response.status >= 500) {
           throw new Error(`Error del servidor (${response.status}): ${errorData.message || 'Error interno del servidor'}`);
         } else {
-          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+          throw new Error(errorData.message as string || `Error ${response.status}: ${response.statusText}`);
         }
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: Record<string, unknown>;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
       if (result.success && result.data) {
-        return result.data;
+        return result.data as Aula;
       } else if (result.id) {
         // Respuesta directa del aula creada
-        return result;
+        return result as unknown as Aula;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -331,11 +332,11 @@ class AulasService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: Record<string, unknown> = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -349,24 +350,24 @@ class AulasService {
         } else if (response.status >= 500) {
           throw new Error(`Error del servidor (${response.status}): ${errorData.message || 'Error interno del servidor'}`);
         } else {
-          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+          throw new Error(errorData.message as string || `Error ${response.status}: ${response.statusText}`);
         }
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: Record<string, unknown>;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
       if (result.success && result.data) {
-        return result.data;
+        return result.data as Aula;
       } else if (result.id) {
         // Respuesta directa del aula actualizada
-        return result;
+        return result as unknown as Aula;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -399,11 +400,11 @@ class AulasService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: Record<string, unknown> = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -415,24 +416,24 @@ class AulasService {
         } else if (response.status >= 500) {
           throw new Error(`Error del servidor (${response.status}): ${errorData.message || 'Error interno del servidor'}`);
         } else {
-          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+          throw new Error(errorData.message as string || `Error ${response.status}: ${response.statusText}`);
         }
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: Record<string, unknown>;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
       if (result.success && result.data) {
-        return result.data;
+        return result.data as Aula;
       } else if (result.id) {
         // Respuesta directa del aula actualizada
-        return result;
+        return result as unknown as Aula;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -465,11 +466,11 @@ class AulasService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: Record<string, unknown> = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -481,7 +482,7 @@ class AulasService {
         } else if (response.status >= 500) {
           throw new Error(`Error del servidor (${response.status}): ${errorData.message || 'Error interno del servidor'}`);
         } else {
-          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+          throw new Error(errorData.message as string || `Error ${response.status}: ${response.statusText}`);
         }
       }
 

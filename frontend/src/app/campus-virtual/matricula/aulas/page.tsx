@@ -16,7 +16,6 @@ import {
   FaSearch, 
   FaPowerOff,
   FaBuilding,
-  FaChair,
   FaTv,
   FaMapMarkerAlt,
   FaUsers,
@@ -201,10 +200,11 @@ export default function AulasPage() {
 
       closeModal();
       loadData();
-    } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Error al guardar el aula";
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al guardar el aula',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -233,10 +233,11 @@ export default function AulasPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado del aula';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar el estado del aula',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -266,10 +267,11 @@ export default function AulasPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al eliminar el aula';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al eliminar el aula',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });

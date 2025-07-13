@@ -1,6 +1,22 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { Sede, SedeRequest } from '@/types/sede';
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: Sede[];
+  content?: Sede[];
+  items?: Sede[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
+interface MicroserviceResponseSingle {
+  data?: Sede;
+  success?: boolean;
+  id?: number;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Sedes
 const SEDES_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -82,11 +98,11 @@ class SedesService {
       const responseText = await response.text();
       console.log('🔍 [SEDES SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: Sede[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
       
@@ -99,19 +115,19 @@ class SedesService {
         // Respuesta directa como array
         finalData = result;
         console.log('🔍 [SEDES SERVICE] DIRECT ARRAY RESPONSE');
-      } else if (result.data && Array.isArray(result.data)) {
+      } else if ('data' in result && result.data && Array.isArray(result.data)) {
         // Respuesta envuelta en objeto con propiedad 'data'
         finalData = result.data;
         console.log('🔍 [SEDES SERVICE] WRAPPED DATA RESPONSE');
-      } else if (result.content && Array.isArray(result.content)) {
+      } else if ('content' in result && result.content && Array.isArray(result.content)) {
         // Respuesta paginada con Spring Boot
         finalData = result.content;
         console.log('🔍 [SEDES SERVICE] PAGINATED CONTENT RESPONSE');
-      } else if (result.items && Array.isArray(result.items)) {
+      } else if ('items' in result && result.items && Array.isArray(result.items)) {
         // Otra estructura común
         finalData = result.items;
         console.log('🔍 [SEDES SERVICE] ITEMS RESPONSE');
-      } else if (result.success && result.data) {
+      } else if ('success' in result && result.success && result.data) {
         // Estructura con success flag
         finalData = Array.isArray(result.data) ? result.data : [result.data];
         console.log('🔍 [SEDES SERVICE] SUCCESS FLAG RESPONSE');
@@ -232,11 +248,11 @@ class SedesService {
         const errorText = await response.text();
         console.log('🔍 [SEDES SERVICE] Error response text:', errorText);
         
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -253,19 +269,19 @@ class SedesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: Sede | MicroserviceResponseSingle;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result && result.id) {
         // Respuesta directa de la sede creada
-        return result;
+        return result as Sede;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -299,11 +315,11 @@ class SedesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -322,19 +338,19 @@ class SedesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: Sede | MicroserviceResponseSingle;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result && result.id) {
         // Respuesta directa de la sede actualizada
-        return result;
+        return result as Sede;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -368,7 +384,7 @@ class SedesService {
       console.log('🔍 [SEDES SERVICE] Response status:', response.status);
 
       if (!response.ok) {
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         let errorText = '';
         
         try {
@@ -378,7 +394,7 @@ class SedesService {
           if (errorText) {
             try {
               errorData = JSON.parse(errorText);
-            } catch (parseError) {
+            } catch {
               errorData.message = errorText;
             }
           }
@@ -400,21 +416,21 @@ class SedesService {
       const responseText = await response.text();
       console.log('🔍 [SEDES SERVICE] Response text exitoso:', responseText);
       
-      let result: any;
+      let result: Sede | MicroserviceResponseSingle;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       console.log('🔍 [SEDES SERVICE] Parsed result:', result);
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result && result.id) {
         // Respuesta directa de la sede
-        return result;
+        return result as Sede;
       } else {
         throw new Error('Respuesta inesperada del servidor');
       }
@@ -447,11 +463,11 @@ class SedesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         if (errorText) {
           try {
             errorData = JSON.parse(errorText);
-          } catch (parseError) {
+          } catch {
             errorData.message = errorText;
           }
         }

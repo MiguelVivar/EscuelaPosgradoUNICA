@@ -1,6 +1,15 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { Mencion, MencionRequest } from '@/types/mencion';
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: Mencion[];
+  content?: Mencion[];
+  items?: Mencion[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Menciones
 const MENCIONES_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -76,11 +85,11 @@ class MencionesService {
       const responseText = await response.text();
       console.log('🔍 [MENCIONES SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: Mencion[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 

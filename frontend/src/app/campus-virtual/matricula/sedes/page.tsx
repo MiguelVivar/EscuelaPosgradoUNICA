@@ -19,8 +19,7 @@ import {
   FaEnvelope,
   FaInfoCircle,
   FaCheckCircle,
-  FaTimesCircle,
-  FaHome
+  FaTimesCircle
 } from 'react-icons/fa';
 
 export default function SedesPage() {
@@ -205,10 +204,11 @@ export default function SedesPage() {
 
       closeModal();
       loadSedes();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar la sede';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al guardar la sede',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -237,10 +237,11 @@ export default function SedesPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadSedes();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado de la sede';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar el estado de la sede',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -270,10 +271,11 @@ export default function SedesPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadSedes();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al eliminar la sede';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al eliminar la sede',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });

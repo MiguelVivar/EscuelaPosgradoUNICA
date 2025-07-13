@@ -214,12 +214,12 @@ export default function MencionesPage() {
 
       closeModal();
       loadInitialData();
-    } catch (error: any) {
-      console.error('Error al guardar mención:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo guardar la mención';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.message || 'No se pudo guardar la mención',
+        text: errorMessage,
         confirmButtonColor: '#d97706'
       });
     }
@@ -252,12 +252,12 @@ export default function MencionesPage() {
 
         loadInitialData();
       }
-    } catch (error: any) {
-      console.error('Error al cambiar estado:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo cambiar el estado de la mención';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.message || 'No se pudo cambiar el estado de la mención',
+        text: errorMessage,
         confirmButtonColor: '#d97706'
       });
     }
@@ -290,12 +290,12 @@ export default function MencionesPage() {
 
         loadInitialData();
       }
-    } catch (error: any) {
-      console.error('Error al cambiar disponibilidad:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo cambiar la disponibilidad de la mención';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.message || 'No se pudo cambiar la disponibilidad de la mención',
+        text: errorMessage || 'No se pudo cambiar la disponibilidad de la mención',
         confirmButtonColor: '#d97706'
       });
     }
@@ -328,12 +328,12 @@ export default function MencionesPage() {
 
         loadInitialData();
       }
-    } catch (error: any) {
-      console.error('Error al eliminar mención:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo eliminar la mención';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.message || 'No se pudo eliminar la mención',
+        text: errorMessage,
         confirmButtonColor: '#d97706'
       });
     }

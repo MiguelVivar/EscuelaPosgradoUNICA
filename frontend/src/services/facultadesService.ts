@@ -1,6 +1,13 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { Facultad, FacultadRequest } from '@/types/facultad';
 
+// Tipos para manejar diferentes estructuras de respuesta de microservicios
+interface ApiResponse<T = unknown> {
+  data?: T;
+  content?: T;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Facultades
 const FACULTADES_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -78,7 +85,7 @@ class FacultadesService {
       const responseText = await response.text();
       console.log('🔍 [FACULTADES SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: ApiResponse<Facultad[]> | Facultad[];
       try {
         result = JSON.parse(responseText);
       } catch (parseError) {
@@ -95,22 +102,23 @@ class FacultadesService {
         // Respuesta directa como array
         finalData = result;
         console.log('🔍 [FACULTADES SERVICE] DIRECT ARRAY RESPONSE');
-      } else if (result.data && Array.isArray(result.data)) {
+      } else if (result && typeof result === 'object' && 'data' in result && Array.isArray(result.data)) {
         // Respuesta envuelta en objeto con propiedad 'data'
         finalData = result.data;
         console.log('🔍 [FACULTADES SERVICE] WRAPPED DATA RESPONSE');
-      } else if (result.content && Array.isArray(result.content)) {
+      } else if (result && typeof result === 'object' && 'content' in result && Array.isArray(result.content)) {
         // Respuesta paginada con 'content'
         finalData = result.content;
         console.log('🔍 [FACULTADES SERVICE] PAGINATED CONTENT RESPONSE');
-      } else if (typeof result === 'object' && result !== null) {
+      } else if (result && typeof result === 'object' && result !== null) {
         // Si es un objeto pero no tiene data ni content, podría ser un error o respuesta inesperada
         console.warn('🔍 [FACULTADES SERVICE] UNEXPECTED RESPONSE STRUCTURE:', result);
         
         // Intentar verificar si el objeto tiene alguna propiedad que indique datos
-        const possibleArrayKeys = Object.keys(result).filter(key => Array.isArray(result[key]));
+        const apiResult = result as Record<string, unknown>;
+        const possibleArrayKeys = Object.keys(apiResult).filter(key => Array.isArray(apiResult[key]));
         if (possibleArrayKeys.length > 0) {
-          finalData = result[possibleArrayKeys[0]];
+          finalData = apiResult[possibleArrayKeys[0]] as Facultad[];
           console.log(`🔍 [FACULTADES SERVICE] USING ARRAY FROM KEY: ${possibleArrayKeys[0]}`);
         } else {
           finalData = [];
@@ -295,7 +303,7 @@ class FacultadesService {
           if (errorData.errors && Array.isArray(errorData.errors)) {
             errorMessage = errorData.errors.join(', ');
           }
-        } catch (parseError) {
+        } catch {
           console.warn('No se pudo parsear la respuesta de error');
         }
         
@@ -348,7 +356,7 @@ class FacultadesService {
           if (errorData.errors && Array.isArray(errorData.errors)) {
             errorMessage = errorData.errors.join(', ');
           }
-        } catch (parseError) {
+        } catch {
           console.warn('No se pudo parsear la respuesta de error');
         }
         

@@ -1,6 +1,15 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { TasaPago, TasaPagoRequest } from '@/types/tasaPago';
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: TasaPago[];
+  content?: TasaPago[];
+  items?: TasaPago[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Tasas de Pago
 const TASAS_PAGO_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -80,11 +89,11 @@ class TasasPagoService {
       const responseText = await response.text();
       console.log('🔍 [TASAS PAGO SERVICE] RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: TasaPago[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -157,11 +166,11 @@ class TasasPagoService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TasaPago[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -214,10 +223,10 @@ class TasasPagoService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: TasaPago[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         return [];
       }
 
@@ -320,7 +329,7 @@ class TasasPagoService {
   /**
    * Crear nueva tasa de pago
    */
-  async createTasaPago(tasaPagoData: TasaPagoRequest): Promise<any> {
+  async createTasaPago(tasaPagoData: TasaPagoRequest): Promise<TasaPago> {
     try {
       if (!validateStoredToken()) {
         throw new Error('Token no válido o expirado');
@@ -356,7 +365,7 @@ class TasasPagoService {
   /**
    * Actualizar tasa de pago existente
    */
-  async updateTasaPago(id: number, tasaPagoData: TasaPagoRequest): Promise<any> {
+  async updateTasaPago(id: number, tasaPagoData: TasaPagoRequest): Promise<TasaPago> {
     try {
       if (!validateStoredToken()) {
         throw new Error('Token no válido o expirado');
@@ -392,7 +401,7 @@ class TasasPagoService {
   /**
    * Alternar estado activo/inactivo de tasa de pago
    */
-  async toggleActiveTasaPago(id: number): Promise<any> {
+  async toggleActiveTasaPago(id: number): Promise<TasaPago> {
     try {
       if (!validateStoredToken()) {
         throw new Error('Token no válido o expirado');
@@ -427,7 +436,7 @@ class TasasPagoService {
   /**
    * Eliminar tasa de pago
    */
-  async deleteTasaPago(id: number): Promise<any> {
+  async deleteTasaPago(id: number): Promise<TasaPago> {
     try {
       if (!validateStoredToken()) {
         throw new Error('Token no válido o expirado');

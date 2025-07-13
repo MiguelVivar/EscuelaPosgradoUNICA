@@ -78,6 +78,15 @@ export interface ApiResponse<T> {
   errors?: string[];
 }
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: PeriodoAcademico[];
+  content?: PeriodoAcademico[];
+  items?: PeriodoAcademico[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 class MatriculaService {
   private baseUrl = MATRICULA_API_CONFIG.BASE_URL;
 
@@ -139,11 +148,11 @@ class MatriculaService {
       const responseText = await response.text();
       console.log('🔍 RAW RESPONSE TEXT:', responseText);
       
-      let result: any;
+      let result: PeriodoAcademico[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
       
@@ -351,7 +360,7 @@ class MatriculaService {
         console.error('🔍 [MATRICULA SERVICE] Response no exitosa');
         
         // Intentar obtener información del error
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         let errorText = '';
         
         try {
@@ -362,7 +371,7 @@ class MatriculaService {
             try {
               errorData = JSON.parse(errorText);
               console.log('🔍 [MATRICULA SERVICE] Error data parsed:', errorData);
-            } catch (parseError) {
+            } catch {
               console.log('🔍 [MATRICULA SERVICE] No se pudo parsear como JSON, usando texto crudo');
               errorData.message = errorText;
             }
@@ -453,7 +462,7 @@ class MatriculaService {
         console.error('🔍 [MATRICULA SERVICE] Response no exitosa');
         
         // Intentar obtener información del error
-        let errorData: any = {};
+        let errorData: { message?: string } = {};
         let errorText = '';
         
         try {
@@ -464,7 +473,7 @@ class MatriculaService {
             try {
               errorData = JSON.parse(errorText);
               console.log('🔍 [MATRICULA SERVICE] Error data parsed:', errorData);
-            } catch (parseError) {
+            } catch {
               console.log('🔍 [MATRICULA SERVICE] No se pudo parsear como JSON, usando texto crudo');
               errorData.message = errorText;
             }

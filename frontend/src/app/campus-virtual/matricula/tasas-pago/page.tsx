@@ -22,10 +22,7 @@ import {
   FaGraduationCap,
   FaCheckCircle,
   FaTimesCircle,
-  FaExclamationCircle,
-  FaCreditCard,
-  FaUniversity,
-  FaEye
+  FaExclamationCircle
 } from 'react-icons/fa';
 
 export default function TasasPagoPage() {
@@ -138,11 +135,6 @@ export default function TasasPagoPage() {
     return matchesSearch && matchesPrograma && matchesTipo && matchesMoneda && matchesObligatoria;
   });
 
-  const getTiposUnicos = () => {
-    const tipos = tasasPago.map(tasa => tasa.tipo).filter(Boolean);
-    return [...new Set(tipos)];
-  };
-
   const openModal = (tasa?: TasaPago) => {
     if (tasa) {
       setEditingTasa(tasa);
@@ -238,11 +230,12 @@ export default function TasasPagoPage() {
 
       closeModal();
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al guardar tasa de pago:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar la tasa de pago';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al guardar la tasa de pago',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -272,11 +265,12 @@ export default function TasasPagoPage() {
         });
         loadData();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al cambiar estado:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al cambiar el estado',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -306,11 +300,12 @@ export default function TasasPagoPage() {
         });
         loadData();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al eliminar tasa:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error al eliminar la tasa de pago';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al eliminar la tasa de pago',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -540,7 +535,7 @@ export default function TasasPagoPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTasas.map((tasa, index) => (
+                {filteredTasas.map((tasa) => (
                   <tr key={tasa.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">

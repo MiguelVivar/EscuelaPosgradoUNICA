@@ -19,13 +19,11 @@ import {
   FaUniversity,
   FaBook,
   FaClock,
-  FaUsers,
   FaInfoCircle,
   FaCheckCircle,
   FaTimesCircle,
   FaEye,
   FaEyeSlash,
-  FaCalendarAlt,
   FaCertificate
 } from 'react-icons/fa';
 
@@ -221,10 +219,11 @@ export default function ProgramasEstudioPage() {
 
       closeModal();
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar el programa';
       Swal.fire({
         title: 'Error',
-        text: error.message || 'Error al guardar el programa',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#f59e0b'
       });
@@ -253,10 +252,11 @@ export default function ProgramasEstudioPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar el estado del programa';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar el estado del programa',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -286,10 +286,11 @@ export default function ProgramasEstudioPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al cambiar la disponibilidad del programa';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al cambiar la disponibilidad del programa',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });
@@ -319,10 +320,11 @@ export default function ProgramasEstudioPage() {
           confirmButtonColor: '#f59e0b'
         });
         loadData();
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al eliminar el programa';
         Swal.fire({
           title: 'Error',
-          text: error.message || 'Error al eliminar el programa',
+          text: errorMessage,
           icon: 'error',
           confirmButtonColor: '#f59e0b'
         });

@@ -1,18 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { gsap } from "gsap";
 import { FiCalendar, FiMapPin, FiBookOpen, FiUsers, FiCreditCard, FiClock, FiSettings, FiTool } from "react-icons/fi";
 import { Button, LoadingSpinner } from "@/components/common";
 
 export default function MatriculaPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -29,27 +26,7 @@ export default function MatriculaPage() {
     }
   }, [isAuthenticated, isLoading, user, router]);
 
-  // Animaciones GSAP
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user && (user.role === 'ADMIN' || user.role === 'COORDINADOR')) {
-      const tl = gsap.timeline();
-      
-      // Animar entrada del header
-      tl.fromTo(headerRef.current, 
-        { opacity: 0, y: -50 },
-        { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
-      );
-      
-      // Animar cards con stagger
-      if (cardsRef.current) {
-        const cards = Array.from(cardsRef.current.children);
-        tl.fromTo(cards, 
-          { opacity: 0, y: 30, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
-        );
-      }
-    }
-  }, [isLoading, isAuthenticated, user]);
+
 
   if (isLoading) {
     return (
@@ -160,7 +137,7 @@ export default function MatriculaPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div ref={headerRef} className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
             <div className="text-center">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
@@ -192,7 +169,7 @@ export default function MatriculaPage() {
         </div>
 
         {/* Grid de Módulos */}
-        <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
             

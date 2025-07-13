@@ -49,5 +49,5 @@ export const debugTokenStatus = () => {
 
 // Function to call from console for debugging
 if (typeof window !== 'undefined') {
-  (window as any).debugTokenStatus = debugTokenStatus;
+  (window as { debugTokenStatus?: () => void }).debugTokenStatus = debugTokenStatus;
 }

@@ -1,6 +1,19 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { Comision, ComisionRequest } from '@/types/comision';
 
+// Interfaces para las respuestas de la API
+interface ApiResponse<T> {
+  data?: T;
+  content?: T;
+  items?: T;
+  success?: boolean;
+  message?: string;
+}
+
+interface ErrorResponse {
+  message?: string;
+}
+
 // Configuración específica para el microservicio de Matrícula - Comisiones
 const COMISIONES_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -71,11 +84,11 @@ class ComisionesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: ApiResponse<Comision[]> | Comision[];
       try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+        result = JSON.parse(responseText) as ApiResponse<Comision[]> | Comision[];
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -231,11 +244,11 @@ class ComisionesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: ErrorResponse = {};
         if (errorText) {
           try {
-            errorData = JSON.parse(errorText);
-          } catch (parseError) {
+            errorData = JSON.parse(errorText) as ErrorResponse;
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -252,17 +265,17 @@ class ComisionesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: ApiResponse<Comision> | Comision;
       try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
+        result = JSON.parse(responseText) as ApiResponse<Comision> | Comision;
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result) {
         // Respuesta directa de la comisión creada
         return result;
       } else {
@@ -298,11 +311,11 @@ class ComisionesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: ErrorResponse = {};
         if (errorText) {
           try {
-            errorData = JSON.parse(errorText);
-          } catch (parseError) {
+            errorData = JSON.parse(errorText) as ErrorResponse;
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -321,17 +334,17 @@ class ComisionesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: ApiResponse<Comision> | Comision;
       try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
+        result = JSON.parse(responseText) as ApiResponse<Comision> | Comision;
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result) {
         // Respuesta directa de la comisión actualizada
         return result;
       } else {
@@ -373,11 +386,11 @@ class ComisionesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: ErrorResponse = {};
         if (errorText) {
           try {
-            errorData = JSON.parse(errorText);
-          } catch (parseError) {
+            errorData = JSON.parse(errorText) as ErrorResponse;
+          } catch {
             errorData.message = errorText;
           }
         }
@@ -394,17 +407,17 @@ class ComisionesService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: ApiResponse<Comision> | Comision;
       try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
+        result = JSON.parse(responseText) as ApiResponse<Comision> | Comision;
+      } catch {
         throw new Error('Error al parsear la respuesta del servidor');
       }
 
       // La respuesta puede venir envuelta en un MessageResponse
-      if (result.success && result.data) {
+      if ('success' in result && result.success && result.data) {
         return result.data;
-      } else if (result.id) {
+      } else if ('id' in result) {
         return result;
       } else {
         throw new Error('Respuesta inesperada del servidor');
@@ -436,11 +449,11 @@ class ComisionesService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData: any = {};
+        let errorData: ErrorResponse = {};
         if (errorText) {
           try {
-            errorData = JSON.parse(errorText);
-          } catch (parseError) {
+            errorData = JSON.parse(errorText) as ErrorResponse;
+          } catch {
             errorData.message = errorText;
           }
         }

@@ -1,6 +1,15 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
 import { PeriodoAcademico } from '@/types/turnoMatricula';
 
+// Interface para diferentes estructuras de respuesta del microservicio
+interface MicroserviceResponse {
+  data?: PeriodoAcademico[];
+  content?: PeriodoAcademico[];
+  items?: PeriodoAcademico[];
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 // Configuración específica para el microservicio de Matrícula - Períodos Académicos
 const PERIODOS_API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_MATRICULA_API_URL || 'http://localhost:8082',
@@ -48,11 +57,11 @@ class PeriodosAcademicosService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: PeriodoAcademico[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
@@ -110,11 +119,11 @@ class PeriodosAcademicosService {
       }
 
       const responseText = await response.text();
-      let result: any;
+      let result: PeriodoAcademico[] | MicroserviceResponse;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
+      } catch {
+        console.error('Error parsing JSON');
         return [];
       }
 
