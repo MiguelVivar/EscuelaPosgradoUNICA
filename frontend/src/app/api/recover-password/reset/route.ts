@@ -37,8 +37,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // En una implementación real, aquí harías la llamada al backend para actualizar la contraseña
     try {
       // Llamada al microservicio de autenticación para cambiar la contraseña
       const resetResponse = await fetch(`${API_CONFIG.BASE_URL}/api/auth/reset-password`, {

@@ -16,6 +16,12 @@ import {
   ApiError 
 } from "./auth";
 import { SidebarProps, SidebarItemProps } from "./Sidebar";
+import { 
+  Authority, 
+  AuthorityCardProps, 
+  AuthorityGridProps, 
+  AuthorityPageHeaderProps 
+} from "./authority";
 
 export type {
   NavItem,
@@ -34,4 +40,8 @@ export type {
   ApiError,
   SidebarProps,
   SidebarItemProps,
+  Authority,
+  AuthorityCardProps,
+  AuthorityGridProps,
+  AuthorityPageHeaderProps,
 };
