@@ -45,6 +45,13 @@ import {
   MaestriaCategoriaProps,
   MaestriasGridProps,
 } from "./programs";
+import {
+  PasswordRecoveryFormData,
+  PasswordRecoveryState,
+  UsePasswordRecoveryReturn,
+  EmailValidationOptions,
+  PasswordRecoveryResponse,
+} from "./passwordRecovery";
 
 export type {
   NavItem,
@@ -86,4 +93,9 @@ export type {
   ProgramaItemProps,
   MaestriaCategoriaProps,
   MaestriasGridProps,
+  PasswordRecoveryFormData,
+  PasswordRecoveryState,
+  UsePasswordRecoveryReturn,
+  EmailValidationOptions,
+  PasswordRecoveryResponse,
 };
