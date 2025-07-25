@@ -6,11 +6,15 @@ import ResolutionLink from './ResolutionLink';
 import AuthorityActionButton from './AuthorityActionButton';
 
 const AuthorityCard: React.FC<AuthorityCardProps> = ({ authority }) => {
+  const imageSrc = typeof authority.image === 'string' 
+    ? authority.image 
+    : authority.image.default;
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col">
       {/* Imagen */}
       <AuthorityImage 
-        src={authority.image}
+        src={imageSrc}
         alt={authority.name}
       />
       
