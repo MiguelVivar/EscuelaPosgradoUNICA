@@ -8,6 +8,7 @@ export * from './common';
 export * from './admin';
 export * from './auth';
 export * from './campus';
+export * from './contact';
 export * from './home';
 export * from './login';
 export * from './profile';

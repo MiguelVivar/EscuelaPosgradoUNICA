@@ -22,6 +22,17 @@ import {
   AuthorityGridProps, 
   AuthorityPageHeaderProps 
 } from "./authority";
+import {
+  ContactInfo,
+  DirectoryEntry,
+  DirectorySection,
+  ContactFormData,
+  ContactFormProps,
+  ContactInfoCardProps,
+  DirectoryTableProps,
+  DirectoryMenuProps,
+  MapProps
+} from "./contact";
 
 export type {
   NavItem,
@@ -44,4 +55,13 @@ export type {
   AuthorityCardProps,
   AuthorityGridProps,
   AuthorityPageHeaderProps,
+  ContactInfo,
+  DirectoryEntry,
+  DirectorySection,
+  ContactFormData,
+  ContactFormProps,
+  ContactInfoCardProps,
+  DirectoryTableProps,
+  DirectoryMenuProps,
+  MapProps
 };
