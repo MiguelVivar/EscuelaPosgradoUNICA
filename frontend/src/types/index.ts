@@ -52,6 +52,15 @@ import {
   EmailValidationOptions,
   PasswordRecoveryResponse,
 } from "./passwordRecovery";
+import {
+  PasswordResetFormData,
+  PasswordResetState,
+  UsePasswordResetReturn,
+  PasswordResetResponse,
+  TokenValidationResponse,
+  PasswordInputFieldProps,
+  PasswordValidationOptions,
+} from "./passwordReset";
 
 export type {
   NavItem,
@@ -98,4 +107,11 @@ export type {
   UsePasswordRecoveryReturn,
   EmailValidationOptions,
   PasswordRecoveryResponse,
+  PasswordResetFormData,
+  PasswordResetState,
+  UsePasswordResetReturn,
+  PasswordResetResponse,
+  TokenValidationResponse,
+  PasswordInputFieldProps,
+  PasswordValidationOptions,
 };

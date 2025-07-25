@@ -12,4 +12,5 @@ export * from './contact';
 export * from './home';
 export * from './login';
 export { EmailInput as PasswordRecoveryEmailInput, SubmitButton as PasswordRecoverySubmitButton } from './password-recovery';
+export * from './password-reset';
 export * from './profile';
