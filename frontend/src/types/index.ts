@@ -6,21 +6,21 @@ import {
   BaseButtonProps,
 } from "./Button";
 import { CarouselSlide, CarouselProps } from "./Carrousel";
-import { 
-  Role, 
-  LoginRequest, 
-  AuthResponse, 
-  MessageResponse, 
-  UsuarioResponse, 
+import {
+  Role,
+  LoginRequest,
+  AuthResponse,
+  MessageResponse,
+  UsuarioResponse,
   AuthContextType,
-  ApiError 
+  ApiError,
 } from "./auth";
 import { SidebarProps, SidebarItemProps } from "./Sidebar";
-import { 
-  Authority, 
-  AuthorityCardProps, 
-  AuthorityGridProps, 
-  AuthorityPageHeaderProps 
+import {
+  Authority,
+  AuthorityCardProps,
+  AuthorityGridProps,
+  AuthorityPageHeaderProps,
 } from "./authority";
 import {
   ContactInfo,
@@ -31,8 +31,20 @@ import {
   ContactInfoCardProps,
   DirectoryTableProps,
   DirectoryMenuProps,
-  MapProps
+  MapProps,
 } from "./contact";
+import {
+  Doctorado,
+  Programa,
+  CategoriaAcademica,
+  HeroSectionProps,
+  SectionHeaderProps,
+  DoctoradoCardProps,
+  DoctoradosGridProps,
+  ProgramaItemProps,
+  MaestriaCategoriaProps,
+  MaestriasGridProps,
+} from "./programs";
 
 export type {
   NavItem,
@@ -63,5 +75,15 @@ export type {
   ContactInfoCardProps,
   DirectoryTableProps,
   DirectoryMenuProps,
-  MapProps
+  MapProps,
+  Doctorado,
+  Programa,
+  CategoriaAcademica,
+  HeroSectionProps,
+  SectionHeaderProps,
+  DoctoradoCardProps,
+  DoctoradosGridProps,
+  ProgramaItemProps,
+  MaestriaCategoriaProps,
+  MaestriasGridProps,
 };

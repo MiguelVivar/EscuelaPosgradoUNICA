@@ -7,7 +7,7 @@ export const authoritiesData: Authority[] = [
     name: 'Dr. Mario Gustavo REYES MEJÍA',
     title: 'Director General',
     description: 'Encargado de la dirección general de la universidad.',
-    image: directorPosgrado,
+    image: directorPosgrado.src,
     resolution: 'https://www.unica.edu.pe/transparencia/buscador/sistema/upload/archivos/2024/11/27/RR-441-2024.pdf',
     externalLink: 'https://ctivitae.concytec.gob.pe/appDirectorioCTI/VerDatosInvestigador.do?id_investigador=99063',
   },
