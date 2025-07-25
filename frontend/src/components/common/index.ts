@@ -3,3 +3,4 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 export { Notification } from './Notification';
 export { HeroSection } from './HeroSection';
 export { SectionHeader } from './SectionHeader';
+export { default as ModuleCard } from './ModuleCard';

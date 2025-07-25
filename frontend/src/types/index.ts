@@ -114,4 +114,18 @@ export type {
   TokenValidationResponse,
   PasswordInputFieldProps,
   PasswordValidationOptions,
+  CampusModule,
+  CampusVirtualHeaderProps,
+  CampusModuleCardProps,
+  CampusModulesGridProps,
+  AdminModuleCardProps,
+  CampusLoadingStateProps,
 };
+import {
+  CampusModule,
+  CampusVirtualHeaderProps,
+  CampusModuleCardProps,
+  CampusModulesGridProps,
+  AdminModuleCardProps,
+  CampusLoadingStateProps,
+} from "./campus";
