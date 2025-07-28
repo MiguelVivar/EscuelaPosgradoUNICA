@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock } from "react-icons/fa";
 
 export default function CampusLocationInfo() {
   return (
@@ -13,7 +13,7 @@ export default function CampusLocationInfo() {
         {/* Dirección */}
         <div className="flex items-start space-x-3 group">
           <div className="flex-shrink-0 p-2 bg-zinc-800/50 rounded-lg group-hover:bg-amber-500/10 transition-colors duration-200">
-            <MapPin className="w-4 h-4 text-amber-400" />
+            <FaMapMarkerAlt className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <h4 className="text-zinc-300 font-medium text-sm">Dirección</h4>
@@ -30,7 +30,7 @@ export default function CampusLocationInfo() {
         {/* Teléfono */}
         <div className="flex items-start space-x-3 group">
           <div className="flex-shrink-0 p-2 bg-zinc-800/50 rounded-lg group-hover:bg-amber-500/10 transition-colors duration-200">
-            <Phone className="w-4 h-4 text-amber-400" />
+            <FaPhone className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <h4 className="text-zinc-300 font-medium text-sm">Teléfono</h4>
@@ -48,7 +48,7 @@ export default function CampusLocationInfo() {
         {/* Email */}
         <div className="flex items-start space-x-3 group">
           <div className="flex-shrink-0 p-2 bg-zinc-800/50 rounded-lg group-hover:bg-amber-500/10 transition-colors duration-200">
-            <Mail className="w-4 h-4 text-amber-400" />
+            <FaEnvelope className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <h4 className="text-zinc-300 font-medium text-sm">Email</h4>
@@ -66,7 +66,7 @@ export default function CampusLocationInfo() {
         {/* Horarios */}
         <div className="flex items-start space-x-3 group">
           <div className="flex-shrink-0 p-2 bg-zinc-800/50 rounded-lg group-hover:bg-amber-500/10 transition-colors duration-200">
-            <Clock className="w-4 h-4 text-amber-400" />
+            <FaClock className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <h4 className="text-zinc-300 font-medium text-sm">Horarios</h4>
