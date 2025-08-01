@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/AuthContext";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 
@@ -17,6 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <>
     <html lang="es">
       <body>
         <AuthProvider>
@@ -26,5 +28,7 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
+    <Analytics />
+    </>
   );
 }
