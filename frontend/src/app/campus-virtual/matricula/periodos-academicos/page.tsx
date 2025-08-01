@@ -664,34 +664,33 @@ export default function PeriodosAcademicosPage() {
           )}
         </div>
       </div>
-
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div ref={modalRef} className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <form onSubmit={handleSubmit}>
               {/* Header del Modal */}
-              <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-t-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-amber-100 rounded-lg">
-                      <FaCalendarAlt className="text-amber-600" />
+                <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-t-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-amber-100 rounded-lg">
+                        <FaCalendarAlt className="text-amber-600" />
+                      </div>
+                      <h2 className="text-xl font-bold text-gray-900">
+                        {editingPeriodo ? 'Editar Período Académico' : 'Nuevo Período Académico'}
+                      </h2>
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                      {editingPeriodo ? 'Editar Período Académico' : 'Nuevo Período Académico'}
-                    </h2>
+                    <button
+                      onClick={handleCloseModal}
+                      type="button"
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    onClick={handleCloseModal}
-                    type="button"
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
                 </div>
-              </div>
 
               {/* Contenido del Modal */}
               <div className="p-6 space-y-6">
