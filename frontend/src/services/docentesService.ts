@@ -4,14 +4,20 @@ import {
   DocenteEstadisticas,
   EstadoDocente,
   TipoGrado,
+  FiltrosDocente,
 } from "@/types/docente";
 
 class DocentesService {
   private baseUrl = "/api/docentes";
 
-  async buscarDocentes(): Promise<{ docentes: Docente[] }> {
+  async buscarDocentes(
+    filtros: FiltrosDocente
+  ): Promise<{ docentes: Docente[] }> {
     try {
       // Simulación - reemplazar con llamada real a la API
+      // TODO: Implementar filtros cuando se conecte con la API real
+      /* @VinnBon ENCARGADA */
+      console.log("Filtros aplicados:", filtros);
       const mockDocentes: Docente[] = [
         {
           id: 1,
