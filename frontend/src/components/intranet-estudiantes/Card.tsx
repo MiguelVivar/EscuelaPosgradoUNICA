@@ -43,7 +43,7 @@ export default function Card({
         <h2 className="text-white text-xl font-bold">{title}</h2>
         <p className="text-zinc-200 text-sm">{description}</p>
         <div className="mt-2">
-          <div className="bg-zinc-800 rounded-lg p-3 text-white text-base font-semibold">
+          <div className="bg-neutral-800 rounded-lg p-3 text-white text-base font-semibold">
             {status}
           </div>
         </div>

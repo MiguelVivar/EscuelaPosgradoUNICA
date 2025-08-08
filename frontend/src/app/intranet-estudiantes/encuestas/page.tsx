@@ -123,7 +123,7 @@ export default function Encuestas() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 py-10 px-4">
+    <div className="min-h-screen bg-amber-50 py-10 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

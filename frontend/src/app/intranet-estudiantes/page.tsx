@@ -77,7 +77,7 @@ export default function IntranetEstudiantesHome() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-900 py-10 px-4 flex flex-col items-center">
+    <main className="min-h-screen bg-emerald-50 py-10 px-4 flex flex-col items-center">
       {/* Header de Bienvenida */}
       <div className="w-full max-w-6xl mb-8">
         <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-xl">
