@@ -6,16 +6,61 @@ import {
   BaseButtonProps,
 } from "./Button";
 import { CarouselSlide, CarouselProps } from "./Carrousel";
-import { 
-  Role, 
-  LoginRequest, 
-  AuthResponse, 
-  MessageResponse, 
-  UsuarioResponse, 
+import {
+  Role,
+  LoginRequest,
+  AuthResponse,
+  MessageResponse,
+  UsuarioResponse,
   AuthContextType,
-  ApiError 
+  ApiError,
 } from "./auth";
 import { SidebarProps, SidebarItemProps } from "./Sidebar";
+import {
+  Authority,
+  AuthorityCardProps,
+  AuthorityGridProps,
+  AuthorityPageHeaderProps,
+} from "./authority";
+import {
+  ContactInfo,
+  DirectoryEntry,
+  DirectorySection,
+  ContactFormData,
+  ContactFormProps,
+  ContactInfoCardProps,
+  DirectoryTableProps,
+  DirectoryMenuProps,
+  MapProps,
+} from "./contact";
+import {
+  Doctorado,
+  Programa,
+  CategoriaAcademica,
+  HeroSectionProps,
+  SectionHeaderProps,
+  DoctoradoCardProps,
+  DoctoradosGridProps,
+  ProgramaItemProps,
+  MaestriaCategoriaProps,
+  MaestriasGridProps,
+} from "./programs";
+import {
+  PasswordRecoveryFormData,
+  PasswordRecoveryState,
+  UsePasswordRecoveryReturn,
+  EmailValidationOptions,
+  PasswordRecoveryResponse,
+} from "./passwordRecovery";
+import {
+  PasswordResetFormData,
+  PasswordResetState,
+  UsePasswordResetReturn,
+  PasswordResetResponse,
+  TokenValidationResponse,
+  PasswordInputFieldProps,
+  PasswordValidationOptions,
+} from "./passwordReset";
 
 export type {
   NavItem,
@@ -34,4 +79,53 @@ export type {
   ApiError,
   SidebarProps,
   SidebarItemProps,
+  Authority,
+  AuthorityCardProps,
+  AuthorityGridProps,
+  AuthorityPageHeaderProps,
+  ContactInfo,
+  DirectoryEntry,
+  DirectorySection,
+  ContactFormData,
+  ContactFormProps,
+  ContactInfoCardProps,
+  DirectoryTableProps,
+  DirectoryMenuProps,
+  MapProps,
+  Doctorado,
+  Programa,
+  CategoriaAcademica,
+  HeroSectionProps,
+  SectionHeaderProps,
+  DoctoradoCardProps,
+  DoctoradosGridProps,
+  ProgramaItemProps,
+  MaestriaCategoriaProps,
+  MaestriasGridProps,
+  PasswordRecoveryFormData,
+  PasswordRecoveryState,
+  UsePasswordRecoveryReturn,
+  EmailValidationOptions,
+  PasswordRecoveryResponse,
+  PasswordResetFormData,
+  PasswordResetState,
+  UsePasswordResetReturn,
+  PasswordResetResponse,
+  TokenValidationResponse,
+  PasswordInputFieldProps,
+  PasswordValidationOptions,
+  CampusModule,
+  CampusVirtualHeaderProps,
+  CampusModuleCardProps,
+  CampusModulesGridProps,
+  AdminModuleCardProps,
+  CampusLoadingStateProps,
 };
+import {
+  CampusModule,
+  CampusVirtualHeaderProps,
+  CampusModuleCardProps,
+  CampusModulesGridProps,
+  AdminModuleCardProps,
+  CampusLoadingStateProps,
+} from "./campus";

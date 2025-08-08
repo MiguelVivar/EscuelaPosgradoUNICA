@@ -12,6 +12,7 @@
     "@emailjs/browser": "^4.4.1",
     "@google-cloud/local-auth": "^3.0.1",
     "@types/nodemailer": "^6.4.17",
+    "@vercel/analytics": "^1.5.0",
     "google-auth-library": "^9.14.2",
     "gsap": "^3.13.0",
     "next": "15.3.4",
