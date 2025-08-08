@@ -115,7 +115,7 @@ export default function IntranetEstudiantesHome() {
       </div>
 
       {/* Título Principal */}
-      <h2 className="text-2xl md:text-3xl font-bold text-amber-400 mb-8 text-center">Panel Estudiantil - Sistema Integral</h2>
+      <h2 className="text-2xl md:text-3xl font-bold text-amber-400 mb-8 text-center">Panel Estudiantil - Sistema Integral 📚</h2>
       
       {/* Grid de Tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
