@@ -3,13 +3,18 @@
 import Image from "next/image";
 import { ModuleCard } from "@/components/common";
 import { CampusModuleCardProps } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function CampusModuleCard({ module }: CampusModuleCardProps) {
   const { id, title, href, icon, alt, isMultiLine } = module;
+  const { user } = useAuth();
+
+  // Si es el módulo INTRANET y el usuario es ALUMNO, redirigir a /intranet-estudiantes
+  const finalHref = id === "intranet" && user?.role === "ALUMNO" ? "/intranet-estudiantes" : href;
 
   return (
     <ModuleCard 
-      href={href}
+      href={finalHref}
       className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3 lg:space-y-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[180px]"
     >
       <div className="text-center">
