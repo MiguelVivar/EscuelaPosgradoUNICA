@@ -18,11 +18,18 @@ export default function ModuleCard({
 }: ModuleCardProps) {
   const baseClasses = "bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 hover:bg-white/90 transition-colors duration-200 flex flex-col items-center justify-center";
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <Link 
       className={`${baseClasses} ${className}`}
       href={href}
-      onClick={onClick}
+      onClick={onClick ? handleClick : undefined}
     >
       {children}
     </Link>
