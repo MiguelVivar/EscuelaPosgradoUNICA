@@ -9,10 +9,13 @@ apellidos: string;
 email: string;
 telefono?: string;
 programa: {
-id: number;
-nombre: string;
-codigo: string;
-facultad: string;
+    id: number;
+    nombre: string;
+    codigo: string;
+    facultad: string | { // ✅ Acepta ambos tipos
+        id: number;
+        nombre: string;
+    };
 };
 estado: 'INGRESANTE'|'ACTIVO' | 'RESERVADO' | 'GRADUADO' | 'RETIRADO';
 fechaIngreso: Date;
@@ -21,13 +24,14 @@ creditosAprobados: number;
 creditosTotales: number;
 promedioGeneral: number;
 periodoActual?: {
-id: number;
-codigo: string;
-nombre: string;
+    id: number;
+    codigo: string;
+    nombre: string;
 };
 estadoFinanciero: 'AL_DIA' | 'MORA' | 'BECADO';
 ultimaMatricula?: Date;
 sede: Sede;
+fechaRegistro: string; // Fecha de registro del estudiante
 }
 
 // Formulario para crear/editar estudiante
@@ -60,6 +64,7 @@ estadoFinanciero?: string;
 
 // Filtros para búsqueda (equivale a tu FiltrosEstudiante)
 export interface FiltrosEstudiante {
+    busqueda?: string; // ✅ AGREGAR ESTE CAMPO
     codigoMin?: string;
     codigoMax?: string;
     programa?: string;

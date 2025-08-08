@@ -19,13 +19,26 @@ private estudiantesPrueba: Estudiante[] = [
     email: 'juan.perez@example.com',
     telefono: '987654321',
     programa: {
-    id: 1,
-    nombre: 'Maestría en Ingeniería de Sistemas',
-    codigo: 'MIS-001',
-    facultad: 'Ingeniería'
+        id: 1,
+        nombre: 'Maestría en Ingeniería de Sistemas',
+        codigo: 'MIS-001',
+        facultad: {
+            id: 1,
+            nombre: 'Ingeniería'
+        }
+    },
+    sede: {
+        id: 1,
+        nombre: 'Campus Central',
+        codigo: 'CC-001',
+        direccion: 'Av. Principal 123, Lima',
+        activo: true,
+        fechaCreacion: new Date('2020-01-01').toISOString(),
+        fechaActualizacion: new Date('2024-01-01').toISOString()
     },
     estado: 'ACTIVO',
     fechaIngreso: new Date('2024-03-01'),
+    fechaRegistro: new Date('2024-03-01').toISOString(),
     semestreActual: 3,
     creditosAprobados: 45,
     creditosTotales: 180,
@@ -40,13 +53,26 @@ private estudiantesPrueba: Estudiante[] = [
     email: 'maria.rodriguez@example.com',
     telefono: '987654322',
     programa: {
-    id: 2,
-    nombre: 'Maestría en Administración',
-    codigo: 'MAD-001',
-    facultad: 'Ciencias Empresariales'
+        id: 2,
+        nombre: 'Maestría en Administración',
+        codigo: 'MAD-001',
+        facultad: {
+            id: 2,
+            nombre: 'Ciencias Empresariales'
+        }
     },
-    estado: 'ACTIVO',
+    sede: {
+        id: 1,
+        nombre: 'Campus Central',
+        codigo: 'CC-001',
+        direccion: 'Av. Principal 123, Lima',
+        activo: true,
+        fechaCreacion: new Date('2020-01-01').toISOString(),
+        fechaActualizacion: new Date('2024-01-01').toISOString()
+    },
+    estado: 'INGRESANTE',
     fechaIngreso: new Date('2024-03-01'),
+    fechaRegistro: new Date('2024-03-01').toISOString(),
     semestreActual: 2,
     creditosAprobados: 32,
     creditosTotales: 160,
@@ -61,13 +87,26 @@ private estudiantesPrueba: Estudiante[] = [
     email: 'carlos.gonzalez@example.com',
     telefono: '987654323',
     programa: {
-    id: 1,
-    nombre: 'Maestría en Ingeniería de Sistemas',
-    codigo: 'MIS-001',
-    facultad: 'Ingeniería'
+        id: 1,
+        nombre: 'Maestría en Ingeniería de Sistemas',
+        codigo: 'MIS-001',
+        facultad: {
+            id: 1,
+            nombre: 'Ingeniería'
+        }
+    },
+    sede: {
+        id: 2,
+        nombre: 'Campus Norte',
+        codigo: 'CN-001',
+        direccion: 'Av. Universitaria 456, Lima Norte',
+        activo: true,
+        fechaCreacion: new Date('2020-01-01').toISOString(),
+        fechaActualizacion: new Date('2024-01-01').toISOString()
     },
     estado: 'GRADUADO',
     fechaIngreso: new Date('2020-03-01'),
+    fechaRegistro: new Date('2020-03-01').toISOString(),
     semestreActual: 10,
     creditosAprobados: 180,
     creditosTotales: 180,
@@ -82,13 +121,26 @@ private estudiantesPrueba: Estudiante[] = [
     email: 'ana.mendoza@example.com',
     telefono: '987654324',
     programa: {
-    id: 3,
-    nombre: 'Doctorado en Educación',
-    codigo: 'DOE-001',
-    facultad: 'Educación'
+        id: 3,
+        nombre: 'Doctorado en Educación',
+        codigo: 'DOE-001',
+        facultad: {
+            id: 3,
+            nombre: 'Educación'
+        }
+    },
+    sede: {
+        id: 1,
+        nombre: 'Campus Central',
+        codigo: 'CC-001',
+        direccion: 'Av. Principal 123, Lima',
+        activo: true,
+        fechaCreacion: new Date('2020-01-01').toISOString(),
+        fechaActualizacion: new Date('2024-01-01').toISOString()
     },
     estado: 'ACTIVO',
     fechaIngreso: new Date('2024-03-01'),
+    fechaRegistro: new Date('2024-03-01').toISOString(),
     semestreActual: 1,
     creditosAprobados: 15,
     creditosTotales: 200,
@@ -103,13 +155,26 @@ private estudiantesPrueba: Estudiante[] = [
     email: 'luis.vasquez@example.com',
     telefono: '987654325',
     programa: {
-    id: 2,
-    nombre: 'Maestría en Administración',
-    codigo: 'MAD-001',
-    facultad: 'Ciencias Empresariales'
+        id: 2,
+        nombre: 'Maestría en Administración',
+        codigo: 'MAD-001',
+        facultad: {
+            id: 2,
+            nombre: 'Ciencias Empresariales'
+        }
+    },
+    sede: {
+        id: 2,
+        nombre: 'Campus Norte',
+        codigo: 'CN-001',
+        direccion: 'Av. Universitaria 456, Lima Norte',
+        activo: true,
+        fechaCreacion: new Date('2020-01-01').toISOString(),
+        fechaActualizacion: new Date('2024-01-01').toISOString()
     },
     estado: 'RETIRADO',
     fechaIngreso: new Date('2023-03-01'),
+    fechaRegistro: new Date('2023-03-01').toISOString(),
     semestreActual: 2,
     creditosAprobados: 28,
     creditosTotales: 160,
@@ -128,9 +193,9 @@ await this.simulateDelay(600);
 
 let estudiantes = [...this.estudiantesPrueba];
 
-// Aplicar filtro de búsqueda general
-if (filtros.codigoMin) {
-    const searchTerm = filtros.codigoMin.toLowerCase();
+// Búsqueda general (cambiar nombre del filtro por claridad)
+if (filtros.busqueda || filtros.codigoMin) {
+    const searchTerm = (filtros.busqueda || filtros.codigoMin || '').toLowerCase();
     estudiantes = estudiantes.filter(e => 
     e.codigo.toLowerCase().includes(searchTerm) ||
     e.nombres.toLowerCase().includes(searchTerm) ||
@@ -140,17 +205,24 @@ if (filtros.codigoMin) {
     );
 }
 
-// Aplicar filtro por estado
+// Filtro por estado
 if (filtros.estado) {
     estudiantes = estudiantes.filter(e => e.estado === filtros.estado);
 }
 
-// Aplicar filtro por programa
+// Filtro por programa con validación
 if (filtros.programa) {
-    estudiantes = estudiantes.filter(e => e.programa.id === parseInt(filtros.programa!));
+    const programaId = parseInt(filtros.programa);
+    if (!isNaN(programaId)) {
+    estudiantes = estudiantes.filter(e => e.programa.id === programaId);
+    }
 }
 
-// Aplicar filtro por rango de código
+// Filtros de rango de código
+if (filtros.codigoMin && filtros.codigoMin !== filtros.busqueda) {
+    estudiantes = estudiantes.filter(e => e.codigo >= filtros.codigoMin!);
+}
+
 if (filtros.codigoMax) {
     estudiantes = estudiantes.filter(e => e.codigo <= filtros.codigoMax!);
 }
@@ -175,9 +247,13 @@ return {
 async getInformacionEstudiante(id: number): Promise<Estudiante> {
 await this.simulateDelay(400);
 
+if (!id || id <= 0) {
+    throw new Error('ID de estudiante inválido');
+}
+
 const estudiante = this.estudiantesPrueba.find(e => e.id === id);
 if (!estudiante) {
-    throw new Error('Estudiante no encontrado');
+    throw new Error(`Estudiante con ID ${id} no encontrado`);
 }
 
 return estudiante;
@@ -257,28 +333,66 @@ return {
 };
 }
 
+// Método para obtener datos de la plantilla
+private getTemplateData(): { content: string; filename: string } {
+    // Definir las columnas de la plantilla
+    const headers = [
+        'codigo',
+        'nombres', 
+        'apellidos',
+        'email',
+        'telefono',
+        'programa_id',
+        'sede_id',
+        'estado',
+        'semestre_actual',
+        'fecha_ingreso'
+    ];
+
+    // Datos de ejemplo para la plantilla
+    const ejemplos = [
+        '2024001001,Juan Carlos,Pérez García,juan.perez@email.com,987654321,1,1,ACTIVO,1,2024-03-01',
+        '2024001002,María Elena,Rodríguez López,maria.rodriguez@email.com,987654322,2,1,INGRESANTE,1,2024-03-01',
+        '2024001003,Carlos Alberto,González Ruiz,carlos.gonzalez@email.com,987654323,1,2,ACTIVO,2,2024-03-01'
+    ];
+
+    // Crear contenido CSV
+    const content = [
+        headers.join(','),
+        '# Ejemplos:',
+        ...ejemplos,
+        '',
+        '# Instrucciones:',
+        '# - No modifiques los nombres de las columnas',
+        '# - Los códigos deben ser únicos',
+        '# - programa_id: 1=Ing.Sistemas, 2=Administración, 3=Educación',
+        '# - sede_id: 1=Campus Central, 2=Campus Norte',
+        '# - estado: ACTIVO, INGRESANTE, GRADUADO, RETIRADO, SUSPENDIDO',
+        '# - fecha_ingreso: formato YYYY-MM-DD'
+    ].join('\n');
+
+    return {
+        content,
+        filename: 'plantilla_estudiantes.csv'
+    };
+}
+
 // Descargar plantilla Excel
 async downloadTemplate(): Promise<void> {
-await this.simulateDelay(500);
-
-// Crear contenido CSV de ejemplo
-const csvContent = [
-    'codigo,nombres,apellidos,email,telefono,programa_id,fecha_ingreso,semestre_actual,estado,estado_financiero',
-    '2024001238,Juan,Pérez,juan@example.com,987654321,1,01/03/2024,1,ACTIVO,AL_DIA',
-    '2024001239,María,García,maria@example.com,987654322,2,01/03/2024,1,ACTIVO,BECADO',
-    '2024001240,Carlos,López,carlos@example.com,987654323,3,01/03/2024,1,ACTIVO,AL_DIA'
-].join('\n');
-
-// Crear y descargar el archivo
-const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-const url = window.URL.createObjectURL(blob);
-const link = document.createElement('a');
-link.href = url;
-link.download = 'plantilla_estudiantes.csv';
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
-window.URL.revokeObjectURL(url);
+    const { content, filename } = this.getTemplateData();
+    
+    // Crear blob y descargar
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // Obtener estadísticas generales

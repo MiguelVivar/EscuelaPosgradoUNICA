@@ -1,5 +1,5 @@
 import { getAuthHeaders, validateStoredToken } from '@/lib/api';
-import { PeriodoAcademico } from '@/types/turnoMatricula';
+import { PeriodoAcademico, EstadoPeriodo } from '@/types/periodoAcademico';
 
 // Interface para diferentes estructuras de respuesta del microservicio
 interface MicroserviceResponse {
@@ -27,6 +27,7 @@ const PERIODOS_API_CONFIG = {
 } as const;
 
 class PeriodosAcademicosService {
+  private baseUrl = '/api/periodos-academicos';
 
   /**
    * Obtener todos los períodos académicos
@@ -182,6 +183,16 @@ class PeriodosAcademicosService {
       }
     } catch (error) {
       console.error(`Error al obtener período académico con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  async getPeriodoActivo(): Promise<PeriodoAcademico | null> {
+    try {
+      const periodos = await this.getPeriodos();
+      return periodos.find(p => p.activo && p.estado === EstadoPeriodo.EN_CURSO) || null;
+    } catch (error) {
+      console.error('Error al obtener período activo:', error);
       throw error;
     }
   }
