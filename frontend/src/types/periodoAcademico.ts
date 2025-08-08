@@ -1,46 +1,32 @@
 export interface PeriodoAcademico {
-id: number;
-codigo: string;
-nombre: string;
-anio: string;
-semestre: string;
-fechaInicio: Date;
-fechaFin: Date;
-fechaInicioMatricula?: Date;
-fechaFinMatricula?: Date;
-activo: boolean;
-descripcion?: string;
-fechaCreacion: string;
-fechaActualizacion: string;
+  id: number;
+  nombre: string;
+  codigo: string;
+  fechaInicio: string;
+  fechaFin: string;
+  fechaInicioMatriculas: string;
+  fechaFinMatriculas: string;
+  estado: EstadoPeriodo;
+  activo: boolean;
+  anio: number;
+  semestre: number;
+  descripcion?: string;
 }
 
-export interface PeriodoAcademicoForm {
-codigo: string;
-nombre: string;
-anio: string;
-semestre: string;
-fechaInicio: Date;
-fechaFin: Date;
-fechaInicioMatricula?: Date;
-fechaFinMatricula?: Date;
-descripcion?: string;
+export enum EstadoPeriodo {
+  PLANIFICACION = "PLANIFICACION",
+  MATRICULAS_ABIERTAS = "MATRICULAS_ABIERTAS",
+  EN_CURSO = "EN_CURSO",
+  EVALUACIONES = "EVALUACIONES",
+  FINALIZADO = "FINALIZADO",
+  CERRADO = "CERRADO",
 }
 
-export interface PeriodoAcademicoRequest {
-codigo: string;
-nombre: string;
-anio: string;
-semestre: string;
-fechaInicio: string;
-fechaFin: string;
-fechaInicioMatricula?: string;
-fechaFinMatricula?: string;
-descripcion?: string;
-}
-
-export interface ApiResponse<T> {
-success: boolean;
-message: string;
-data?: T;
-errors?: string[];
-}
+export const ESTADOS_PERIODO_LABELS = {
+  [EstadoPeriodo.PLANIFICACION]: "En Planificación",
+  [EstadoPeriodo.MATRICULAS_ABIERTAS]: "Matrículas Abiertas",
+  [EstadoPeriodo.EN_CURSO]: "En Curso",
+  [EstadoPeriodo.EVALUACIONES]: "Período de Evaluaciones",
+  [EstadoPeriodo.FINALIZADO]: "Finalizado",
+  [EstadoPeriodo.CERRADO]: "Cerrado",
+};

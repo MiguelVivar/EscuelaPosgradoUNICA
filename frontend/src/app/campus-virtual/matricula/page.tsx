@@ -130,7 +130,17 @@ export default function MatriculaPage() {
       bgColor: "bg-slate-50",
       textColor: "text-slate-800",
       borderColor: "border-slate-200"
-    }
+    },
+    {
+      title: "Reporte Académico",
+      description: "Visualizacion del rendimiento académico de los estudiantes",
+      icon: FiCreditCard,
+      href: "/campus-virtual/matricula/reporte",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-200"
+    },
   ];
 
   return (

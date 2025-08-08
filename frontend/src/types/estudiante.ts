@@ -12,7 +12,13 @@ export interface Estudiante {
     id: number;
     nombre: string;
     codigo: string;
-    facultad: string;
+    facultad:
+      | string
+      | {
+          // ✅ Acepta ambos tipos
+          id: number;
+          nombre: string;
+        };
   };
   estado: "INGRESANTE" | "ACTIVO" | "RESERVADO" | "GRADUADO" | "RETIRADO";
   fechaIngreso: Date;
@@ -27,7 +33,8 @@ export interface Estudiante {
   };
   estadoFinanciero: "AL_DIA" | "MORA" | "BECADO";
   ultimaMatricula?: Date;
-  sede?: Sede | null;
+  sede: Sede;
+  fechaRegistro: string; // Fecha de registro del estudiante
 }
 
 // Formulario para crear/editar estudiante
@@ -60,6 +67,7 @@ export interface EstudianteRequest {
 
 // Filtros para búsqueda (equivale a tu FiltrosEstudiante)
 export interface FiltrosEstudiante {
+  busqueda?: string; // ✅ AGREGAR ESTE CAMPO
   codigoMin?: string;
   codigoMax?: string;
   programa?: string;
