@@ -130,6 +130,16 @@ export default function MatriculaPage() {
       bgColor: "bg-slate-50",
       textColor: "text-slate-800",
       borderColor: "border-slate-200"
+    },
+    {
+      title: "Equivalencias de Planes de Estudio",
+      description: "Registrar y consultar equivalencias entre cursos de diferentes planes de estudio",
+      icon: FiSettings,
+      href: "/campus-virtual/matricula/equivalencias",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-200"
     }
   ];
 
