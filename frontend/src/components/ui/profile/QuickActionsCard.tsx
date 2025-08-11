@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '@/components/ui/common/Card';
+import ProfileActionButton from './ProfileActionButton';
 import { FaCog, FaBell, FaQuestionCircle, FaShieldAlt } from 'react-icons/fa';
 
 interface QuickActionsCardProps {
@@ -13,29 +14,17 @@ export default function QuickActionsCard({
   onPrivacyClick, 
   onHelpClick 
 }: QuickActionsCardProps) {
-  const actions = [
-    {
-      icon: FaBell,
-      title: "Notificaciones",
-      description: "Gestionar preferencias",
-      onClick: onNotificationClick,
-      color: "text-blue-500"
-    },
-    {
-      icon: FaShieldAlt,
-      title: "Privacidad",
-      description: "Configurar privacidad",
-      onClick: onPrivacyClick,
-      color: "text-green-500"
-    },
-    {
-      icon: FaQuestionCircle,
-      title: "Ayuda",
-      description: "Centro de ayuda",
-      onClick: onHelpClick,
-      color: "text-purple-500"
-    }
-  ];
+  const handleNotificationClick = () => {
+    onNotificationClick?.();
+  };
+
+  const handlePrivacyClick = () => {
+    onPrivacyClick?.();
+  };
+
+  const handleHelpClick = () => {
+    onHelpClick?.();
+  };
 
   return (
     <Card padding="md">
@@ -44,24 +33,29 @@ export default function QuickActionsCard({
         Configuraciones
       </h3>
       <div className="space-y-3">
-        {actions.map((action, index) => {
-          const IconComponent = action.icon;
-          return (
-            <button
-              key={index}
-              onClick={action.onClick}
-              className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors group"
-            >
-              <div className="flex items-center">
-                <IconComponent className={`${action.color} mr-3 group-hover:scale-110 transition-transform`} size={18} />
-                <div>
-                  <div className="font-medium text-gray-800">{action.title}</div>
-                  <div className="text-sm text-gray-600">{action.description}</div>
-                </div>
-              </div>
-            </button>
-          );
-        })}
+        <ProfileActionButton
+          icon={FaBell}
+          title="Notificaciones"
+          description="Gestionar preferencias de notificaciones"
+          onClick={handleNotificationClick}
+          variant="primary"
+        />
+        
+        <ProfileActionButton
+          icon={FaShieldAlt}
+          title="Privacidad"
+          description="Configurar opciones de privacidad"
+          onClick={handlePrivacyClick}
+          variant="secondary"
+        />
+        
+        <ProfileActionButton
+          icon={FaQuestionCircle}
+          title="Ayuda"
+          description="Centro de ayuda y soporte"
+          onClick={handleHelpClick}
+          variant="default"
+        />
       </div>
     </Card>
   );

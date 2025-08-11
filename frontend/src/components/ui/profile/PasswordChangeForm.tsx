@@ -3,6 +3,7 @@ import Card from '@/components/ui/common/Card';
 import InputField from '@/components/ui/common/InputField';
 import SectionHeader from '@/components/ui/common/SectionHeader';
 import Button from '@/components/common/Button';
+import PasswordValidation from './PasswordValidation';
 import { FaKey, FaLock } from 'react-icons/fa';
 import { ChangePasswordRequest } from '@/types/auth';
 
@@ -59,6 +60,12 @@ export default function PasswordChangeForm({
           icon={FaLock}
           disabled={isChangingPassword}
           required
+        />
+
+        <PasswordValidation
+          password={passwordData.nuevaPassword}
+          confirmPassword={passwordData.confirmarNuevaPassword}
+          currentPassword={passwordData.passwordActual}
         />
 
         <div className="pt-2">
