@@ -43,8 +43,8 @@ export function useHistorial({ userRole, isAuthenticated }: UseHistorialProps): 
       }
       
       setHistorial(historialData);
-    } catch (err: any) {
-      const errorMessage = err.message || 'Error al cargar el historial';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar el historial';
       setError(errorMessage);
       console.error('Error loading historial:', err);
     } finally {

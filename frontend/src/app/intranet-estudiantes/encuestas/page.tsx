@@ -2,11 +2,12 @@
 
 import { FaArrowLeft, FaClipboardList, FaUser, FaStar, FaClock, FaCheckCircle, FaExclamationCircle, FaChartBar, FaPlay, FaEye } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React from 'react';
 
 export default function Encuestas() {
   const router = useRouter();
-  const [encuestaSeleccionada, setEncuestaSeleccionada] = useState<string | null>(null);
+  // const [encuestaSeleccionada, setEncuestaSeleccionada] = useState<string | null>(null);
+  console.log('Componente Encuestas cargado'); // Para evitar warning de variables no usadas
 
   const encuestasDisponibles = [
     {

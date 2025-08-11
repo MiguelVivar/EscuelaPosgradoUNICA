@@ -50,8 +50,8 @@ export function useDeudas({ userRole, isAuthenticated }: UseDeudasProps): UseDeu
       }
       
       setDeudas(deudasData);
-    } catch (err: any) {
-      const errorMessage = err.message || 'Error al cargar las deudas';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar las deudas';
       setError(errorMessage);
       console.error('Error loading deudas:', err);
     } finally {
@@ -86,10 +86,11 @@ export function useDeudas({ userRole, isAuthenticated }: UseDeudasProps): UseDeu
 
       await loadDeudas();
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo crear la deuda';
       await Swal.fire({
         title: 'Error',
-        text: error.message || 'No se pudo crear la deuda',
+        text: errorMessage,
         icon: 'error'
       });
       return false;
@@ -123,10 +124,11 @@ export function useDeudas({ userRole, isAuthenticated }: UseDeudasProps): UseDeu
 
       await loadDeudas();
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo marcar la deuda como pagada';
       await Swal.fire({
         title: 'Error',
-        text: error.message || 'No se pudo marcar la deuda como pagada',
+        text: errorMessage,
         icon: 'error'
       });
       return false;
@@ -160,10 +162,11 @@ export function useDeudas({ userRole, isAuthenticated }: UseDeudasProps): UseDeu
 
       await loadDeudas();
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo eliminar la deuda';
       await Swal.fire({
         title: 'Error',
-        text: error.message || 'No se pudo eliminar la deuda',
+        text: errorMessage,
         icon: 'error'
       });
       return false;

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FiCalendar, FiMapPin, FiBookOpen, FiUsers, FiCreditCard, FiClock, FiSettings, FiTool } from "react-icons/fi";
+import { FiCalendar, FiMapPin, FiBookOpen, FiUsers, FiCreditCard, FiClock, FiSettings, FiTool, FiRefreshCw, FiCheck, FiUserCheck, FiFileText, FiPercent } from "react-icons/fi";
 import { Button, LoadingSpinner } from "@/components/common";
 
 export default function MatriculaPage() {
@@ -133,13 +133,63 @@ export default function MatriculaPage() {
     },
     {
       title: "Reporte Académico",
-      description: "Visualizacion del rendimiento académico de los estudiantes",
+      description: "Visualización del rendimiento académico de los estudiantes",
       icon: FiCreditCard,
       href: "/campus-virtual/matricula/reporte",
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50",
       textColor: "text-blue-800",
       borderColor: "border-blue-200"
+    },
+    {
+      title: "Equivalencia de Planes",
+      description: "Generar equivalencias entre planes de estudio",
+      icon: FiRefreshCw,
+      href: "/campus-virtual/matricula/equivalencia-planes",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      textColor: "text-green-800",
+      borderColor: "border-green-200"
+    },
+    {
+      title: "Registro de Convalidaciones",
+      description: "Gestionar convalidaciones de cursos por estudiante",
+      icon: FiCheck,
+      href: "/campus-virtual/matricula/convalidaciones",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-800",
+      borderColor: "border-purple-200"
+    },
+    {
+      title: "Matrícula de Estudiantes",
+      description: "Matricular estudiantes en cursos y programas",
+      icon: FiUserCheck,
+      href: "/campus-virtual/matricula/matricula-estudiantes",
+      color: "from-indigo-500 to-indigo-600",
+      bgColor: "bg-indigo-50",
+      textColor: "text-indigo-800",
+      borderColor: "border-indigo-200"
+    },
+    {
+      title: "Esquela de Pagos",
+      description: "Generar esquelas de pago con detalles pendientes",
+      icon: FiFileText,
+      href: "/campus-virtual/matricula/esquela-pagos",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      textColor: "text-emerald-800",
+      borderColor: "border-emerald-200"
+    },
+    {
+      title: "Cuotas por Programa",
+      description: "Calcular cuotas de pago por programa académico",
+      icon: FiPercent,
+      href: "/campus-virtual/matricula/cuotas-programa",
+      color: "from-rose-500 to-rose-600",
+      bgColor: "bg-rose-50",
+      textColor: "text-rose-800",
+      borderColor: "border-rose-200"
     },
   ];
 

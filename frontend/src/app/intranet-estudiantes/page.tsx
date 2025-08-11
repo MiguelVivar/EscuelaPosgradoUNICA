@@ -119,13 +119,13 @@ export default function IntranetEstudiantesHome() {
       
       {/* Grid de Tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
-        {cards.map((card, idx) => (
+        {cards.map((card) => (
           <Card
             key={card.title}
             title={card.title}
             description={card.description}
             status={card.status}
-            color={card.color as any}
+            color={card.color as "amber" | "red" | "zinc"}
             icon={card.icon}
             onClick={() => router.push(card.href)}
           />

@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDeudas } from '@/hooks/useDeudas';
 import CreateDeudaModal from '@/components/pagos/CreateDeudaModal';
 import PagarDeudaModal from '@/components/pagos/PagarDeudaModal';
 import UserSelector from '@/components/pagos/UserSelector';
+import { Deuda } from '@/types/pagos';
 
 export default function DeudasPage() {
   const { user, isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDeuda, setSelectedDeuda] = useState<any>(null);
+  const [selectedDeuda, setSelectedDeuda] = useState<Deuda | null>(null);
   const [showPagarModal, setShowPagarModal] = useState(false);
 
   const {
@@ -21,7 +22,6 @@ export default function DeudasPage() {
     showCreateModal,
     setSelectedUsuarioId,
     setShowCreateModal,
-    loadDeudas,
     createDeuda,
     marcarPagada,
     deleteDeuda,
@@ -47,7 +47,7 @@ export default function DeudasPage() {
     }
   };
 
-  const handlePagarDeuda = (deuda: any) => {
+  const handlePagarDeuda = (deuda: Deuda) => {
     setSelectedDeuda(deuda);
     setShowPagarModal(true);
   };
