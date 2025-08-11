@@ -1,10 +1,16 @@
 "use client";
 
-import { FaArrowLeft, FaCreditCard, FaExclamationTriangle, FaCheckCircle, FaCalendarAlt, FaMoneyBillWave, FaDownload } from "react-icons/fa";
+import { FaArrowLeft, FaCreditCard, FaExclamationTriangle, FaCheckCircle, FaCalendarAlt, FaMoneyBillWave, FaDownload, FaFileAlt, FaPrint } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { getBolteasByStudent, GeneratedBoleta } from "@/data/esquelas-mock";
 
 export default function Deudas() {
   const router = useRouter();
+  const { user } = useAuth();
+
+  // Obtener esquelas del estudiante actual desde los datos compartidos
+  const esquelasEstudiante = getBolteasByStudent(user?.email || 'estudiante@unica.edu.pe');
   
   const deudasData = [
     { 
@@ -72,6 +78,27 @@ export default function Deudas() {
     return diferencia;
   };
 
+  // Funciones para esquelas de pago
+  const descargarEsquela = (boleta: GeneratedBoleta) => {
+    console.log('Descargando esquela:', boleta.id);
+    // TODO: Implementar descarga real de PDF
+    alert(`Descargando esquela ${boleta.id}`);
+  };
+
+  const imprimirEsquela = (boleta: GeneratedBoleta) => {
+    console.log('Imprimiendo esquela:', boleta.id);
+    // TODO: Implementar impresión real
+    alert(`Imprimiendo esquela ${boleta.id}`);
+  };
+
+  const getEstadoBoletaColor = (estado: string) => {
+    switch (estado) {
+      case "Pagada": return "text-green-400 bg-green-900/20";
+      case "Activa": return "text-amber-400 bg-amber-900/20";
+      default: return "text-red-400 bg-red-900/20";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-amber-50 py-10 px-4">
       <div className="max-w-7xl mx-auto">
@@ -127,6 +154,94 @@ export default function Deudas() {
             <p className="text-zinc-400 text-sm">Incluye recargos</p>
           </div>
         </div>
+
+        {/* Esquelas de Pago Generadas */}
+        {esquelasEstudiante.length > 0 && (
+          <div className="bg-zinc-800 rounded-xl p-6 shadow-lg mb-8">
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <FaFileAlt className="text-amber-400" />
+              Esquelas de Pago Generadas
+              <span className="bg-amber-500 text-zinc-900 px-2 py-1 rounded-full text-xs font-bold">
+                {esquelasEstudiante.length}
+              </span>
+            </h2>
+            
+            <div className="space-y-4">
+              {esquelasEstudiante.map((boleta) => (
+                <div key={boleta.id} className="bg-zinc-900 rounded-lg p-4 border border-zinc-700">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <FaFileAlt className="text-amber-400" />
+                        <h3 className="text-white font-bold">Esquela {boleta.id}</h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${getEstadoBoletaColor(boleta.estado)}`}>
+                          {boleta.estado}
+                        </span>
+                      </div>
+                      <p className="text-zinc-300 text-sm mb-1">
+                        Generada el: {new Date(boleta.fechaGeneracion).toLocaleDateString('es-ES')}
+                      </p>
+                      <p className="text-zinc-300 text-sm mb-3">
+                        Total: <span className="text-amber-400 font-bold">S/ {boleta.total.toFixed(2)}</span>
+                      </p>
+                      
+                      {/* Conceptos de la esquela */}
+                      <div className="space-y-2">
+                        <h4 className="text-zinc-300 font-medium text-sm">Conceptos incluidos:</h4>
+                        {boleta.conceptos.map((concepto) => (
+                          <div key={concepto.id} className="bg-zinc-800 rounded p-2 text-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white">{concepto.concepto}</span>
+                              <span className="text-amber-400 font-bold">S/ {concepto.monto.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center mt-1">
+                              <span className="text-zinc-400 text-xs">
+                                Vence: {concepto.fechaVencimiento}
+                              </span>
+                              <span className={`text-xs px-2 py-1 rounded ${getEstadoColor(concepto.estado || 'Pendiente')}`}>
+                                {concepto.estado || 'Pendiente'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Acciones */}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={() => descargarEsquela(boleta)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors flex items-center gap-2"
+                      >
+                        <FaDownload className="w-3 h-3" />
+                        Descargar PDF
+                      </button>
+                      <button
+                        onClick={() => imprimirEsquela(boleta)}
+                        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition-colors flex items-center gap-2"
+                      >
+                        <FaPrint className="w-3 h-3" />
+                        Imprimir
+                      </button>
+                      {boleta.estado === 'Activa' && (
+                        <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition-colors">
+                          Pagar Ahora
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border-l-4 border-blue-400">
+              <p className="text-blue-200 text-sm">
+                <strong>Información:</strong> Las esquelas de pago son generadas automáticamente por la administración. 
+                Puedes descargar e imprimir estos documentos para realizar tus pagos en cualquier entidad bancaria autorizada.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Tabla de Deudas */}
         <div className="bg-zinc-800 rounded-xl p-6 shadow-lg mb-8">

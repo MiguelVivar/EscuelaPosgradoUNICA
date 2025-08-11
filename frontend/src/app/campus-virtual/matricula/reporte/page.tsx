@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/common";
 import Swal from "sweetalert2";
@@ -9,7 +9,6 @@ import {
   FaChartBar,
   FaChartLine,
   FaChartPie,
-  FaDownload,
   FaFilter,
   FaTimes,
   FaCalendarAlt,
@@ -19,13 +18,10 @@ import {
   FaFileExcel,
   FaFilePdf,
   FaInfoCircle,
-  FaEye,
-  FaPrint,
   FaSearch,
   FaUserGraduate,
   FaChevronDown,
   FaChevronUp,
-  FaListAlt,
   FaUser,
   FaClipboardList,
 } from "react-icons/fa";
@@ -42,12 +38,10 @@ import {
 import { PeriodoAcademico } from "@/types/periodoAcademico";
 import { ProgramaEstudio } from "@/types/programaEstudio";
 import { Sede } from "@/types/sede";
-import { reportesService } from "@/services/reportesService";
 import { periodosAcademicosService } from "@/services/periodosAcademicosService";
 import { programasEstudioService } from "@/services/programasEstudioService";
 import { sedesService } from "@/services/sedesService";
 import { estudiantesService } from "@/services/estudiantesService";
-import { pagosEstudianteService } from "@/services/pagosEstudianteService";
 import { tasasPagoService } from "@/services/tasasPagoService";
 
 // Tipos para el reporte detallado
@@ -110,7 +104,14 @@ function SimpleChart({
   title,
 }: {
   type: "bar" | "line" | "pie";
-  data: any;
+  data: {
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+    }>;
+  };
   title: string;
 }) {
   if (type === "pie") {
@@ -1033,47 +1034,8 @@ export default function ReportesPage() {
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Verificar acceso
-  if (!canAccess) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <FaInfoCircle className="mx-auto text-5xl text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Acceso Denegado
-          </h2>
-          <p className="text-gray-600">
-            No tienes permisos para acceder a los reportes
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Carga inicial de datos
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Cargar reporte cuando cambian los filtros o tipo de reporte
-  useEffect(() => {
-    if (periodosAcademicos.length > 0) {
-      loadReporte();
-    }
-  }, [tipoReporteActivo, filtros, periodosAcademicos]);
-
-  // Animaciones
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
-      );
-    }
-  }, []);
-
-  const loadInitialData = async () => {
+  // Funciones definidas con useCallback
+  const loadInitialData = useCallback(async () => {
     try {
       setLoading(true);
       const [periodos, programas, sedesData] = await Promise.all([
@@ -1101,9 +1063,9 @@ export default function ReportesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadReporte = async () => {
+  const loadReporte = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -1473,7 +1435,47 @@ export default function ReportesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tipoReporteActivo, filtros, periodosAcademicos, programasEstudio, sedes]);
+
+  // Hooks que usan las funciones
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
+  // Cargar reporte cuando cambian los filtros o tipo de reporte
+  useEffect(() => {
+    if (periodosAcademicos.length > 0) {
+      loadReporte();
+    }
+  }, [tipoReporteActivo, filtros, periodosAcademicos, loadReporte]);
+
+  // Animaciones
+  useEffect(() => {
+    if (containerRef.current) {
+      gsap.fromTo(
+        containerRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+    }
+  }, []);
+
+  // Verificar acceso
+  if (!canAccess) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <FaInfoCircle className="mx-auto text-5xl text-red-500 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Acceso Denegado
+          </h2>
+          <p className="text-gray-600">
+            No tienes permisos para acceder a los reportes
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleApplyFilters = () => {
     setFiltros(tempFiltros);
@@ -1524,6 +1526,7 @@ export default function ReportesPage() {
         confirmButtonColor: "#f59e0b",
       });
     } catch (error) {
+      console.error("Error al exportar reporte:", error);
       Swal.fire({
         icon: "error",
         title: "Error",

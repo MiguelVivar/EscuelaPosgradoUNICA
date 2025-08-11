@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import pagosService from '@/services/pagosService';
@@ -11,13 +11,7 @@ export default function PagosMain() {
   const [stats, setStats] = useState<Partial<PagosStats> | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadStats();
-    }
-  }, [isAuthenticated, user?.role]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       if (user?.role === 'ADMIN') {
         const adminStats = await pagosService.getStats();
@@ -31,7 +25,13 @@ export default function PagosMain() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.role]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadStats();
+    }
+  }, [isAuthenticated, user?.role, loadStats]);
 
   const menuItems = [
     {

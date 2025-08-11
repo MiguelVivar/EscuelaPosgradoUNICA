@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHistorial } from '@/hooks/useHistorial';
 import UserSelector from '@/components/pagos/UserSelector';
@@ -15,7 +15,6 @@ export default function HistorialPage() {
     error,
     selectedUsuarioId,
     setSelectedUsuarioId,
-    loadHistorial,
   } = useHistorial({
     userRole: user?.role || 'ALUMNO',
     isAuthenticated

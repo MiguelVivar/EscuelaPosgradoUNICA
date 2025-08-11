@@ -1,6 +1,6 @@
-import { InformacionAcademica, ApiResponse } from "@/types/academic-info";
+import { InformacionAcademica } from "@/types/academic-info";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 class AcademicService {
   private async simulateDelay(ms: number = 800): Promise<void> {
