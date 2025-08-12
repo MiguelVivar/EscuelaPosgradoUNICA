@@ -46,7 +46,9 @@ interface MateriasEstudiante {
   estado: 'MATRICULADO' | 'EN_CURSO' | 'APROBADO' | 'DESAPROBADO';
 }
 
+// Interface para los datos del modal
 interface DatosEstudianteModal {
+  // Datos básicos del estudiante
   nombre: string;
   codigo: string;
   email: string;
@@ -58,7 +60,7 @@ interface DatosEstudianteModal {
   programa: string;
   facultad: string;
   semestre: string;
-  // Propiedades opcionales para cuando se selecciona una materia
+  // Datos específicos de materia (opcionales)
   especialInfo?: string;
   docente?: string;
   horario?: string;
@@ -225,10 +227,7 @@ export default function PlanEstudios() {
       estado: user ? "ACTIVO" : "INACTIVO",
       promedio: calcularPromedio(),
       sede: "Campus Central",
-      ingreso: "29/2/2024",
-      programa: "Maestría en Administración",
-      facultad: "Escuela de Posgrado",
-      semestre: "Información general"
+      ingreso: "29/2/2024"
     };
 
     // Información específica según la materia seleccionada
@@ -240,6 +239,8 @@ export default function PlanEstudios() {
 
       return {
         ...baseData,
+        programa: "Maestría en Administración",
+        facultad: "Escuela de Posgrado",
         semestre: `${materia.ciclo}° Semestre`,
         especialInfo: materia.descripcion || `Curso de ${materia.creditos} créditos académicos`,
         docente: docenteNombre,
@@ -261,7 +262,12 @@ export default function PlanEstudios() {
       };
     }
 
-    return baseData;
+    return {
+      ...baseData,
+      programa: "Maestría en Administración",
+      facultad: "Escuela de Posgrado", 
+      semestre: "Información general"
+    };
   };
 
   // Resumen académico calculado con datos reales
@@ -309,7 +315,7 @@ export default function PlanEstudios() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-20 pb-10">
+    <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -677,17 +683,17 @@ export default function PlanEstudios() {
                         <div className="flex items-center">
                           <FaChalkboardTeacher className="text-gray-400 mr-3 w-4" />
                           <span className="font-medium">Docente:</span>
-                          <span className="ml-2">{datos.docente || 'Por asignar'}</span>
+                          <span className="ml-2">{datos.docente || 'N/A'}</span>
                         </div>
                         <div className="flex items-center">
                           <FaClock className="text-gray-400 mr-3 w-4" />
                           <span className="font-medium">Horario:</span>
-                          <span className="ml-2">{datos.horario || 'Por confirmar'}</span>
+                          <span className="ml-2">{datos.horario || 'N/A'}</span>
                         </div>
                         <div className="flex items-center">
                           <FaMapMarkerAlt className="text-gray-400 mr-3 w-4" />
                           <span className="font-medium">Aula:</span>
-                          <span className="ml-2">{datos.aula || 'Por asignar'}</span>
+                          <span className="ml-2">{datos.aula || 'N/A'}</span>
                         </div>
                         <div className="flex items-center">
                           <FaGraduationCap className="text-gray-400 mr-3 w-4" />
@@ -697,7 +703,7 @@ export default function PlanEstudios() {
                         <div className="flex items-center">
                           <FaClock className="text-gray-400 mr-3 w-4" />
                           <span className="font-medium">Horas Totales:</span>
-                          <span className="ml-2">{datos.totalHoras || 0} (T: {datos.horasTeoricas || 0}, P: {datos.horasPracticas || 0})</span>
+                          <span className="ml-2">{datos.totalHoras || 'N/A'} (T: {datos.horasTeoricas || 0}, P: {datos.horasPracticas || 0})</span>
                         </div>
                       </div>
                     </div>
@@ -718,7 +724,7 @@ export default function PlanEstudios() {
                         <div className="bg-green-50 p-4 rounded-lg">
                           <p className="text-sm text-green-600">Asistencia</p>
                           <p className="text-2xl font-bold text-green-800">
-                            {datos.asistencia?.toFixed(1) || '0.0'}%
+                            {datos.asistencia ? datos.asistencia.toFixed(1) : 'N/A'}%
                           </p>
                         </div>
                         <div className="bg-amber-50 p-4 rounded-lg">
@@ -736,7 +742,7 @@ export default function PlanEstudios() {
                       </div>
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <p className="text-sm text-gray-600 mb-2">Descripción:</p>
-                        <p className="text-gray-800">{datos.especialInfo || 'Información no disponible'}</p>
+                        <p className="text-gray-800">{datos.especialInfo || 'No disponible'}</p>
                       </div>
                     </div>
                   </div>
