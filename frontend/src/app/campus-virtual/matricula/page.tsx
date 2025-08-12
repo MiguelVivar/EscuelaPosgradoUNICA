@@ -5,11 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  FiBookOpen,
-  FiCreditCard,
-  FiClock,
   FiBarChart,
-  FiTool,
   FiRotateCcw,
   FiPieChart,
 } from "react-icons/fi";
