@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button, LoadingSpinner } from '@/components/common';
 
 interface ProcesoMatricula {
@@ -34,15 +33,14 @@ interface DocumentoRequerido {
 
 export default function SeguimientoMatriculaPage() {
   const router = useRouter();
-  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [procesos, setProcesos] = useState<ProcesoMatricula[]>([]);
   const [filtroEstado, setFiltroEstado] = useState<string>('');
   const [busqueda, setBusqueda] = useState('');
 
-  // Datos de ejemplo
-  const procesosEjemplo: ProcesoMatricula[] = [
+  // Datos de ejemplo - memorizados para evitar recreación en cada render
+  const procesosEjemplo: ProcesoMatricula[] = useMemo(() => [
     {
       id: "1",
       estudianteId: "EST001",
@@ -142,7 +140,7 @@ export default function SeguimientoMatriculaPage() {
         }
       ]
     }
-  ];
+  ], []); // Array vacío como dependencias porque son datos estáticos
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -160,7 +158,7 @@ export default function SeguimientoMatriculaPage() {
     };
 
     cargarDatos();
-  }, []);
+  }, [procesosEjemplo]);
 
   const getEstadoColor = (estado: string) => {
     switch (estado) {
@@ -263,6 +261,7 @@ export default function SeguimientoMatriculaPage() {
                   value={filtroEstado}
                   onChange={(e) => setFiltroEstado(e.target.value)}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  title="Seleccionar estado del proceso"
                 >
                   <option value="">Todos los estados</option>
                   <option value="INICIADO">Iniciado</option>

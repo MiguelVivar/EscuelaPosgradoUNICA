@@ -1,23 +1,270 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  FaCalendarAlt, 
+  FaClock, 
+  FaCalendarCheck, 
+  FaGraduationCap, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaToggleOn, 
+  FaToggleOff, 
+  FaEdit, 
+  FaPowerOff, 
+  FaInfoCircle,
+  FaPlus,
+  FaSearch
+} from 'react-icons/fa';
 
-// Archivo temporal - Períodos académicos en desarrollo
-export default function PeriodosAcademicosPage() {
+interface PeriodoAcademico {
+  id: number;
+  nombre: string;
+  codigo: string;
+  anio: string;
+  semestre: string;
+  fechaInicio: string;
+  fechaFin: string;
+  fechaInicioMatricula: string;
+  fechaFinMatricula: string;
+  descripcion: string;
+  activo: boolean;
+  habilitado: boolean;
+}
+
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
+  leftIcon?: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const Button: React.FC<ButtonProps> = ({ 
+  variant = 'primary', 
+  size = 'md', 
+  onClick, 
+  leftIcon: Icon, 
+  children, 
+  type = 'button' 
+}) => {
+  const baseClasses = 'inline-flex items-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
+    outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500'
+  };
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Períodos Académicos</h1>
-        <p className="text-gray-600 mb-6">Este módulo está en desarrollo</p>
-        <p className="text-sm text-gray-500">
-          Por ahora, enfócate en usar el módulo completo de matrícula para estudiantes
-        </p>
-      </div>
+    <button
+      type={type}
+      onClick={onClick}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`}
+    >
+      {Icon && <Icon className="mr-2" />}
+      {children}
+    </button>
+  );
+};
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table ref={tableRef} className="w-full">
+export default function PeriodosAcademicosPage() {
+  const [periodos, setPeriodos] = useState<PeriodoAcademico[]>([]);
+  const [filteredPeriodos, setFilteredPeriodos] = useState<PeriodoAcademico[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingPeriodo, setEditingPeriodo] = useState<PeriodoAcademico | null>(null);
+  const [loading, setLoading] = useState(true);
+  const canManage = true; // Placeholder para permisos
+  const tableRef = useRef<HTMLTableElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const [formData, setFormData] = useState({
+    nombre: '',
+    codigo: '',
+    anio: new Date().getFullYear().toString(),
+    semestre: 'I',
+    fechaInicio: '',
+    fechaFin: '',
+    fechaInicioMatricula: '',
+    fechaFinMatricula: '',
+    descripcion: '',
+    habilitado: true
+  });
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('es-PE');
+  };
+
+  const updateCodigoIfEmpty = (anio: string, semestre: string) => {
+    if (!formData.codigo || formData.codigo === `${formData.anio}-${formData.semestre}`) {
+      setFormData(prev => ({...prev, codigo: `${anio}-${semestre}`}));
+    }
+  };
+
+  const handleEdit = (periodo: PeriodoAcademico) => {
+    setEditingPeriodo(periodo);
+    setFormData({
+      nombre: periodo.nombre,
+      codigo: periodo.codigo,
+      anio: periodo.anio,
+      semestre: periodo.semestre,
+      fechaInicio: periodo.fechaInicio,
+      fechaFin: periodo.fechaFin,
+      fechaInicioMatricula: periodo.fechaInicioMatricula,
+      fechaFinMatricula: periodo.fechaFinMatricula,
+      descripcion: periodo.descripcion,
+      habilitado: periodo.habilitado
+    });
+    setShowModal(true);
+  };
+
+  const handleToggleActive = (periodo: PeriodoAcademico) => {
+    // Implementar toggle de estado activo
+    console.log('Toggle active para período:', periodo.id);
+  };
+
+  const handleToggleHabilitado = (periodo: PeriodoAcademico) => {
+    // Implementar toggle de habilitado
+    console.log('Toggle habilitado para período:', periodo.id);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingPeriodo(null);
+    setFormData({
+      nombre: '',
+      codigo: '',
+      anio: new Date().getFullYear().toString(),
+      semestre: 'I',
+      fechaInicio: '',
+      fechaFin: '',
+      fechaInicioMatricula: '',
+      fechaFinMatricula: '',
+      descripcion: '',
+      habilitado: true
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implementar lógica de envío
+    console.log('Enviar formulario:', formData);
+    handleCloseModal();
+  };
+
+  useEffect(() => {
+    // Simular carga de datos
+    const mockPeriodos: PeriodoAcademico[] = [
+      {
+        id: 1,
+        nombre: '2025-I',
+        codigo: '2025-I',
+        anio: '2025',
+        semestre: 'I',
+        fechaInicio: '2025-03-18',
+        fechaFin: '2025-07-26',
+        fechaInicioMatricula: '2025-01-15',
+        fechaFinMatricula: '2025-03-15',
+        descripcion: 'Primer semestre académico 2025',
+        activo: true,
+        habilitado: true
+      },
+      {
+        id: 2,
+        nombre: '2024-II',
+        codigo: '2024-II',
+        anio: '2024',
+        semestre: 'II',
+        fechaInicio: '2024-08-19',
+        fechaFin: '2024-12-20',
+        fechaInicioMatricula: '2024-06-15',
+        fechaFinMatricula: '2024-08-15',
+        descripcion: 'Segundo semestre académico 2024',
+        activo: false,
+        habilitado: false
+      }
+    ];
+    
+    setTimeout(() => {
+      setPeriodos(mockPeriodos);
+      setFilteredPeriodos(mockPeriodos);
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    const filtered = periodos.filter(periodo =>
+      periodo.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      periodo.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      periodo.anio.includes(searchTerm)
+    );
+    setFilteredPeriodos(filtered);
+  }, [periodos, searchTerm]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Cargando períodos académicos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Períodos Académicos</h1>
+              <p className="text-gray-600 mt-1">Gestiona los períodos académicos y de matrícula</p>
+            </div>
+            {canManage && (
+              <Button
+                variant="primary"
+                onClick={() => setShowModal(true)}
+                leftIcon={FaPlus}
+              >
+                Nuevo Período
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Filtros */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre, código o año..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table ref={tableRef} className="w-full">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -396,6 +643,7 @@ export default function PeriodosAcademicosPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

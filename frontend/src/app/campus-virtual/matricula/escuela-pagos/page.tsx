@@ -15,47 +15,6 @@ import {
   Student
 } from '@/data/esquelas-mock';
 
-// TODO: conectar con backend
-const MOCK_PAYMENT_DETAILS = {
-  'EST001': {
-    conceptos: [
-      { id: 1, concepto: 'Matrícula 2024-I', monto: 1200.00, fechaVencimiento: '2024-03-15', estado: 'pendiente' },
-      { id: 2, concepto: 'Pensión Marzo 2024', monto: 800.00, fechaVencimiento: '2024-03-31', estado: 'pendiente' },
-      { id: 3, concepto: 'Pensión Abril 2024', monto: 800.00, fechaVencimiento: '2024-04-30', estado: 'pendiente' },
-      { id: 4, concepto: 'Biblioteca Virtual', monto: 150.00, fechaVencimiento: '2024-03-20', estado: 'pendiente' }
-    ],
-    totalPendiente: 2950.00,
-    fechaGeneracion: '2024-03-10'
-  },
-  'EST002': {
-    conceptos: [
-      { id: 1, concepto: 'Matrícula 2024-I', monto: 1500.00, fechaVencimiento: '2024-03-15', estado: 'pendiente' },
-      { id: 2, concepto: 'Pensión Marzo 2024', monto: 900.00, fechaVencimiento: '2024-03-31', estado: 'pendiente' },
-      { id: 3, concepto: 'Laboratorio de Sistemas', monto: 200.00, fechaVencimiento: '2024-03-25', estado: 'pendiente' }
-    ],
-    totalPendiente: 2600.00,
-    fechaGeneracion: '2024-03-10'
-  },
-  'EST003': {
-    conceptos: [
-      { id: 1, concepto: 'Matrícula 2024-I', monto: 1800.00, fechaVencimiento: '2024-03-15', estado: 'pendiente' },
-      { id: 2, concepto: 'Pensión Marzo 2024', monto: 1200.00, fechaVencimiento: '2024-03-31', estado: 'pendiente' },
-      { id: 3, concepto: 'Tesis Doctoral', monto: 500.00, fechaVencimiento: '2024-04-15', estado: 'pendiente' }
-    ],
-    totalPendiente: 3500.00,
-    fechaGeneracion: '2024-03-10'
-  },
-  'EST004': {
-    conceptos: [
-      { id: 1, concepto: 'Matrícula 2024-I', monto: 1100.00, fechaVencimiento: '2024-03-15', estado: 'pendiente' },
-      { id: 2, concepto: 'Pensión Marzo 2024', monto: 750.00, fechaVencimiento: '2024-03-31', estado: 'pendiente' },
-      { id: 3, concepto: 'Certificados', monto: 80.00, fechaVencimiento: '2024-03-18', estado: 'pendiente' }
-    ],
-    totalPendiente: 1930.00,
-    fechaGeneracion: '2024-03-10'
-  }
-};
-
 interface PaymentConcept {
   id: number;
   concepto: string;
@@ -75,7 +34,7 @@ export default function EsquelaPagosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   
   // Nuevos estados para la funcionalidad de creación de boletas
   const [isCreatingBoleta, setIsCreatingBoleta] = useState(false);

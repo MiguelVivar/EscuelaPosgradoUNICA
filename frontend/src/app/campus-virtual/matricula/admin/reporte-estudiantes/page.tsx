@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/common';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/common";
 
 interface FiltrosReporteMatricula {
   programaId?: string;
   mencionId?: string;
   sedeId?: string;
   periodoId?: string;
-  estado?: 'ACTIVO' | 'INACTIVO' | 'SUSPENDIDO' | 'EGRESADO';
+  estado?: "ACTIVO" | "INACTIVO" | "SUSPENDIDO" | "EGRESADO";
 }
 
 interface EstudianteReporte {
@@ -49,7 +49,7 @@ export default function ReporteEstudiantesPage() {
       fechaMatricula: "2024-03-15",
       estado: "ACTIVO",
       creditosAcumulados: 45,
-      semestre: 3
+      semestre: 3,
     },
     {
       id: "2",
@@ -62,7 +62,7 @@ export default function ReporteEstudiantesPage() {
       fechaMatricula: "2024-03-20",
       estado: "ACTIVO",
       creditosAcumulados: 30,
-      semestre: 2
+      semestre: 2,
     },
     {
       id: "3",
@@ -75,51 +75,53 @@ export default function ReporteEstudiantesPage() {
       fechaMatricula: "2023-08-10",
       estado: "EGRESADO",
       creditosAcumulados: 96,
-      semestre: 6
-    }
+      semestre: 6,
+    },
   ];
 
   const handleGenerarReporte = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Simular carga de datos
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       // Filtrar estudiantes según criterios
       let estudiantesFiltrados = estudiantesEjemplo;
-      
+
       if (filtros.estado) {
-        estudiantesFiltrados = estudiantesFiltrados.filter(e => e.estado === filtros.estado);
+        estudiantesFiltrados = estudiantesFiltrados.filter(
+          (e) => e.estado === filtros.estado
+        );
       }
-      
+
       setEstudiantes(estudiantesFiltrados);
       setMostrarReporte(true);
     } catch (error) {
-      setError('Error al generar el reporte');
-      console.error('Error:', error);
+      setError("Error al generar el reporte");
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExportar = (formato: 'excel' | 'pdf') => {
+  const handleExportar = (formato: "excel" | "pdf") => {
     alert(`📊 Exportando reporte a ${formato.toUpperCase()}...`);
   };
 
   const getStatusColor = (estado: string) => {
     switch (estado) {
-      case 'ACTIVO':
-        return 'bg-green-100 text-green-800';
-      case 'EGRESADO':
-        return 'bg-blue-100 text-blue-800';
-      case 'SUSPENDIDO':
-        return 'bg-red-100 text-red-800';
-      case 'INACTIVO':
-        return 'bg-gray-100 text-gray-800';
+      case "ACTIVO":
+        return "bg-green-100 text-green-800";
+      case "EGRESADO":
+        return "bg-blue-100 text-blue-800";
+      case "SUSPENDIDO":
+        return "bg-red-100 text-red-800";
+      case "INACTIVO":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -139,39 +141,61 @@ export default function ReporteEstudiantesPage() {
               </p>
             </div>
             <Button
-              onClick={() => router.push('/campus-virtual/matricula')}
+              onClick={() => router.push("/campus-virtual/matricula")}
               className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg"
             >
               ← Volver
             </Button>
           </div>
-          
+
           {/* Filtros */}
           <div className="bg-slate-50 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de Búsqueda</h3>
-            
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+              Filtros de Búsqueda
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Programa</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Programa
+                </label>
                 <select
-                  value={filtros.programaId || ''}
-                  onChange={(e) => setFiltros(prev => ({ ...prev, programaId: e.target.value || undefined }))}
+                  value={filtros.programaId || ""}
+                  onChange={(e) =>
+                    setFiltros((prev) => ({
+                      ...prev,
+                      programaId: e.target.value || undefined,
+                    }))
+                  }
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Todos los programas</option>
-                  <option value="DOC001">Doctorado en Ciencias Empresariales</option>
-                  <option value="DOC002">Doctorado en Derecho y Ciencia Política</option>
+                  <option value="DOC001">
+                    Doctorado en Ciencias Empresariales
+                  </option>
+                  <option value="DOC002">
+                    Doctorado en Derecho y Ciencia Política
+                  </option>
                   <option value="DOC003">Doctorado en Educación</option>
-                  <option value="MAE001">Maestría en Gestión Empresarial</option>
+                  <option value="MAE001">
+                    Maestría en Gestión Empresarial
+                  </option>
                   <option value="MAE002">Maestría en Gestión Pública</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Sede</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Sede
+                </label>
                 <select
-                  value={filtros.sedeId || ''}
-                  onChange={(e) => setFiltros(prev => ({ ...prev, sedeId: e.target.value || undefined }))}
+                  value={filtros.sedeId || ""}
+                  onChange={(e) =>
+                    setFiltros((prev) => ({
+                      ...prev,
+                      sedeId: e.target.value || undefined,
+                    }))
+                  }
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Todas las sedes</option>
@@ -182,10 +206,17 @@ export default function ReporteEstudiantesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Estado</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Estado
+                </label>
                 <select
-                  value={filtros.estado || ''}
-                  onChange={(e) => setFiltros(prev => ({ ...prev, estado: e.target.value as any || undefined }))}
+                  value={filtros.estado || ""}
+                  onChange={(e) =>
+                  setFiltros((prev) => ({
+                    ...prev,
+                    estado: e.target.value ? e.target.value as "ACTIVO" | "INACTIVO" | "SUSPENDIDO" | "EGRESADO" : undefined,
+                  }))
+                  }
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Todos los estados</option>
@@ -209,22 +240,20 @@ export default function ReporteEstudiantesPage() {
                     Generando...
                   </>
                 ) : (
-                  <>
-                    🔍 Generar Reporte
-                  </>
+                  <>🔍 Generar Reporte</>
                 )}
               </button>
-              
+
               {mostrarReporte && estudiantes.length > 0 && (
                 <div className="flex gap-2">
                   <button
-                    onClick={() => handleExportar('excel')}
+                    onClick={() => handleExportar("excel")}
                     className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
                   >
                     📊 Excel
                   </button>
                   <button
-                    onClick={() => handleExportar('pdf')}
+                    onClick={() => handleExportar("pdf")}
                     className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
                   >
                     📄 PDF
@@ -245,25 +274,42 @@ export default function ReporteEstudiantesPage() {
           {mostrarReporte && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="text-lg font-semibold text-blue-800">Total Estudiantes</h4>
-                <p className="text-2xl font-bold text-blue-600">{estudiantes.length}</p>
+                <h4 className="text-lg font-semibold text-blue-800">
+                  Total Estudiantes
+                </h4>
+                <p className="text-2xl font-bold text-blue-600">
+                  {estudiantes.length}
+                </p>
               </div>
               <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="text-lg font-semibold text-green-800">Activos</h4>
+                <h4 className="text-lg font-semibold text-green-800">
+                  Activos
+                </h4>
                 <p className="text-2xl font-bold text-green-600">
-                  {estudiantes.filter(e => e.estado === 'ACTIVO').length}
+                  {estudiantes.filter((e) => e.estado === "ACTIVO").length}
                 </p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg">
-                <h4 className="text-lg font-semibold text-yellow-800">Egresados</h4>
+                <h4 className="text-lg font-semibold text-yellow-800">
+                  Egresados
+                </h4>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {estudiantes.filter(e => e.estado === 'EGRESADO').length}
+                  {estudiantes.filter((e) => e.estado === "EGRESADO").length}
                 </p>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg">
-                <h4 className="text-lg font-semibold text-purple-800">Promedio Créditos</h4>
+                <h4 className="text-lg font-semibold text-purple-800">
+                  Promedio Créditos
+                </h4>
                 <p className="text-2xl font-bold text-purple-600">
-                  {estudiantes.length > 0 ? Math.round(estudiantes.reduce((sum, e) => sum + e.creditosAcumulados, 0) / estudiantes.length) : 0}
+                  {estudiantes.length > 0
+                    ? Math.round(
+                        estudiantes.reduce(
+                          (sum, e) => sum + e.creditosAcumulados,
+                          0
+                        ) / estudiantes.length
+                      )
+                    : 0}
                 </p>
               </div>
             </div>
@@ -275,29 +321,59 @@ export default function ReporteEstudiantesPage() {
               <table className="w-full border-collapse border border-slate-300">
                 <thead>
                   <tr className="bg-slate-100">
-                    <th className="border border-slate-300 px-4 py-2 text-left">Código</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Nombres</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Apellidos</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Programa</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Sede</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Estado</th>
-                    <th className="border border-slate-300 px-4 py-2 text-left">Créditos</th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Código
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Nombres
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Apellidos
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Programa
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Sede
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Estado
+                    </th>
+                    <th className="border border-slate-300 px-4 py-2 text-left">
+                      Créditos
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {estudiantes.map((estudiante) => (
                     <tr key={estudiante.id} className="hover:bg-slate-50">
-                      <td className="border border-slate-300 px-4 py-2 font-mono">{estudiante.codigo}</td>
-                      <td className="border border-slate-300 px-4 py-2">{estudiante.nombres}</td>
-                      <td className="border border-slate-300 px-4 py-2">{estudiante.apellidos}</td>
-                      <td className="border border-slate-300 px-4 py-2 text-sm">{estudiante.programa}</td>
-                      <td className="border border-slate-300 px-4 py-2">{estudiante.sede}</td>
+                      <td className="border border-slate-300 px-4 py-2 font-mono">
+                        {estudiante.codigo}
+                      </td>
                       <td className="border border-slate-300 px-4 py-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(estudiante.estado)}`}>
+                        {estudiante.nombres}
+                      </td>
+                      <td className="border border-slate-300 px-4 py-2">
+                        {estudiante.apellidos}
+                      </td>
+                      <td className="border border-slate-300 px-4 py-2 text-sm">
+                        {estudiante.programa}
+                      </td>
+                      <td className="border border-slate-300 px-4 py-2">
+                        {estudiante.sede}
+                      </td>
+                      <td className="border border-slate-300 px-4 py-2">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            estudiante.estado
+                          )}`}
+                        >
                           {estudiante.estado}
                         </span>
                       </td>
-                      <td className="border border-slate-300 px-4 py-2 text-center">{estudiante.creditosAcumulados}</td>
+                      <td className="border border-slate-300 px-4 py-2 text-center">
+                        {estudiante.creditosAcumulados}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -308,7 +384,9 @@ export default function ReporteEstudiantesPage() {
           {/* Mensaje si no hay datos */}
           {mostrarReporte && estudiantes.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-slate-500 text-lg">No se encontraron estudiantes con los filtros seleccionados</p>
+              <p className="text-slate-500 text-lg">
+                No se encontraron estudiantes con los filtros seleccionados
+              </p>
             </div>
           )}
         </div>
