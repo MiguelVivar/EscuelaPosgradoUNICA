@@ -296,10 +296,10 @@ export default function MatriculaPage() {
             borderColor: "border-indigo-200",
           },
           {
-            title: "Esquela de Pagos",
-            description: "Generar esquelas de pago con detalles pendientes",
+            title: "Escuela de Pagos",
+            description: "Generar escuelas de pago con detalles pendientes",
             icon: FiFileText,
-            href: "/campus-virtual/matricula/esquela-pagos",
+            href: "/campus-virtual/matricula/escuela-pagos",
             color: "from-emerald-500 to-emerald-600",
             bgColor: "bg-emerald-50",
             textColor: "text-emerald-800",
