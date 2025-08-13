@@ -42,7 +42,7 @@ import {
 import { PeriodoAcademico } from "@/types/periodoAcademico";
 import { ProgramaEstudio } from "@/types/programaEstudio";
 import { Sede } from "@/types/sede";
-import { reportesService } from "@/services/reportesService";
+// import { reportesService } from "@/services/reportesService";
 import { periodosAcademicosService } from "@/services/periodosAcademicosService";
 import { programasEstudioService } from "@/services/programasEstudioService";
 import { sedesService } from "@/services/sedesService";
@@ -1033,6 +1033,31 @@ export default function ReportesPage() {
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Carga inicial de datos
+  useEffect(() => {
+    if (canAccess) {
+      loadInitialData();
+    }
+  }, [canAccess]);
+
+  // Cargar reporte cuando cambian los filtros o tipo de reporte
+  useEffect(() => {
+    if (canAccess && periodosAcademicos.length > 0) {
+      loadReporte();
+    }
+  }, [tipoReporteActivo, filtros, periodosAcademicos, canAccess]);
+
+  // Animaciones
+  useEffect(() => {
+    if (canAccess && containerRef.current) {
+      gsap.fromTo(
+        containerRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+    }
+  }, [canAccess]);
+
   // Verificar acceso
   if (!canAccess) {
     return (
@@ -1049,29 +1074,6 @@ export default function ReportesPage() {
       </div>
     );
   }
-
-  // Carga inicial de datos
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Cargar reporte cuando cambian los filtros o tipo de reporte
-  useEffect(() => {
-    if (periodosAcademicos.length > 0) {
-      loadReporte();
-    }
-  }, [tipoReporteActivo, filtros, periodosAcademicos]);
-
-  // Animaciones
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
-      );
-    }
-  }, []);
 
   const loadInitialData = async () => {
     try {

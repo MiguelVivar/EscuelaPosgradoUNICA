@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/common";
 import Swal from "sweetalert2";
 import { gsap } from "gsap";
 import {
@@ -14,8 +13,6 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
   FaTrophy,
-  FaDownload,
-  FaEye,
 } from "react-icons/fa";
 
 import { InformacionAcademica } from "@/types/academic-info";
