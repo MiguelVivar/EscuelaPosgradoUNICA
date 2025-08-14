@@ -1,0 +1,21 @@
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+
+# Cache
+.cache/
+
+# Generated types
+*.d.ts
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -11,7 +11,11 @@ import {
   FaBuilding,
   FaCalendarAlt,
   FaMapMarkerAlt,
-  FaUniversity
+  FaUniversity,
+  FaChartBar,
+  FaCreditCard,
+  FaHistory,
+  FaFileInvoice
 } from "react-icons/fa";
 
 // Configuración de sidebars por página y rol
@@ -30,6 +34,24 @@ export const campusVirtualMainSidebar: PageSidebarConfig = {
         icon: <FaHome />,
         label: "Campus Virtual",
         href: "/campus-virtual"
+      },
+      {
+        id: "admin-panel",
+        icon: <FaUsers />,
+        label: "Administración",
+        href: "/campus-virtual/admin"
+      },
+      {
+        id: "encuestas",
+        icon: <FaChartBar />,
+        label: "Encuestas",
+        href: "/campus-virtual/intranet/encuestas"
+      },
+      {
+        id: "pagos",
+        icon: <FaCreditCard />,
+        label: "Sistema Pagos",
+        href: "/campus-virtual/intranet/pagos"
       },
       {
         id: "perfil",
@@ -87,6 +109,18 @@ export const campusVirtualMainSidebar: PageSidebarConfig = {
         icon: <FaTachometerAlt />,
         label: "Campus Virtual",
         href: "/campus-virtual"
+      },
+      {
+        id: "encuestas",
+        icon: <FaChartBar />,
+        label: "Encuestas",
+        href: "/campus-virtual/intranet/encuestas"
+      },
+      {
+        id: "pagos",
+        icon: <FaCreditCard />,
+        label: "Pagos",
+        href: "/campus-virtual/intranet/pagos"
       },
       {
         id: "perfil",
@@ -301,6 +335,86 @@ export const matriculaSidebar: PageSidebarConfig = {
   }
 };
 
+// Sidebar para el módulo de encuestas
+export const encuestasSidebar: PageSidebarConfig = {
+  "/campus-virtual/intranet/encuestas": {
+    "ADMIN": [
+      {
+        id: "volver",
+        icon: <FaHome />,
+        label: "Campus Virtual",
+        href: "/campus-virtual"
+      },
+      {
+        id: "encuestas-admin",
+        icon: <FaChartBar />,
+        label: "Gestión Encuestas",
+        href: "/campus-virtual/intranet/encuestas/admin"
+      },
+      {
+        id: "pagos",
+        icon: <FaCreditCard />,
+        label: "Deudas",
+        href: "/campus-virtual/intranet/pagos/deudas"
+      },
+      {
+        id: "historial",
+        icon: <FaHistory />,
+        label: "Historial",
+        href: "/campus-virtual/intranet/pagos/historial"
+      },
+      {
+        id: "solicitudes",
+        icon: <FaFileInvoice />,
+        label: "Solicitudes",
+        href: "/campus-virtual/intranet/pagos/solicitudes"
+      },
+      {
+        id: "cerrar-sesion",
+        icon: <FaSignOutAlt />,
+        label: "Cerrar Sesión",
+      }
+    ],
+    "ALUMNO": [
+      {
+        id: "volver",
+        icon: <FaHome />,
+        label: "Campus Virtual",
+        href: "/campus-virtual"
+      },
+      {
+        id: "encuestas",
+        icon: <FaChartBar />,
+        label: "Encuestas",
+        href: "/campus-virtual/intranet/encuestas/encuestas"
+      },
+      {
+        id: "pagos",
+        icon: <FaCreditCard />,
+        label: "Deudas",
+        href: "/campus-virtual/intranet/pagos/deudas"
+      },
+      {
+        id: "historial",
+        icon: <FaHistory />,
+        label: "Historial",
+        href: "/campus-virtual/intranet/pagos/historial"
+      },
+      {
+        id: "solicitudes",
+        icon: <FaFileInvoice />,
+        label: "Solicitudes",
+        href: "/campus-virtual/intranet/pagos/solicitudes"
+      },
+      {
+        id: "cerrar-sesion",
+        icon: <FaSignOutAlt />,
+        label: "Cerrar Sesión",
+      }
+    ]
+  }
+};
+
 // Función para obtener el sidebar apropiado según la página y el rol
 export function getSidebarForPage(pathname: string, userRole?: string): SidebarItemProps[] {
   // Configuraciones de sidebar por página
@@ -308,7 +422,8 @@ export function getSidebarForPage(pathname: string, userRole?: string): SidebarI
     campusVirtualMainSidebar,
     adminPanelSidebar,
     perfilSidebar,
-    matriculaSidebar
+    matriculaSidebar,
+    encuestasSidebar
   ];
 
   // Buscar configuración exacta
