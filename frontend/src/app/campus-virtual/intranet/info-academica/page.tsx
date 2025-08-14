@@ -148,7 +148,7 @@ export default function InfoAcademicaPage() {
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
-                onClick={() => setActiveTab(id as any)}
+                onClick={() => setActiveTab(id as "resumen" | "historial" | "proyeccion")}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === id
                     ? "border-amber-500 text-amber-600"

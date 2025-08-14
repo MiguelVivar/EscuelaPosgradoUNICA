@@ -2,11 +2,10 @@ import {
 Estudiante, 
 FiltrosEstudiante, 
 UploadResult, 
-EstudianteEstadisticas,
-ApiResponse
+EstudianteEstadisticas
 } from '@/types/estudiante';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 class EstudiantesService {
 // Datos de prueba temporales (simula la API)
@@ -260,8 +259,9 @@ return estudiante;
 }
 
 // Obtener historial académico
-async getHistorialAcademico(id: number) {
+async getHistorialAcademico(estudianteId: number) {
 await this.simulateDelay(700);
+console.log('Obteniendo historial para estudiante:', estudianteId); // Usar parámetro
 
 // Simular datos de historial académico
 return {

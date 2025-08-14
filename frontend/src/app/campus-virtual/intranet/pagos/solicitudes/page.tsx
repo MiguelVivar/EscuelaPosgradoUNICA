@@ -5,12 +5,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSolicitudes } from '@/hooks/useSolicitudes';
 import CreateSolicitudModal from '@/components/pagos/CreateSolicitudModal';
 import RespondSolicitudModal from '@/components/pagos/RespondSolicitudModal';
+import { Solicitud } from '@/types/pagos';
 
 export default function SolicitudesPage() {
   const { user, isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
-  const [selectedSolicitud, setSelectedSolicitud] = useState<any>(null);
+  const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
   const [showRespondModal, setShowRespondModal] = useState(false);
 
   const {
@@ -19,7 +20,6 @@ export default function SolicitudesPage() {
     error,
     showCreateModal,
     setShowCreateModal,
-    loadSolicitudes,
     createSolicitud,
     respondSolicitud,
   } = useSolicitudes({
@@ -60,7 +60,7 @@ export default function SolicitudesPage() {
     }
   };
 
-  const handleResponder = (solicitud: any) => {
+  const handleResponder = (solicitud: Solicitud) => {
     setSelectedSolicitud(solicitud);
     setShowRespondModal(true);
   };

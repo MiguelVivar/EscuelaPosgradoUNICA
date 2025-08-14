@@ -42,8 +42,8 @@ export function useSolicitudes({ userRole, isAuthenticated }: UseSolicitudesProp
       }
       
       setSolicitudes(solicitudesData);
-    } catch (err: any) {
-      const errorMessage = err.message || 'Error al cargar las solicitudes';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar las solicitudes';
       setError(errorMessage);
       console.error('Error loading solicitudes:', err);
     } finally {
@@ -78,10 +78,11 @@ export function useSolicitudes({ userRole, isAuthenticated }: UseSolicitudesProp
 
       await loadSolicitudes();
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo enviar la solicitud';
       await Swal.fire({
         title: 'Error',
-        text: error.message || 'No se pudo enviar la solicitud',
+        text: errorMessage,
         icon: 'error'
       });
       return false;
@@ -118,10 +119,11 @@ export function useSolicitudes({ userRole, isAuthenticated }: UseSolicitudesProp
 
       await loadSolicitudes();
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'No se pudo responder la solicitud';
       await Swal.fire({
         title: 'Error',
-        text: error.message || 'No se pudo responder la solicitud',
+        text: errorMessage,
         icon: 'error'
       });
       return false;

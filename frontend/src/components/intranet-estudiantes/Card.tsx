@@ -7,15 +7,21 @@ interface CardProps {
   title: string;
   description: string;
   status: ReactNode;
-  color: "amber" | "red" | "zinc";
+  color: "blue" | "orange" | "slate";
   icon: ReactNode;
   onClick: () => void;
 }
 
 const colorMap = {
-  amber: "bg-amber-500 border-amber-400",
-  red: "bg-red-500 border-red-400",
-  zinc: "bg-zinc-500 border-zinc-400",
+  blue: "bg-white border-blue-200 hover:border-blue-300",
+  orange: "bg-white border-orange-200 hover:border-orange-300", 
+  slate: "bg-white border-gray-200 hover:border-gray-300",
+};
+
+const iconColorMap = {
+  blue: "bg-blue-500",
+  orange: "bg-orange-500",
+  slate: "bg-gray-600",
 };
 
 export default function Card({
@@ -28,30 +34,32 @@ export default function Card({
 }: CardProps) {
   return (
     <div
-      className={`relative flex flex-col justify-between rounded-xl border-2 ${colorMap[color]} shadow-lg overflow-hidden min-h-[260px] transition-transform hover:scale-105 cursor-pointer`}
+      className={`relative flex flex-col justify-between rounded-2xl ${colorMap[color]} border-2 shadow-lg overflow-hidden min-h-[280px] transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group`}
       onClick={onClick}
     >
-      <div className={`flex items-center justify-between p-4 pb-0`}> 
-        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-black/80 text-white text-2xl">
+      {/* Header con icono */}
+      <div className="flex items-center justify-between p-6 pb-4"> 
+        <div className={`w-16 h-16 flex items-center justify-center rounded-2xl ${iconColorMap[color]} text-white text-3xl group-hover:scale-110 transition-transform duration-300`}>
           {icon}
         </div>
-        <div className="absolute top-0 right-0 w-16 h-16 bg-black/80 rounded-bl-3xl flex items-center justify-center">
-          <span className="text-white text-2xl">➔</span>
+        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors">
+          <span className="text-gray-600 text-lg font-bold">→</span>
         </div>
       </div>
-      <div className="flex-1 p-4 pt-2 flex flex-col gap-2">
-        <h2 className="text-white text-xl font-bold">{title}</h2>
-        <p className="text-zinc-200 text-sm">{description}</p>
-        <div className="mt-2">
-          <div className="bg-zinc-800 rounded-lg p-3 text-white text-base font-semibold">
-            {status}
+      
+      {/* Contenido principal */}
+      <div className="flex-1 px-6 pb-4 flex flex-col gap-3">
+        <h2 className="text-gray-800 text-xl font-bold leading-tight">{title}</h2>
+        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+        
+        {/* Status card */}
+        <div className="mt-auto">
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <div className="text-gray-700 text-sm font-medium">
+              {status}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="p-4 pt-0">
-        <button className="w-full py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg flex items-center justify-center gap-2 transition-colors">
-          Ingresar <span className="text-xl">→</span>
-        </button>
       </div>
     </div>
   );
