@@ -143,12 +143,12 @@ class EncuestasService {
   }
 
   // Admin: Obtener estadísticas de una encuesta específica
-  async getEstadisticasEncuesta(encuestaId: number): Promise<any> {
+  async getEstadisticasEncuesta(encuestaId: number): Promise<EncuestaStats> {
     const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/encuestas/${encuestaId}/estadisticas`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
-    return this.handleResponse<any>(response);
+    return this.handleResponse<EncuestaStats>(response);
   }
 
   // Admin: Duplicar encuesta

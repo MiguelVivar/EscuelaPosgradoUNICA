@@ -19,7 +19,7 @@ import {
 import CreateEncuestaModal from '@/components/encuestas/CreateEncuestaModal';
 
 export default function AdminEncuestasPage() {
-  const { user: _user, isAuthenticated } = useAuth();
+  const { user: _user } = useAuth();
   const {
     encuestas,
     loading,

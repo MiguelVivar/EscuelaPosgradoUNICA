@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { useResponderEncuesta } from '@/hooks/useResponderEncuesta';
 import encuestasService from '@/services/encuestasService';
 import { Pregunta, RespuestaPregunta } from '@/types/encuestas';
@@ -18,7 +17,6 @@ import Swal from 'sweetalert2';
 export default function ResponderEncuestaPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
   const encuestaId = parseInt(params.id as string);
   
   const {

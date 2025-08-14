@@ -648,7 +648,7 @@ export default function HistorialPagos() {
       // Simular envío por email
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(`✅ Historial de pagos enviado exitosamente a: ${user?.email || 'su correo registrado'}`);
-    } catch (error) {
+    } catch {
       alert('❌ Error al enviar el correo. Intente nuevamente.');
     } finally {
       setCargandoPDF(false);
@@ -841,7 +841,7 @@ export default function HistorialPagos() {
                 </tr>
               </thead>
               <tbody>
-                {filtrarPagos().map((pago, index) => (
+                {filtrarPagos().map((pago) => (
                   <tr key={pago.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
@@ -1371,7 +1371,7 @@ export default function HistorialPagos() {
                           {filtroAno && <li>• Año: {filtroAno}</li>}
                           {filtroEstado && <li>• Estado: {filtroEstado}</li>}
                           {filtroConcepto && <li>• Concepto: {filtroConcepto}</li>}
-                          {busqueda && <li>• Búsqueda: "{busqueda}"</li>}
+                          {busqueda && <li>• Búsqueda: &quot;{busqueda}&quot;</li>}
                           {!filtroAno && !filtroEstado && !filtroConcepto && !busqueda && <li>• Sin filtros (todos los registros)</li>}
                         </ul>
                       </div>

@@ -35,16 +35,16 @@ export function useResponderEncuesta({ encuestaId }: UseResponderEncuestaProps):
       setEncuesta(encuestaData);
       setTiempoInicio(new Date());
       
-      // Si el usuario ya respondió parcialmente, cargar sus respuestas
-      if (encuestaData.misRespuestas && !encuestaData.misRespuestas.completada) {
-        const respuestasExistentes: Record<number, RespuestaPregunta> = {};
-        encuestaData.misRespuestas.respuestas.forEach(respuesta => {
-          respuestasExistentes[respuesta.preguntaId] = respuesta;
-        });
-        setRespuestas(respuestasExistentes);
-      }
-    } catch (err: any) {
-      const errorMessage = err.message || 'Error al cargar la encuesta';
+        // Si el usuario ya respondió parcialmente, cargar sus respuestas
+        if (encuestaData.misRespuestas && !encuestaData.misRespuestas.completada) {
+          const respuestasExistentes: Record<number, RespuestaPregunta> = {};
+          encuestaData.misRespuestas.respuestas.forEach(respuesta => {
+            respuestasExistentes[respuesta.preguntaId] = respuesta;
+          });
+          setRespuestas(respuestasExistentes);
+        }
+      } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar la encuesta';
       setError(errorMessage);
       console.error('Error loading encuesta:', err);
     } finally {

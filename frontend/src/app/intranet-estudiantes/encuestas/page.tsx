@@ -1,6 +1,6 @@
 "use client";
 
-import { FaArrowLeft, FaClipboardList, FaUser, FaStar, FaClock, FaCheckCircle, FaExclamationCircle, FaChartBar, FaPlay, FaEye, FaTimes, FaCheck, FaInfoCircle, FaDownload, FaFilePdf, FaFileExcel, FaPrint, FaFilter, FaSearch, FaCalendarAlt, FaThumbsUp, FaComment, FaQuestionCircle, FaAward, FaBolt, FaGift } from "react-icons/fa";
+import { FaArrowLeft, FaClipboardList, FaUser, FaStar, FaClock, FaCheckCircle, FaExclamationCircle, FaChartBar, FaPlay, FaEye, FaTimes, FaCheck, FaInfoCircle, FaDownload, FaFilePdf, FaFileExcel, FaPrint, FaFilter, FaSearch, FaCalendarAlt, FaComment, FaAward, FaBolt, FaGift } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,7 +33,12 @@ interface EncuestaCompletada {
   tiempoEmpleado: string;
   comentarios: string;
   puntos: number;
-  respuestasDetalladas: any[];
+  respuestasDetalladas: {
+    pregunta: string;
+    respuesta: string | number;
+    categoria?: string;
+    tipo: 'escala' | 'multiple' | 'texto' | 'si_no';
+    }[];
   certificadoDisponible: boolean;
 }
 
@@ -51,7 +56,7 @@ export default function Encuestas() {
   const { user } = useAuth();
   const [encuestaEnCurso, setEncuestaEnCurso] = useState<EncuestaDisponible | null>(null);
   const [preguntaActual, setPreguntaActual] = useState(0);
-  const [respuestas, setRespuestas] = useState<{[key: number]: any}>({});
+  const [respuestas, setRespuestas] = useState<{[key: number]: string | number}>({});
   const [modalRespuestas, setModalRespuestas] = useState(false);
   const [encuestaSeleccionada, setEncuestaSeleccionada] = useState<EncuestaCompletada | null>(null);
   const [modalExportar, setModalExportar] = useState(false);
@@ -314,7 +319,7 @@ export default function Encuestas() {
     setRespuestas({});
   };
 
-  const responderPregunta = (respuesta: any) => {
+  const responderPregunta = (respuesta: string | number) => {
     setRespuestas(prev => ({
       ...prev,
       [preguntaActual]: respuesta

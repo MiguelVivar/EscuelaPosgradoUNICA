@@ -38,7 +38,6 @@ import {
 import { PeriodoAcademico } from "@/types/periodoAcademico";
 import { ProgramaEstudio } from "@/types/programaEstudio";
 import { Sede } from "@/types/sede";
-import { reportesService } from "@/services/reportesService";
 import { periodosAcademicosService } from "@/services/periodosAcademicosService";
 import { programasEstudioService } from "@/services/programasEstudioService";
 import { sedesService } from "@/services/sedesService";
@@ -1035,48 +1034,6 @@ export default function ReportesPage() {
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Carga inicial de datos
-  useEffect(() => {
-    if (canAccess) {
-      loadInitialData();
-    }
-  }, [canAccess]);
-
-  // Cargar reporte cuando cambian los filtros o tipo de reporte
-  useEffect(() => {
-    if (canAccess && periodosAcademicos.length > 0) {
-      loadReporte();
-    }
-  }, [tipoReporteActivo, filtros, periodosAcademicos, canAccess]);
-
-  // Animaciones
-  useEffect(() => {
-    if (canAccess && containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
-      );
-    }
-  }, [canAccess]);
-
-  // Verificar acceso
-  if (!canAccess) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <FaInfoCircle className="mx-auto text-5xl text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Acceso Denegado
-          </h2>
-          <p className="text-gray-600">
-            No tienes permisos para acceder a los reportes
-          </p>
-        </div>
-      </div>
-    );
-  }
-    
   // Funciones definidas con useCallback
   const loadInitialData = useCallback(async () => {
     try {
@@ -1480,28 +1437,30 @@ export default function ReportesPage() {
     }
   }, [tipoReporteActivo, filtros, periodosAcademicos, programasEstudio, sedes]);
 
-  // Hooks que usan las funciones
+  // Carga inicial de datos
   useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
+    if (canAccess) {
+      loadInitialData();
+    }
+  }, [canAccess, loadInitialData]);
 
   // Cargar reporte cuando cambian los filtros o tipo de reporte
   useEffect(() => {
-    if (periodosAcademicos.length > 0) {
+    if (canAccess && periodosAcademicos.length > 0) {
       loadReporte();
     }
-  }, [tipoReporteActivo, filtros, periodosAcademicos, loadReporte]);
+  }, [canAccess, tipoReporteActivo, filtros, periodosAcademicos, loadReporte]);
 
   // Animaciones
   useEffect(() => {
-    if (containerRef.current) {
+    if (canAccess && containerRef.current) {
       gsap.fromTo(
         containerRef.current,
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
     }
-  }, []);
+  }, [canAccess]);
 
   // Verificar acceso
   if (!canAccess) {

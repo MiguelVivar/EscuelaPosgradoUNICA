@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useEncuestas } from '@/hooks/useEncuestas';
 import { CreateEncuestaRequest } from '@/types/encuestas';
-import { useAuth } from '@/contexts/AuthContext';
 import { 
   FaTimes, 
   FaPlus, 
@@ -43,14 +42,13 @@ interface FormOpcion {
 }
 
 export default function CreateEncuestaModal({ onClose, onSuccess }: CreateEncuestaModalProps) {
-  const { user, isAuthenticated } = useAuth();
   const { crearEncuesta } = useEncuestas();
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
-    tipo: 'SATISFACCION' as const,
+    tipo: 'SATISFACCION' as 'SATISFACCION' | 'EVALUACION_DOCENTE' | 'SERVICIOS' | 'INFRAESTRUCTURA' | 'OTRO',
     fechaInicio: new Date().toISOString().split('T')[0],
     fechaCierre: '',
     duracionEstimada: 10,
@@ -170,13 +168,13 @@ export default function CreateEncuestaModal({ onClose, onSuccess }: CreateEncues
     }
   };
 
-  const updatePregunta = (index: number, field: string, value: any) => {
+  const updatePregunta = (index: number, field: keyof FormPregunta, value: string | number | boolean | TipoPregunta) => {
     const newPreguntas = [...preguntas];
     
     if (field === 'tipo') {
       // Reset campos específicos cuando cambia el tipo
       const pregunta = { ...newPreguntas[index] };
-      pregunta.tipo = value;
+      pregunta.tipo = value as TipoPregunta;
       
       if (value === 'MULTIPLE_CHOICE') {
         pregunta.opciones = [
@@ -203,7 +201,10 @@ export default function CreateEncuestaModal({ onClose, onSuccess }: CreateEncues
       
       newPreguntas[index] = pregunta;
     } else {
-      (newPreguntas[index] as any)[field] = value;
+      newPreguntas[index] = {
+        ...newPreguntas[index],
+        [field]: value
+      };
     }
     
     setPreguntas(newPreguntas);
@@ -291,17 +292,17 @@ export default function CreateEncuestaModal({ onClose, onSuccess }: CreateEncues
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tipo de encuesta
                   </label>
-                  <select
+                    <select
                     value={formData.tipo}
-                    onChange={(e) => setFormData({...formData, tipo: e.target.value as any})}
+                    onChange={(e) => setFormData({...formData, tipo: e.target.value as 'SATISFACCION' | 'EVALUACION_DOCENTE' | 'SERVICIOS' | 'INFRAESTRUCTURA' | 'OTRO'})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
+                    >
                     <option value="SATISFACCION">Satisfacción</option>
                     <option value="EVALUACION_DOCENTE">Evaluación Docente</option>
                     <option value="SERVICIOS">Servicios</option>
                     <option value="INFRAESTRUCTURA">Infraestructura</option>
                     <option value="OTRO">Otro</option>
-                  </select>
+                    </select>
                 </div>
 
                 <div>

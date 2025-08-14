@@ -1,66 +1,121 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEncuestas } from '@/hooks/useEncuestas';
-import Link from 'next/link';
-import { FaClipboardList, FaClock, FaExclamationCircle, FaUsers, FaChartBar, FaPlay, FaEye } from 'react-icons/fa';
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEncuestas } from "@/hooks/useEncuestas";
+import Link from "next/link";
+import {
+  FaClipboardList,
+  FaClock,
+  FaExclamationCircle,
+  FaUsers,
+  FaChartBar,
+  FaPlay,
+  FaEye,
+} from "react-icons/fa";
 
 export default function EncuestasPage() {
   const { user } = useAuth();
-  const [filterEstado, setFilterEstado] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEstado, setFilterEstado] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { encuestas = [], loading, error } = useEncuestas();
 
   const getTipoColor = (tipo: string) => {
     switch (tipo) {
-      case 'EVALUACION_DOCENTE': return 'text-blue-600 bg-blue-100';
-      case 'SERVICIOS': return 'text-green-600 bg-green-100';
-      case 'INFRAESTRUCTURA': return 'text-purple-600 bg-purple-100';
-      case 'SATISFACCION': return 'text-pink-600 bg-pink-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case "EVALUACION_DOCENTE":
+        return "text-blue-600 bg-blue-100";
+      case "SERVICIOS":
+        return "text-green-600 bg-green-100";
+      case "INFRAESTRUCTURA":
+        return "text-purple-600 bg-purple-100";
+      case "SATISFACCION":
+        return "text-pink-600 bg-pink-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   const formatearTipo = (tipo: string) => {
     switch (tipo) {
-      case 'EVALUACION_DOCENTE': return 'Evaluación Docente';
-      case 'SERVICIOS': return 'Servicios';
-      case 'INFRAESTRUCTURA': return 'Infraestructura';
-      case 'SATISFACCION': return 'Satisfacción';
-      default: return tipo;
+      case "EVALUACION_DOCENTE":
+        return "Evaluación Docente";
+      case "SERVICIOS":
+        return "Servicios";
+      case "INFRAESTRUCTURA":
+        return "Infraestructura";
+      case "SATISFACCION":
+        return "Satisfacción";
+      default:
+        return tipo;
     }
   };
 
-  const getEstadoEncuesta = (encuesta: any) => {
+  const getEstadoEncuesta = (encuesta: {
+    fechaInicio: string;
+    fechaCierre: string;
+    activa: boolean;
+  }) => {
     const now = new Date();
     const inicio = new Date(encuesta.fechaInicio);
     const cierre = new Date(encuesta.fechaCierre);
-    if (!encuesta.activa) return { estado: 'Inactiva', color: 'text-gray-600 bg-gray-100', icon: FaExclamationCircle };
-    if (now > cierre) return { estado: 'Cerrada', color: 'text-red-600 bg-red-100', icon: FaExclamationCircle };
-    if (encuesta.activa && now >= inicio && now <= cierre) return { estado: 'Disponible', color: 'text-amber-600 bg-amber-100', icon: FaPlay };
-    return { estado: 'Inactiva', color: 'text-gray-600 bg-gray-100', icon: FaExclamationCircle };
+    if (!encuesta.activa)
+      return {
+        estado: "Inactiva",
+        color: "text-gray-600 bg-gray-100",
+        icon: FaExclamationCircle,
+      };
+    if (now > cierre)
+      return {
+        estado: "Cerrada",
+        color: "text-red-600 bg-red-100",
+        icon: FaExclamationCircle,
+      };
+    if (encuesta.activa && now >= inicio && now <= cierre)
+      return {
+        estado: "Disponible",
+        color: "text-amber-600 bg-amber-100",
+        icon: FaPlay,
+      };
+    return {
+      estado: "Inactiva",
+      color: "text-gray-600 bg-gray-100",
+      icon: FaExclamationCircle,
+    };
   };
 
-  const filteredEncuestas = encuestas.filter((encuesta: any) => {
-    const matchesSearch = encuesta.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  interface Encuesta {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    tipo: string;
+    fechaInicio: string;
+    fechaCierre: string;
+    activa: boolean;
+    obligatoria?: boolean;
+    duracionEstimada: number;
+    totalRespuestas: number;
+  }
+
+  const filteredEncuestas = encuestas.filter((encuesta: Encuesta) => {
+    const matchesSearch =
+      encuesta.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       encuesta.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
       encuesta.tipo.toLowerCase().includes(searchTerm.toLowerCase());
     let matchesEstado = true;
     if (filterEstado) {
       const estado = getEstadoEncuesta(encuesta).estado;
       switch (filterEstado) {
-        case 'disponible':
-          matchesEstado = estado === 'Disponible';
+        case "disponible":
+          matchesEstado = estado === "Disponible";
           break;
-        case 'completada':
+        case "completada":
           matchesEstado = false;
           break;
-        case 'pendiente':
-          matchesEstado = estado === 'Inactiva';
+        case "pendiente":
+          matchesEstado = estado === "Inactiva";
           break;
-        case 'cerrada':
-          matchesEstado = estado === 'Cerrada';
+        case "cerrada":
+          matchesEstado = estado === "Cerrada";
           break;
         default:
           matchesEstado = true;
@@ -74,10 +129,12 @@ export default function EncuestasPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">
-            {user?.role === 'ADMIN' ? 'Gestión de Encuestas' : 'Mis Encuestas'}
+            {user?.role === "ADMIN" ? "Gestión de Encuestas" : "Mis Encuestas"}
           </h1>
           <p className="text-gray-600 mt-1">
-            {user?.role === 'ADMIN' ? 'Administra encuestas y consulta resultados' : 'Responde las encuestas disponibles para ti'}
+            {user?.role === "ADMIN"
+              ? "Administra encuestas y consulta resultados"
+              : "Responde las encuestas disponibles para ti"}
           </p>
         </div>
       </div>
@@ -116,24 +173,37 @@ export default function EncuestasPage() {
           {filteredEncuestas.length === 0 ? (
             <div className="col-span-full bg-white p-12 rounded-lg shadow text-center">
               <FaClipboardList className="text-6xl text-gray-300 mx-auto mb-4" />
-              <p className="text-xl text-gray-500 mb-2">No hay encuestas disponibles</p>
+              <p className="text-xl text-gray-500 mb-2">
+                No hay encuestas disponibles
+              </p>
               <p className="text-gray-400">
-                {searchTerm ? 'Intenta ajustar los filtros de búsqueda' : 'Las encuestas aparecerán aquí cuando estén disponibles'}
+                {searchTerm
+                  ? "Intenta ajustar los filtros de búsqueda"
+                  : "Las encuestas aparecerán aquí cuando estén disponibles"}
               </p>
             </div>
           ) : (
-            filteredEncuestas.map((encuesta: any) => {
+            filteredEncuestas.map((encuesta: Encuesta) => {
               const estadoInfo = getEstadoEncuesta(encuesta);
               const IconoEstado = estadoInfo.icon;
               return (
-                <div key={encuesta.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div
+                  key={encuesta.id}
+                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center space-x-3">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${getTipoColor(encuesta.tipo)}`}>
+                        <span
+                          className={`px-3 py-1 text-xs font-medium rounded-full ${getTipoColor(
+                            encuesta.tipo
+                          )}`}
+                        >
                           {formatearTipo(encuesta.tipo)}
                         </span>
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1 ${estadoInfo.color}`}>
+                        <span
+                          className={`px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1 ${estadoInfo.color}`}
+                        >
                           <IconoEstado className="text-xs" />
                           {estadoInfo.estado}
                         </span>
@@ -144,8 +214,12 @@ export default function EncuestasPage() {
                         )}
                       </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{encuesta.titulo}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{encuesta.descripcion}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {encuesta.titulo}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {encuesta.descripcion}
+                    </p>
                     <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 mb-4">
                       <div className="flex items-center gap-2">
                         <FaClock />
@@ -157,10 +231,19 @@ export default function EncuestasPage() {
                       </div>
                     </div>
                     <div className="text-xs text-gray-500 mb-4">
-                      <p>Disponible: {new Date(encuesta.fechaInicio).toLocaleDateString('es-PE')} - {new Date(encuesta.fechaCierre).toLocaleDateString('es-PE')}</p>
+                      <p>
+                        Disponible:{" "}
+                        {new Date(encuesta.fechaInicio).toLocaleDateString(
+                          "es-PE"
+                        )}{" "}
+                        -{" "}
+                        {new Date(encuesta.fechaCierre).toLocaleDateString(
+                          "es-PE"
+                        )}
+                      </p>
                     </div>
                     <div className="flex space-x-3">
-                      {user?.role === 'ADMIN' ? (
+                      {user?.role === "ADMIN" ? (
                         <div className="flex space-x-3 w-full">
                           <Link
                             href={`/campus-virtual/intranet/encuestas/${encuesta.id}`}
