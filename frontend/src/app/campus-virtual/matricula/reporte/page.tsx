@@ -1126,7 +1126,7 @@
             setReporteAcademico(academicoReal);
             break;
 
-            case 'DETALLADO':
+            case TipoReporte.DETALLADO:
             // Cargar datos detallados de estudiantes
             const { estudiantes: estudiantesDetalle } = await estudiantesService.buscarEstudiantes({});
             
