@@ -1381,7 +1381,7 @@
             <ReporteAcademicoComponent reporte={reporteAcademico} />
             )}
             
-            {tipoReporteActivo === 'DETALLADO' && reporteDetallado && (
+            {tipoReporteActivo === TipoReporte.DETALLADO && reporteDetallado && (
             <ReporteDetalladoComponent reporte={reporteDetallado} />
             )}
         </div>
