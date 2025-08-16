@@ -4,13 +4,21 @@ import { recoveryTokens, cleanupExpiredTokens } from "@/lib/recoveryTokens";
 
 // Configuración de Mailtrap con opciones optimizadas para conectividad
 const createTransporter = (port: number = 2525) => {
+  // SECURITY WARNING: Mailtrap credentials must be provided via environment variables
+  const mailtrapUser = process.env.MAILTRAP_USER;
+  const mailtrapPassword = process.env.MAILTRAP_PASSWORD;
+  
+  if (!mailtrapUser || !mailtrapPassword) {
+    throw new Error('MAILTRAP_USER and MAILTRAP_PASSWORD environment variables are required');
+  }
+  
   return nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
     port: port,
     secure: false,
     auth: {
-      user: process.env.MAILTRAP_USER || "012a734da54fb7",
-      pass: process.env.MAILTRAP_PASSWORD || "add7b6837a0301",
+      user: mailtrapUser,
+      pass: mailtrapPassword,
     },
     // Timeouts más conservadores pero efectivos
     connectionTimeout: 30000, // 30 segundos

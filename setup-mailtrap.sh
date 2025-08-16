@@ -14,7 +14,7 @@ fi
 # Crear/actualizar .env en la raíz del proyecto
 echo "📝 Configurando .env principal..."
 
-read -p "Ingresa tu MAILTRAP_USER (ejemplo: 012a734da54fb7): " mailtrap_user
+read -p "Ingresa tu MAILTRAP_USER (obtén de tu cuenta Mailtrap): " mailtrap_user
 read -s -p "Ingresa tu MAILTRAP_PASSWORD: " mailtrap_password
 echo ""
 
