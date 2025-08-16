@@ -56,7 +56,8 @@ enum EstadoPago {
     PARCIAL = 'PARCIAL',
     ANULADO = 'ANULADO'
 }
-
+// Importar tipos de pagos desde archivo compartido
+import { PagoEstudiante, EstadoPago } from "@/types/pagoEstudiante";
 // Servicio temporal para sedes si no existe
 const sedesService = {
     async getSedes(): Promise<Sede[]> {
