@@ -9,8 +9,8 @@ const createTransporter = (port: number = 2525) => {
     port: port,
     secure: false,
     auth: {
-      user: process.env.MAILTRAP_USER || "012a734da54fb7",
-      pass: process.env.MAILTRAP_PASSWORD || "add7b6837a0301",
+      user: process.env.MAILTRAP_USER || "your_mailtrap_user_here",
+      pass: process.env.MAILTRAP_PASSWORD || "your_mailtrap_password_here",
     },
     // Timeouts más conservadores pero efectivos
     connectionTimeout: 30000, // 30 segundos

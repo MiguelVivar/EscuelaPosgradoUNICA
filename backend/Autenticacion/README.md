@@ -280,7 +280,7 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 
 # JWT
-app.jwtSecret=escuelaPosgradoUnicaSecretKey2024JWTAuthentication
+app.jwtSecret=${JWT_SECRET:tu-clave-secreta-jwt-aqui}
 app.jwtExpirationMs=86400000
 
 # JPA

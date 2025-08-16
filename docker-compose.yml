@@ -35,9 +35,12 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/autenticacion
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET:-defaultSecretKeyForDevelopmentOnly}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your-google-client-id-here}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your-google-client-secret-here}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -59,9 +62,10 @@ services:
       - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/intranet
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET:-defaultSecretKeyForDevelopmentOnly}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -83,9 +87,10 @@ services:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/matricula
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET:-defaultSecretKeyForDevelopmentOnly}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -104,8 +109,8 @@ services:
   db:
     image: postgres:17.5
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -126,7 +131,7 @@ services:
     image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@unica.edu.pe
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "8079:80"
