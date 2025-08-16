@@ -145,5 +145,6 @@ export const TIPOS_REPORTE_LABELS = {
   [TipoReporte.MATRICULAS]: 'Reporte de Matrículas',
   [TipoReporte.PAGOS]: 'Reporte de Pagos',
   [TipoReporte.ACADEMICO]: 'Reporte Académico',
-  [TipoReporte.CONSOLIDADO]: 'Reporte Consolidado'
+  [TipoReporte.CONSOLIDADO]: 'Reporte Consolidado',
+  [TipoReporte.DETALLADO]: 'Reporte Detallado'
 };
