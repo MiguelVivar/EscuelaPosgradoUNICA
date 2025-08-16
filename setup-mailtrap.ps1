@@ -10,7 +10,7 @@ if (-not (Test-Path "docker-compose.yml")) {
 }
 
 # Solicitar credenciales de Mailtrap
-$mailtrap_user = Read-Host "Ingresa tu MAILTRAP_USER (ejemplo: 012a734da54fb7)"
+$mailtrap_user = Read-Host "Ingresa tu MAILTRAP_USER (obtén de tu cuenta Mailtrap)"
 $secure_password = Read-Host "Ingresa tu MAILTRAP_PASSWORD" -AsSecureString
 $mailtrap_password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure_password))
 

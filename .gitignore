@@ -5,6 +5,14 @@
 .env.staging
 .env.development
 
+# Archivos específicos de configuración sensible
+.env.*
+!.env.example
+config/secrets.*
+config/production.*
+secrets/
+credentials/
+
 # Logs
 logs
 *.log
@@ -68,6 +76,8 @@ build/
 *.crt
 secrets/
 credentials/
+*.p12
+*.jks
 
 # Backups
 *.backup
@@ -75,3 +85,20 @@ credentials/
 
 # Cache
 .cache/
+
+# Spring Boot specific
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Spring configuration with secrets
+application-prod.properties
+application-production.properties
+bootstrap-prod.yml
+bootstrap-production.yml
+
+# JWT secrets and API keys
+**/jwt.properties
+**/oauth.properties
+**/api-keys.*

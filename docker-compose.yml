@@ -9,6 +9,7 @@ services:
       NEXT_TELEMETRY_DISABLED: 1
       NODE_ENV: production
       # Variables de Mailtrap desde archivo .env
+      # SECURITY WARNING: Ensure MAILTRAP credentials are set in environment
       MAILTRAP_USER: ${MAILTRAP_USER}
       MAILTRAP_PASSWORD: ${MAILTRAP_PASSWORD}
       MAILTRAP_FROM_EMAIL: ${MAILTRAP_FROM_EMAIL:-noreply@unica.edu.pe}
@@ -34,10 +35,16 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # SECURITY WARNING: Use strong database credentials in production
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/autenticacion
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      # SECURITY WARNING: JWT_SECRET must be set with a strong value
+      JWT_SECRET: ${JWT_SECRET}
+      # Google OAuth credentials - required for OAuth functionality
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -58,10 +65,13 @@ services:
     ports:
       - "8081:8081"
     environment:
+      # SECURITY WARNING: Use strong database credentials in production
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/intranet
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      # SECURITY WARNING: JWT_SECRET must be set with a strong value
+      JWT_SECRET: ${JWT_SECRET}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -82,10 +92,13 @@ services:
     ports:
       - "8082:8082"
     environment:
+      # SECURITY WARNING: Use strong database credentials in production
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/matricula
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_PROFILES_ACTIVE: docker
+      # SECURITY WARNING: JWT_SECRET must be set with a strong value
+      JWT_SECRET: ${JWT_SECRET}
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -104,8 +117,9 @@ services:
   db:
     image: postgres:17.5
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      # SECURITY WARNING: Use strong credentials in production
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -125,8 +139,9 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@unica.edu.pe
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      # SECURITY WARNING: Change these default credentials in production
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@unica.edu.pe}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-change_this_password_in_production}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "8079:80"

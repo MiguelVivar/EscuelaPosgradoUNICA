@@ -478,18 +478,18 @@ curl http://localhost:3000                    # Frontend
 
 | Rol | Username | Contraseña | Email | Permisos |
 |-----|----------|------------|-------|----------|
-| **👑 ADMIN** | `admin` | `admin123` | admin@unica.edu.pe | Control total del sistema |
-| **👨‍🏫 DOCENTE** | `docente.demo` | `docente123` | docente.demo@unica.edu.pe | Gestión de alumnos y colegas |
-| **👨‍💼 COORDINADOR** | `coordinador.demo` | `coordinador123` | coordinador.demo@unica.edu.pe | Supervisión académica |
-| **👨‍🎓 ALUMNO** | `alumno.demo` | `alumno123` | alumno.demo@unica.edu.pe | Portal estudiantil |
-| **📝 POSTULANTE** | `postulante.demo` | `postulante123` | postulante.demo@gmail.com | Información de postulación |
+| **👑 ADMIN** | `admin` | `admin123` *(CHANGE IN PRODUCTION!)* | admin@unica.edu.pe | Control total del sistema |
+| **👨‍🏫 DOCENTE** | `docente.demo` | `docente123` *(Demo only)* | docente.demo@unica.edu.pe | Gestión de alumnos y colegas |
+| **👨‍💼 COORDINADOR** | `coordinador.demo` | `coordinador123` *(Demo only)* | coordinador.demo@unica.edu.pe | Supervisión académica |
+| **👨‍🎓 ALUMNO** | `alumno.demo` | `alumno123` *(Demo only)* | alumno.demo@unica.edu.pe | Portal estudiantil |
+| **📝 POSTULANTE** | `postulante.demo` | `postulante123` *(Demo only)* | postulante.demo@gmail.com | Información de postulación |
 
 #### **Credenciales de Servicios:**
 
 | Servicio | Usuario | Contraseña | Notas |
 |----------|---------|------------|-------|
-| **PostgreSQL** | `postgres` | `postgres` | 3 bases de datos: autenticacion, intranet, matricula |
-| **pgAdmin** | `admin@unica.edu.pe` | `admin123` | Interfaz web para administrar BD |
+| **PostgreSQL** | `postgres` | Use .env values | 3 bases de datos: autenticacion, intranet, matricula |
+| **pgAdmin** | Use .env values | *(CHANGE IN PRODUCTION!)* | Interfaz web para administrar BD |
 
 ### 🔗 Flujo de Prueba Completo
 
@@ -694,12 +694,14 @@ GET /api/auth/validate         # Validar token JWT actual
 #### **Configuración de Base de Datos:**
 ```properties
 # archivo: src/main/resources/application.properties
+# SECURITY WARNING: Use environment variables for production!
 spring.datasource.url=jdbc:postgresql://localhost:5432/autenticacion
-spring.datasource.username=postgres
-spring.datasource.password=postgres
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD:your-secure-password-here}
 
 # JWT Configuration
-app.jwtSecret=escuelaPosgradoUnicaSecretKey2024JWTAuthentication
+# SECURITY WARNING: Use a strong secret in production!
+app.jwtSecret=${JWT_SECRET:your-jwt-secret-key-here-change-in-production}
 app.jwtExpirationMs=86400000  # 24 horas
 
 # Swagger UI
@@ -919,9 +921,10 @@ CREATE TABLE admisiones (...);       -- Proceso de admisión
 #### **Microservicio de Autenticación (✅ Configurado):**
 ```properties
 # application.properties
+# SECURITY WARNING: Use environment variables for production!
 spring.datasource.url=jdbc:postgresql://localhost:5432/autenticacion
-spring.datasource.username=postgres
-spring.datasource.password=postgres
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD:your-secure-password-here}
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
@@ -929,24 +932,28 @@ spring.jpa.show-sql=true
 #### **Microservicio de Intranet (🏗️ Preparado):**
 ```properties
 # application-docker.properties (configurado en Docker)
+# SECURITY WARNING: Use environment variables for production!
 spring.datasource.url=jdbc:postgresql://db:5432/intranet
-spring.datasource.username=postgres
-spring.datasource.password=postgres
+spring.datasource.username=${POSTGRES_USER:postgres}
+spring.datasource.password=${POSTGRES_PASSWORD:your-secure-password-here}
 ```
 
 #### **Microservicio de Matrícula (🏗️ Preparado):**
 ```properties
 # application-docker.properties (configurado en Docker)
+# SECURITY WARNING: Use environment variables for production!
 spring.datasource.url=jdbc:postgresql://db:5432/matricula
-spring.datasource.username=postgres
-spring.datasource.password=postgres
+spring.datasource.username=${POSTGRES_USER:postgres}
+spring.datasource.password=${POSTGRES_PASSWORD:your-secure-password-here}
 ```
 
 ### 🔧 Herramientas de Administración
 
 #### **pgAdmin 4 (✅ Configurado y Funcional)**
 - **URL de Acceso**: http://localhost:8079
-- **Credenciales**: `admin@unica.edu.pe` / `admin123`
+- **Credenciales**: Use environment variables (see .env.example)
+  - Default: `admin@unica.edu.pe` / `change_this_password_in_production`
+  - **SECURITY WARNING**: Change default credentials in production!
 - **Funcionalidades**:
   - ✅ Administración visual de las 3 bases de datos
   - ✅ Editor SQL integrado
