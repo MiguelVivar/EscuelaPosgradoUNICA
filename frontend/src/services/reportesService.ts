@@ -219,7 +219,8 @@ class ReportesService {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `reporte-${tipoReporte.toLowerCase()}-${new Date().toISOString().split('T')[0]}.${formato.toLowerCase()}`;
+      const extension = formato === 'PDF' ? 'pdf' : (formato === 'EXCEL' ? 'xlsx' : formato.toLowerCase());
+      a.download = `reporte-${tipoReporte.toLowerCase()}-${new Date().toISOString().split('T')[0]}.${extension}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
